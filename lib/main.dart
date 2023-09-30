@@ -1,8 +1,15 @@
-import 'package:apptempesp32/pages/list_pages.dart';
+import 'package:apptempesp32/pages/menus/botton_barr.dart';
+import 'package:apptempesp32/pages/menus/list_pages.dart';
+import 'package:apptempesp32/pages/menus/top_barr.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() {
-  runApp(const MyApp());
+  // Lock orientation to Portrait only
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]).then((value) => runApp(const MyApp())); //then call All the app
 }
 
 class MyApp extends StatelessWidget {
@@ -12,9 +19,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false, //Remove debug banner
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       home: const MyHomePage(),
     );
@@ -29,24 +37,37 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _currentPageIndex = 0; //Inicial index of pag and botton menu
-
-  //Fun to select icon and pag index and setState
-  void _onDestinationSelected(index) {
+  late int _index;
+  void attPageState(int index) {
+    //fun to update current body Page
     setState(() {
-      _currentPageIndex = index;
+      _index = index;
     });
+  }
+
+  @override
+  void initState() {
+    _index = PageIndex(attPageState: attPageState)
+        .getIndex; //Passing fun to PageIndex and obtain inicial index
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      //Top Menu
+      appBar: const PreferredSize(
+        preferredSize: Size.fromHeight(50.0),
+        child: TopBar(),
+      ),
+
       //Bottom Menu
-      bottomNavigationBar: NavigationBar(
-        labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
-        selectedIndex: _currentPageIndex,
-        onDestinationSelected: _onDestinationSelected, //Fun to select icon and pag index and setState
-        destinations: listNavigation(), 
+      // ignore: prefer_const_constructors
+      bottomNavigationBar: BottomBar(),
+
+      //Body (all pags)
+      body: PagSelector(
+        index: _index,
       ),
     );
   }
