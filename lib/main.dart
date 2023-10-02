@@ -1,6 +1,5 @@
-import 'package:apptempesp32/pages/menus/botton_barr.dart';
 import 'package:apptempesp32/pages/menus/list_pages.dart';
-import 'package:apptempesp32/pages/menus/top_barr.dart';
+import 'package:apptempesp32/pages/pag_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -24,19 +23,19 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const MyHomePage(),
+      home: const SelectedPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+class SelectedPage extends StatefulWidget {
+  const SelectedPage({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<SelectedPage> createState() => _SelectedPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _SelectedPageState extends State<SelectedPage> {
   late int _index;
   void attPageState(int index) {
     //fun to update current body Page
@@ -54,21 +53,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      //Top Menu
-      appBar: const PreferredSize(
-        preferredSize: Size.fromHeight(50.0),
-        child: TopBar(),
+    return [  //List of Pages
+      const PagGeneric(
+        pagText: "Page 1",
       ),
-
-      //Bottom Menu
-      // ignore: prefer_const_constructors
-      bottomNavigationBar: BottomBar(),
-
-      //Body (all pags)
-      body: PagSelector(
-        index: _index,
+      const PagGeneric(
+        pagText: "Page 2",
       ),
-    );
+      const PagGeneric(
+        pagText: "Page 3",
+      )
+    ][_index];
   }
 }
+
+

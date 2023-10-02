@@ -1,4 +1,3 @@
-import 'package:apptempesp32/pages/pag_test.dart';
 import 'package:flutter/material.dart';
 
 //Icons list of Botton Menu
@@ -48,26 +47,5 @@ class PageIndex {
   void onDestinationSelected(int index) {
     // Function used in NavigationBar => onDestinationSelected parameters
     setIndex = index;
-  }
-}
-
-// Widget to return Scaffold => Body with atual Page
-class PagSelector extends StatelessWidget {
-  final int index;
-  const PagSelector({super.key, required this.index});
-
-  @override
-  Widget build(BuildContext context) {
-    return const [  //List of Pages
-      PagMonitorar(
-        pagText: "Page 1",
-      ),
-      PagMonitorar(
-        pagText: "Page 2",
-      ),
-      PagMonitorar(
-        pagText: "Page 3",
-      )
-    ][index];
   }
 }
