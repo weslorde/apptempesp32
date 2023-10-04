@@ -1,7 +1,9 @@
+import 'package:apptempesp32/bloc/app_bloc.dart';
 import 'package:apptempesp32/pages/menus/list_pages.dart';
 import 'package:apptempesp32/pages/pag_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
   // Lock orientation to Portrait only
@@ -17,14 +19,16 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false, //Remove debug banner
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const SelectedPage(),
-    );
+    return BlocProvider<AppBloc>( //BlocProvider above MaterialApp for all pages using the same bloc instance
+        create: (BuildContext context) => AppBloc(),  // Call AppBloc() to pick inicial state
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false, //Remove debug banner
+          theme: ThemeData(
+            useMaterial3: true,
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          ),
+          home: const SelectedPage(),
+        ));
   }
 }
 
@@ -53,7 +57,8 @@ class _SelectedPageState extends State<SelectedPage> {
 
   @override
   Widget build(BuildContext context) {
-    return [  //List of Pages
+    return [
+      //List of Pages
       const PagGeneric(
         pagText: "Page 1",
       ),
@@ -66,5 +71,3 @@ class _SelectedPageState extends State<SelectedPage> {
     ][_index];
   }
 }
-
-

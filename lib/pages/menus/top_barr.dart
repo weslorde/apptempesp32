@@ -1,5 +1,7 @@
-import 'package:apptempesp32/pages/pag_test.dart';
+
+import 'package:apptempesp32/pages/bloc_test_pag.dart';
 import 'package:flutter/material.dart';
+
 
 class TopBar extends StatelessWidget implements PreferredSizeWidget {
   const TopBar({super.key});
@@ -12,7 +14,9 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor: Colors.grey.shade400,
       leading: IconButton(
-        onPressed: () { Navigator.pop(context);}, //TODO Perfil icon superior esquedo
+        onPressed: () {
+          Navigator.pop(context);
+        }, //TODO Perfil icon superior esquedo
         icon: const Icon(
           Icons.account_circle_rounded,
           size: 30,
@@ -24,10 +28,9 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => const PagGeneric(
-                        pagText: 'Pag 5',
-                      )),
-            ); 
+                builder: (context) => const BlocPage(),//const PagGeneric(pagText: 'Pag 5'),
+              ),
+            );
           }, //TODO Menu icon superior direito
           icon: const Icon(
             Icons.menu,
