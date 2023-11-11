@@ -19,10 +19,10 @@ class BlocPage extends StatelessWidget {
       body: BlocBuilder<AppBloc, AppState>(
           builder: ((context, state) {
             String texto = '';
-            if (state.error != null) {
+            if (state.msg != null) {
               texto = 'error state do BlocBuild == null';
             } else {
-              texto = state.data;
+              texto = state.msg;
             }
             return (Center(
               child: Column(
@@ -31,7 +31,7 @@ class BlocPage extends StatelessWidget {
                   Text(texto),
                   TextButton(
                       onPressed: () {
-                        context.read<AppBloc>().add(const LoadNextUrlEvent());
+                        context.read<AppBloc>().add(const BlueIsSup());
                       },
                       child: const Text('prox state'))
                 ],

@@ -2,25 +2,30 @@ import 'package:flutter/foundation.dart' show immutable;
 
 @immutable
 class AppState {
-  final bool isLoading;
-  final String data;
-  final Object? error;
+  final String stateActual;
+  final bool blueSuported;
+  final bool blueIsOn;
+  final String msg;
+
 
   const AppState({
-    required this.isLoading,
-    required this.data,
-    required this.error,
+    required this.stateActual,
+    required this.blueSuported,
+    required this.blueIsOn,
+    required this.msg,
   });
 
   const AppState.empty()
-      : isLoading = false,
-        data = 'estado Vazio',
-        error = null;
+      : stateActual = 'empty',
+        blueSuported = false,
+        blueIsOn = false,
+        msg = 'empty';
 
   @override
   String toString() => {
-        'isLoading': isLoading,
-        'hasData': data != '',
-        'error': error,
+        'stateActual' : stateActual,
+        'blueSuported': blueSuported,
+        'blueIsOn': blueIsOn,
+        'msg': msg,
       }.toString();
 }

@@ -1,4 +1,5 @@
 import 'package:apptempesp32/api/blue_api.dart';
+import 'package:apptempesp32/api/data_storege.dart';
 import 'package:apptempesp32/bloc/app_bloc.dart';
 import 'package:apptempesp32/bloc/app_state.dart';
 import 'package:apptempesp32/bloc/bloc_events.dart';
@@ -8,14 +9,18 @@ import 'package:apptempesp32/pages/menus/top_barr.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class PagGeneric extends StatelessWidget {
-  final String pagText;
-
-  const PagGeneric({super.key, required this.pagText});
+class MonitorarPag extends StatelessWidget {
+  const MonitorarPag({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final BlueController blue = BlueController();
+    final BlueController _blue = BlueController();
+    final AllData _data = AllData();
+
+    void changeBlocState(AppEvent nextState) {
+      context.read<AppBloc>().add(nextState);
+    }
+
     return WillPopScope(
       onWillPop: () => onBackPressed(context),
       child: Scaffold(
@@ -35,30 +40,18 @@ class PagGeneric extends StatelessWidget {
                 builder: ((context, state) {
                   return Column(
                     children: [
-                      SizedBox(width: 200, child: Text('$state', softWrap: true,)),
-                      TextButton(
-                        onPressed: () {
-                          context.read<AppBloc>().add(const BlueIsSup());
-                        },
-                        child: const Text('prox state'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          
-                        },
-                        child: const Text('TESTEEE'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          blue.mandaMensagem("Ping");
-                        },
-                        child: const Text('PINGGGG'),
-                      )
+                      const SizedBox(),
+                      IconButton(
+                          onPressed: () {
+                            changeBlocState(const BlueIsOn());
+                          },
+                          icon: const Icon(Icons.bluetooth)),
+                      const SizedBox(),
+                      Text(state.stateActual)
                     ],
                   );
                 }),
               ),
-              Text(pagText),
             ],
           ),
         ),

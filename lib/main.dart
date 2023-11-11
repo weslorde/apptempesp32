@@ -1,5 +1,6 @@
 import 'package:apptempesp32/bloc/app_bloc.dart';
-import 'package:apptempesp32/pages/menus/list_pages.dart';
+import 'package:apptempesp32/pages/menus/controller_pages.dart';
+import 'package:apptempesp32/pages/monitorar_page1.dart';
 import 'package:apptempesp32/pages/pag_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -19,8 +20,10 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<AppBloc>( //BlocProvider above MaterialApp for all pages using the same bloc instance
-        create: (BuildContext context) => AppBloc(),  // Call AppBloc() to pick inicial state
+    return BlocProvider<AppBloc>(
+        //BlocProvider above MaterialApp for all pages using the same bloc instance
+        create: (BuildContext context) =>
+            AppBloc(), // Call AppBloc() to pick inicial state
         child: MaterialApp(
           debugShowCheckedModeBanner: false, //Remove debug banner
           theme: ThemeData(
@@ -57,11 +60,9 @@ class _SelectedPageState extends State<SelectedPage> {
 
   @override
   Widget build(BuildContext context) {
-    return [
+    return /*BlocListener<AppBloc, AppState>(listener: (context, state){if (state.blueIsOn){context.read<AppBloc>().add(const BlueIsOn());}}, child:*/ [
       //List of Pages
-      const PagGeneric(
-        pagText: "Page 1",
-      ),
+      const MonitorarPag(),
       const PagGeneric(
         pagText: "Page 2",
       ),
