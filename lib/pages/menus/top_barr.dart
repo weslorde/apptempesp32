@@ -1,5 +1,7 @@
 
 import 'package:apptempesp32/pages/bloc_test_pag.dart';
+import 'package:apptempesp32/pages/menus/controller_pages.dart';
+import 'package:apptempesp32/pages/pag_Cert.dart';
 import 'package:flutter/material.dart';
 
 
@@ -11,6 +13,9 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    
+    final PageIndex _pageIndex = PageIndex(); //Simple Pag Controller
+
     return AppBar(
       backgroundColor: Colors.grey.shade400,
       leading: IconButton(
@@ -28,7 +33,7 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const BlocPage(),//const PagGeneric(pagText: 'Pag 5'),
+                builder: (context) => const PagCert(),//const PagGeneric(pagText: 'Pag 5'),
               ),
             );
           }, //TODO Menu icon superior direito

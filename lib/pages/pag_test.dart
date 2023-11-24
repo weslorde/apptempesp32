@@ -1,7 +1,7 @@
 import 'package:apptempesp32/api/blue_api.dart';
-import 'package:apptempesp32/bloc/app_bloc.dart';
-import 'package:apptempesp32/bloc/app_state.dart';
-import 'package:apptempesp32/bloc/bloc_events.dart';
+import 'package:apptempesp32/bloc/blue_bloc_files/blue_bloc.dart';
+import 'package:apptempesp32/bloc/blue_bloc_files/blue_state.dart';
+import 'package:apptempesp32/bloc/blue_bloc_files/blue_bloc_events.dart';
 import 'package:apptempesp32/dialogs/close_alert.dart';
 import 'package:apptempesp32/pages/menus/botton_barr.dart';
 import 'package:apptempesp32/pages/menus/top_barr.dart';
@@ -16,8 +16,9 @@ class PagGeneric extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final BlueController blue = BlueController();
-    return WillPopScope(
-      onWillPop: () => onBackPressed(context),
+    
+    return PopScope(
+      onPopInvoked: (_) => onBackPressed(context),
       child: Scaffold(
         //Top Menu
         appBar: const TopBar(),
@@ -31,14 +32,14 @@ class PagGeneric extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              BlocBuilder<AppBloc, AppState>(
+              BlocBuilder<BlueBloc, BlueState>(
                 builder: ((context, state) {
                   return Column(
                     children: [
                       SizedBox(width: 200, child: Text('$state', softWrap: true,)),
                       TextButton(
                         onPressed: () {
-                          context.read<AppBloc>().add(const BlueIsSup());
+                          context.read<BlueBloc>().add(const BlueIsSup());
                         },
                         child: const Text('prox state'),
                       ),
@@ -50,7 +51,7 @@ class PagGeneric extends StatelessWidget {
                       ),
                       TextButton(
                         onPressed: () {
-                          blue.mandaMensagem("Ping");
+                          blue.mandaMensagem("CertIni,1");
                         },
                         child: const Text('PINGGGG'),
                       )

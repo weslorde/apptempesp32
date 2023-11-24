@@ -1,32 +1,38 @@
-import 'dart:convert';
-
 import 'package:apptempesp32/api/blue_api.dart';
-import 'package:apptempesp32/bloc/app_state.dart';
-import 'package:apptempesp32/bloc/bloc_events.dart';
+import 'package:apptempesp32/bloc/blue_bloc_files/blue_state.dart';
+import 'package:apptempesp32/bloc/blue_bloc_files/blue_bloc_events.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:location/location.dart';
 
-class AppBloc extends Bloc<AppEvent, AppState> {
+class BlueBloc extends Bloc<BlueEvent, BlueState> {
   final BlueController _blue = BlueController();
 
   void emitAll({required String stateActual, String msg = ''}) {
     emit(
-      AppState(
+      BlueState(
         stateActual: stateActual,
         blueSuported: _blue.getBlueSup,
         blueIsOn: _blue.getBlueIsOn,
+        blueTurningOn: _blue.getBlueTurningOn,
+        blueLinked: _blue.getBlueLinked,
+        blueConnect: _blue.getblueConnect,
         msg: msg,
       ),
     );
   }
 
-  AppBloc() //When call or creat the AppBloc start the initial state
+  BlueBloc() //When call or creat the AppBloc start the initial state
       : super(
-          const AppState.empty(),
+          const BlueState.empty(),
         ) {
     //Logic of ALL STATES -----------------------------------
+
     on<InitState>((event, emit) async {
+      _blue.setBlueLinked = false;
+      _blue.setBlueIsOn = false;
+      _blue.setLocatIsOn = false;
       emitAll(stateActual: 'InitState');
     });
 
@@ -42,7 +48,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         _blue.setblueSup = true;
         emitAll(stateActual: 'BlueIsSup');
         add(const BlueIsOn());
-        
       }
     });
 
@@ -54,16 +59,10 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
     on<BlueIsOn>((event, emit) {
       [
-        Permission.location,
         Permission.bluetooth,
         Permission.bluetoothConnect,
         Permission.bluetoothScan
-      ].request().then((status) {
-        //print('$status');
-        //print(status[Permission.location]);
-        //print(status[Permission.bluetooth]);
-        
-      });
+      ].request().then((status) {});
 
       FlutterBluePlus.setLogLevel(LogLevel.verbose);
       // handle bluetooth on & off
@@ -71,12 +70,17 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       // note: if you have permissions issues you will get stuck at BluetoothAdapterState.unauthorized
       FlutterBluePlus.adapterState.listen((BluetoothAdapterState state) {
         // BluetoothAdapterState { unknown, unavailable, unauthorized, turningOn, on, turningOff, off }
-        if (state == BluetoothAdapterState.on) {
+        print("STATEEEE: ${state}");
+        if (state == BluetoothAdapterState.on && !_blue.getBlueIsOn) {
+          //Logic to only call one time on a simutaly mult call
           _blue.setBlueIsOn = true;
           emitAll(stateActual: 'BlueIsOn');
-          add(const BlueStartScan());
-        } else if (state == BluetoothAdapterState.off) {
+          add(const LocationisOn());
+        } else if (state == BluetoothAdapterState.off &&
+            !_blue.getBlueTurningOn) {
+          //Logic to only call one time on a simutaly mult call
           _blue.setBlueIsOn = false;
+          _blue.setBlueTurningOn = true;
           emitAll(stateActual: 'BlueIsOn');
           add(const WarningBlueOff());
         }
@@ -85,7 +89,41 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
     on<WarningBlueOff>((event, emit) async {
       emitAll(stateActual: 'WarningBlueOff', msg: 'Bluetooth não está ligado');
-      await Future.delayed(const Duration(seconds: 5));
+      await Future.delayed(const Duration(seconds: 2));
+
+      try {
+        await FlutterBluePlus.turnOn();
+      } on Exception catch (_) {}
+      _blue.setBlueTurningOn = false;
+      add(const InitState());
+    });
+
+    on<LocationisOn>((event, emit) async {
+      emitAll(stateActual: 'LocationisOn');
+
+      Permission.location.request().then((status) {
+        print('$status');
+      });
+
+      Location location = Location();
+
+      if (await location.serviceEnabled()) {
+        add(const BlueStartScan());
+      } else {
+        if (await location.requestService()) {
+          add(const BlueStartScan());
+        } else {
+          add(const WarningLocationOff());
+        }
+      }
+    });
+
+    on<WarningLocationOff>((event, emit) async {
+      _blue.setBlueIsOn = false; //When try to conect again need to be false
+      emitAll(
+          stateActual: 'WarningLocationOff',
+          msg: 'Localização não está ligado');
+      await Future.delayed(const Duration(seconds: 3));
       add(const InitState());
     });
 
@@ -99,7 +137,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
           // If device exist in "seen" -> ignore
           if (seen.contains(r.device.remoteId) == false) {
             seen.add(r.device.remoteId); // Add new device to "seen"
-            if (r.advertisementData.localName == "ChurrasTech") {
+            if (r.advertisementData.localName == "ChurrasTech" ||
+                r.advertisementData.localName == "Esp32") {
               _blue.setDevice = r.device; // Save target device to use later
             }
           }
@@ -123,7 +162,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       );
 
       _blue.setDevice = null;
-      await FlutterBluePlus.startScan(timeout: const Duration(seconds: 5));
+      await FlutterBluePlus.startScan(timeout: const Duration(seconds: 6));
     });
 
     on<WarningDeviceNotFound>((event, emit) async {
@@ -138,13 +177,12 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       emitAll(stateActual: 'BlueStartConnect', msg: 'Iniciando Conexão');
       final device = _blue.getDevice!;
       device.connectionState.listen((BluetoothConnectionState connectState) {
-        if (connectState == BluetoothConnectionState.disconnected) {
+        //print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA: $connectState");
+        if (connectState == BluetoothConnectionState.disconnected && _blue.getBlueLinked) {
+          _blue.setBlueLinked = false;
           add(const WarningBlueDisconnect());
-          // 1. typically, start a periodic timer that tries to
-          //    periodically reconnect, or just call connect() again right now
-          // 2. you must always re-discover services after disconnection!
-          // 3. you should cancel subscriptions to all characteristics you listened to
         } else if (connectState == BluetoothConnectionState.connected) {
+          _blue.setBlueLinked = true;
           add(const BlueStartDiscover());
         }
       });
@@ -155,17 +193,21 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       emitAll(
           stateActual: 'WarningBlueDisconnect',
           msg: 'Dispositivo Desconectado');
-      await Future.delayed(const Duration(seconds: 5));
+      await Future.delayed(const Duration(seconds: 3));
       add(const InitState());
     });
 
     on<BlueStartDiscover>((event, emit) async {
       emitAll(stateActual: 'BlueStartDiscover');
-
-      // Note: You must call discoverServices after every connection!
+      _blue.setfunConectado = () => {add(const BlueConectado())};
+      print("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
+      //Note: You must call discoverServices after every connection!
       _blue.discoveryDevice();
+    });
 
-      add(const InitState());
+    on<BlueConectado>((event, emit) async {
+      _blue.setblueConnect = true;
+      emitAll(stateActual: 'BlueConectado');
     });
 
     //

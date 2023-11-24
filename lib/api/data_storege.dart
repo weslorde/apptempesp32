@@ -12,12 +12,18 @@ class AllData {
   String _tSensor1 = '000';
   String _tSensor2 = '000';
   String _tAlvo = '000';
+
+  String _cert = "";
   
 
   get tGrelha => int.parse(_tGrelha);
   get tSensor1 => int.parse(_tSensor1);
   get tSensor2 => int.parse(_tSensor2);
   get tAlvo => int.parse(_tAlvo);
+
+  get getListTemp => [_tGrelha, _tSensor1, _tSensor2, _tAlvo];
+
+  get getCert => _cert;
 
   set setListTemp(List<String> list) {
     _tGrelha = list[0];
@@ -27,7 +33,9 @@ class AllData {
     attCalculaValores();
   }
 
-  get getListTemp => [_tGrelha, _tSensor1, _tSensor2, _tAlvo];
+  set setCert(String part){_cert = _cert + part;}
+  setCertBlank(){_cert = "";}
+
 
   List alarmeGraus = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; //[0,0,0,0,0,0,0,0];
   List alarmeTimer = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];

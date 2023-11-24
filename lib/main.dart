@@ -1,4 +1,4 @@
-import 'package:apptempesp32/bloc/app_bloc.dart';
+import 'package:apptempesp32/bloc/blue_bloc_files/blue_bloc.dart';
 import 'package:apptempesp32/pages/menus/controller_pages.dart';
 import 'package:apptempesp32/pages/monitorar_page1.dart';
 import 'package:apptempesp32/pages/pag_test.dart';
@@ -20,10 +20,10 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<AppBloc>(
+    return BlocProvider<BlueBloc>(
         //BlocProvider above MaterialApp for all pages using the same bloc instance
         create: (BuildContext context) =>
-            AppBloc(), // Call AppBloc() to pick inicial state
+            BlueBloc(), // Call AppBloc() to pick inicial state
         child: MaterialApp(
           debugShowCheckedModeBanner: false, //Remove debug banner
           theme: ThemeData(

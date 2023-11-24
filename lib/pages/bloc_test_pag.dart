@@ -1,6 +1,6 @@
-import 'package:apptempesp32/bloc/app_bloc.dart';
-import 'package:apptempesp32/bloc/app_state.dart';
-import 'package:apptempesp32/bloc/bloc_events.dart';
+import 'package:apptempesp32/bloc/blue_bloc_files/blue_bloc.dart';
+import 'package:apptempesp32/bloc/blue_bloc_files/blue_state.dart';
+import 'package:apptempesp32/bloc/blue_bloc_files/blue_bloc_events.dart';
 import 'package:apptempesp32/pages/menus/botton_barr.dart';
 import 'package:apptempesp32/pages/menus/top_barr.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +16,7 @@ class BlocPage extends StatelessWidget {
       appBar: const TopBar(),
       // ignore: prefer_const_constructors
       bottomNavigationBar: BottomBar(),
-      body: BlocBuilder<AppBloc, AppState>(
+      body: BlocBuilder<BlueBloc, BlueState>(
           builder: ((context, state) {
             String texto = '';
             if (state.msg != null) {
@@ -31,7 +31,7 @@ class BlocPage extends StatelessWidget {
                   Text(texto),
                   TextButton(
                       onPressed: () {
-                        context.read<AppBloc>().add(const BlueIsSup());
+                        context.read<BlueBloc>().add(const BlueIsSup());
                       },
                       child: const Text('prox state'))
                 ],

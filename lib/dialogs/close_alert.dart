@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-Future<bool> onBackPressed(context) async {
-  return await showDialog(
+onBackPressed(context) async {
+  bool logic = await showDialog(
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Tem certeza?'),
@@ -25,6 +25,8 @@ Future<bool> onBackPressed(context) async {
             ),
           ],
         ),
-      ) ??
-      false;
+      );
+  if (logic){
+    Navigator.pop(context);
+  }
 }

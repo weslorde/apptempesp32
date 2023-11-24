@@ -1,31 +1,23 @@
 import 'package:flutter/foundation.dart' show immutable;
 
 @immutable
-class AppState {
+class CertState {
   final String stateActual;
-  final bool blueSuported;
-  final bool blueIsOn;
   final String msg;
 
 
-  const AppState({
+  const CertState({
     required this.stateActual,
-    required this.blueSuported,
-    required this.blueIsOn,
     required this.msg,
   });
 
-  const AppState.empty()
+  const CertState.empty()
       : stateActual = 'empty',
-        blueSuported = false,
-        blueIsOn = false,
         msg = 'empty';
 
   @override
   String toString() => {
         'stateActual' : stateActual,
-        'blueSuported': blueSuported,
-        'blueIsOn': blueIsOn,
         'msg': msg,
       }.toString();
 }
