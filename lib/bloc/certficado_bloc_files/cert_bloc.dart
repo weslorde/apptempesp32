@@ -22,7 +22,7 @@ class CertBloc extends Bloc<CertEvent, CertState> {
       const StartOne(),
       const StartTwo(),
       const StartThree(),
-      const CheckConnect()
+      const EndCertf()
     ];
     add(listState[state]);
   }
@@ -35,18 +35,21 @@ class CertBloc extends Bloc<CertEvent, CertState> {
 
     on<InitState>((event, emit) async {
       emitAll(stateActual: 'InitState');
-      //print(await _aws.hasCertFiles());
-      add(const CheckConnect());
-      /*
+    });
+
+    on<CheckBlue>((event, emit) async {
+      emitAll(stateActual: 'CheckBlue');
       if (_blue.getblueConnect) {
         add(const StartOne());
       } else {
         add(const WarningBlueConnect());
-      }*/
+      }
     });
 
     on<WarningBlueConnect>((event, emit) async {
-      emitAll(stateActual: 'WarningBlueConnect');
+      emitAll(stateActual: 'WarningBlueConnect not connect');
+      await Future.delayed(const Duration(seconds: 5));
+      add(const InitState());
     });
 
     on<StartOne>((event, emit) async {
@@ -80,38 +83,9 @@ class CertBloc extends Bloc<CertEvent, CertState> {
       emitAll(stateActual: 'CertfThree');
     });
 
-    on<CheckConnect>((event, emit) async {
-      emitAll(stateActual: 'CheckConnect');
-      if (await _aws.hasInternet()) {
-        await _aws.creatClient();
-        add(const StartAws());
-      } else {
-        add(const WarningBlueConnect());
-      }
+    on<EndCertf>((event, emit) async {
+      emitAll(stateActual: 'EndCertf');
     });
-
-    on<StartAws>((event, emit) async {
-      emitAll(stateActual: 'StartAws');
-      await _aws.connectAWS();
-      add(const ConnectAws());
-    });
-
-    on<ConnectAws>((event, emit) async {
-      emitAll(stateActual: 'ConnectAws');
-      await _aws.arrumar();
-      add(const SendAws());
-    });
-
-    on<SendAws>((event, emit) async {
-      print('send');
-      emitAll(stateActual: 'SendAws');
-      const topic =
-          '\$aws/things/ChurrasTech2406/shadow/name/TemperaturesShadow/update';
-      const msg = '{"state": {"desired": {"TAlvoFlutter": "166"}}}';
-      _aws.awsMsg(topic, msg);
-    });
-
-//'\$aws/things/ChurrasTech2406/shadow/name/MotorShadow/update', '{"state": {"desired": {"Sentido": "${comandos[1]}","Nivel": "${comandos[2]}"}}}'
 
     //
     //espaço

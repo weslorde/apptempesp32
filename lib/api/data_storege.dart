@@ -15,7 +15,6 @@ class AllData {
 
   String _cert = "";
   
-
   get tGrelha => int.parse(_tGrelha);
   get tSensor1 => int.parse(_tSensor1);
   get tSensor2 => int.parse(_tSensor2);
@@ -25,6 +24,8 @@ class AllData {
 
   get getCert => _cert;
 
+  //////////////////////////////////////////////////////////////
+  
   set setListTemp(List<String> list) {
     _tGrelha = list[0];
     _tSensor1 = list[1];

@@ -9,6 +9,10 @@ class InitState implements CertEvent{
   const InitState();
 }
 
+class CheckBlue implements CertEvent{
+  const CheckBlue();
+}
+
 class WarningBlueConnect implements CertEvent{
   const WarningBlueConnect();
 }
@@ -37,22 +41,6 @@ class CertfThree implements CertEvent{
   const CertfThree();
 }
 
-class CheckConnect implements CertEvent{
-  const CheckConnect();
-}
-
-
-
-
-
-class StartAws implements CertEvent{
-  const StartAws();
-}
-
-class ConnectAws implements CertEvent{
-  const ConnectAws();
-}
-
-class SendAws implements CertEvent{
-  const SendAws();
+class EndCertf implements CertEvent{
+  const EndCertf();
 }
