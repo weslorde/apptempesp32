@@ -1,19 +1,31 @@
 import 'package:flutter/material.dart';
 
 //Icons list of Botton Menu
-List<Widget> listNavigation() {
+List<BottomNavigationBarItem> listNavigation() {
   return const [
-    NavigationDestination(
-      icon: Icon(Icons.data_usage),
-      label: 'Monitorar',
+    BottomNavigationBarItem(
+      icon: Icon(Icons.home_outlined),
+      label: 'Home',
     ),
-    NavigationDestination(
-      icon: Icon(Icons.alarm_on),
-      label: 'Alarmes',
+    BottomNavigationBarItem(
+      icon: Icon(Icons.speed),
+      label: 'Temperatura',
     ),
-    NavigationDestination(
-      icon: Icon(Icons.format_line_spacing),
-      label: 'Controle',
+    BottomNavigationBarItem(
+      icon: Icon(Icons.local_fire_department_outlined),
+      label: 'Churrasco',
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.timer_sharp),
+      label: 'Alarme',
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.swap_vert_rounded),
+      label: 'Posição',
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.newspaper),
+      label: 'Receitas',
     ),
   ];
 }
@@ -43,9 +55,18 @@ class PageIndex {
   }
 
   int get getIndex => _currentIndex;
+  int get getNavBotIndex {
+    if (_currentIndex > 5) {
+      return 0;
+    } else {
+      return _currentIndex;
+    }
+  }
 
-  void onDestinationSelected(int index) {
+  void onTap(int index) {
     // Function used in NavigationBar => onDestinationSelected parameters
     setIndex = index;
   }
+
+  //End class PageIndex
 }

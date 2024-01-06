@@ -9,6 +9,7 @@ class CertBloc extends Bloc<CertEvent, CertState> {
   final AwsController _aws = AwsController();
 
   void emitAll({required String stateActual, String msg = ''}) {
+    // ignore: invalid_use_of_visible_for_testing_member
     emit(
       CertState(
         stateActual: stateActual,
@@ -19,10 +20,11 @@ class CertBloc extends Bloc<CertEvent, CertState> {
 
   void funCertState(int state) {
     final listState = [
-      const StartOne(),
-      const StartTwo(),
-      const StartThree(),
-      const EndCertf()
+      const CertStartOne(),
+      const CertStartTwo(),
+      const CertStartThree(),
+      const CertDeviceName(),
+      const CertEnd()
     ];
     add(listState[state]);
   }
@@ -37,23 +39,80 @@ class CertBloc extends Bloc<CertEvent, CertState> {
       emitAll(stateActual: 'InitState');
     });
 
-    on<CheckBlue>((event, emit) async {
-      emitAll(stateActual: 'CheckBlue');
+    //
+    // Wifi to Boad Flow
+    //
+    on<InitWifiToBoard>((event, emit) async {
+      emitAll(stateActual: 'InitWifiToBoard');
+      add(const WifiForm());
+      
+    });
+
+    on<WifiCheckBlue>((event, emit) async {
+      emitAll(stateActual: 'WifiCheckBlue');
       if (_blue.getblueConnect) {
-        add(const StartOne());
+        add(const WifiForm());
       } else {
-        add(const WarningBlueConnect());
+        add(const WifiWarningBlueConnect());
       }
     });
 
-    on<WarningBlueConnect>((event, emit) async {
-      emitAll(stateActual: 'WarningBlueConnect not connect');
+    on<WifiWarningBlueConnect>((event, emit) async {
+      emitAll(stateActual: 'WifiWarningBlueConnect');
+      await Future.delayed(const Duration(seconds: 5));
+      add(const InitWifiToBoard());
+    });
+
+    on<WifiForm>((event, emit) async {
+      emitAll(stateActual: 'WifiForm');
+      
+    });
+
+
+    //
+    // Alexa link Email and Disp Flow
+    //
+    on<InitAlexaLink>((event, emit) async {
+      emitAll(stateActual: 'InitAlexaLink');
+    });
+
+    //
+    // Cadastro Celular Flow
+    //
+    on<InitCertFiles>((event, emit) async {
+      emitAll(stateActual: 'InitCertFiles');
+    });
+
+    on<CertCheckFiles>((event, emit) async {
+      emitAll(stateActual: 'CertCheckFiles');
+      if (await _aws.hasCertFiles()) {
+        add(const CertWarningFiles());
+      } else {
+        add(const CertCheckBlue());
+      }
+    });
+
+    on<CertWarningFiles>((event, emit) async {
+      emitAll(stateActual: 'CertWarningFiles');
+    });
+
+    on<CertCheckBlue>((event, emit) async {
+      emitAll(stateActual: 'CertCheckBlue');
+      if (_blue.getblueConnect) {
+        add(const CertStartOne());
+      } else {
+        add(const CertWarningBlueConnect());
+      }
+    });
+
+    on<CertWarningBlueConnect>((event, emit) async {
+      emitAll(stateActual: 'CertWarningBlueConnect');
       await Future.delayed(const Duration(seconds: 5));
       add(const InitState());
     });
 
-    on<StartOne>((event, emit) async {
-      emitAll(stateActual: 'StartOne');
+    on<CertStartOne>((event, emit) async {
+      emitAll(stateActual: 'CertStartOne');
       _blue.setfunCertState = funCertState;
       _blue.mandaMensagem("CertIni,0");
       add(const CertfOne());
@@ -63,8 +122,8 @@ class CertBloc extends Bloc<CertEvent, CertState> {
       emitAll(stateActual: 'CertfOne');
     });
 
-    on<StartTwo>((event, emit) async {
-      emitAll(stateActual: 'StartTwo');
+    on<CertStartTwo>((event, emit) async {
+      emitAll(stateActual: 'CertStartTwo');
       _blue.mandaMensagem("CertIni,1");
       add(const CertfTwo());
     });
@@ -73,8 +132,8 @@ class CertBloc extends Bloc<CertEvent, CertState> {
       emitAll(stateActual: 'CertfTwo');
     });
 
-    on<StartThree>((event, emit) async {
-      emitAll(stateActual: 'StartThree');
+    on<CertStartThree>((event, emit) async {
+      emitAll(stateActual: 'CertStartThree');
       _blue.mandaMensagem("CertIni,2");
       add(const CertfThree());
     });
@@ -83,8 +142,13 @@ class CertBloc extends Bloc<CertEvent, CertState> {
       emitAll(stateActual: 'CertfThree');
     });
 
-    on<EndCertf>((event, emit) async {
-      emitAll(stateActual: 'EndCertf');
+    on<CertDeviceName>((event, emit) async {
+      emitAll(stateActual: 'CertDeviceName');
+      _blue.mandaMensagem("DispCode");
+    });
+
+    on<CertEnd>((event, emit) async {
+      emitAll(stateActual: 'CertEnd');
     });
 
     //

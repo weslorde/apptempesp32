@@ -9,12 +9,20 @@ class InitState implements AwsEvent{
   const InitState();
 }
 
-class WarningInternet implements AwsEvent{
-  const WarningInternet();
+class CheckFiles implements AwsEvent{
+  const CheckFiles();
+}
+
+class WarningFiles implements AwsEvent{
+  const WarningFiles();
 }
 
 class CheckConnect implements AwsEvent{
   const CheckConnect();
+}
+
+class WarningInternet implements AwsEvent{
+  const WarningInternet();
 }
 
 class StartAws implements AwsEvent{

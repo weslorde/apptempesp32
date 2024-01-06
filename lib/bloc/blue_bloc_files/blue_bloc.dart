@@ -70,7 +70,6 @@ class BlueBloc extends Bloc<BlueEvent, BlueState> {
       // note: if you have permissions issues you will get stuck at BluetoothAdapterState.unauthorized
       FlutterBluePlus.adapterState.listen((BluetoothAdapterState state) {
         // BluetoothAdapterState { unknown, unavailable, unauthorized, turningOn, on, turningOff, off }
-        print("STATEEEE: ${state}");
         if (state == BluetoothAdapterState.on && !_blue.getBlueIsOn) {
           //Logic to only call one time on a simutaly mult call
           _blue.setBlueIsOn = true;
@@ -101,9 +100,7 @@ class BlueBloc extends Bloc<BlueEvent, BlueState> {
     on<LocationisOn>((event, emit) async {
       emitAll(stateActual: 'LocationisOn');
 
-      Permission.location.request().then((status) {
-        print('$status');
-      });
+      Permission.location.request().then((status) {});
 
       Location location = Location();
 
@@ -178,7 +175,8 @@ class BlueBloc extends Bloc<BlueEvent, BlueState> {
       final device = _blue.getDevice!;
       device.connectionState.listen((BluetoothConnectionState connectState) {
         //print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA: $connectState");
-        if (connectState == BluetoothConnectionState.disconnected && _blue.getBlueLinked) {
+        if (connectState == BluetoothConnectionState.disconnected &&
+            _blue.getBlueLinked) {
           _blue.setBlueLinked = false;
           add(const WarningBlueDisconnect());
         } else if (connectState == BluetoothConnectionState.connected) {
@@ -200,7 +198,7 @@ class BlueBloc extends Bloc<BlueEvent, BlueState> {
     on<BlueStartDiscover>((event, emit) async {
       emitAll(stateActual: 'BlueStartDiscover');
       _blue.setfunConectado = () => {add(const BlueConectado())};
-      print("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
+      _blue.setfunDataRecived = () => {add(const RecivedData())};
       //Note: You must call discoverServices after every connection!
       _blue.discoveryDevice();
     });
@@ -208,6 +206,11 @@ class BlueBloc extends Bloc<BlueEvent, BlueState> {
     on<BlueConectado>((event, emit) async {
       _blue.setblueConnect = true;
       emitAll(stateActual: 'BlueConectado');
+    });
+
+    on<RecivedData>((event, emit) async {
+      emitAll(stateActual: 'RecivedData');
+      add(const BlueConectado());
     });
 
     //

@@ -9,38 +9,88 @@ class InitState implements CertEvent{
   const InitState();
 }
 
-class CheckBlue implements CertEvent{
-  const CheckBlue();
+//
+// Wifi to Boad Flow
+//
+class InitWifiToBoard implements CertEvent{
+  const InitWifiToBoard();
 }
 
-class WarningBlueConnect implements CertEvent{
-  const WarningBlueConnect();
+class WifiCheckBlue implements CertEvent{
+  const WifiCheckBlue();
 }
 
-class StartOne implements CertEvent{
-  const StartOne();
+class WifiWarningBlueConnect implements CertEvent{
+  const WifiWarningBlueConnect();
+}
+
+class WifiForm implements CertEvent{
+  const WifiForm();
+}
+
+//
+// Alexa link Email and Disp Flow
+//
+class InitAlexaLink implements CertEvent{
+  const InitAlexaLink();
+}
+
+class InitAlexaLink2 implements CertEvent{
+  const InitAlexaLink2();
+}
+
+//
+// Cadastro Celular Flow
+//
+class InitCertFiles implements CertEvent{
+  const InitCertFiles();
+}
+
+class CertCheckFiles implements CertEvent{
+  const CertCheckFiles();
+}
+
+class CertWarningFiles implements CertEvent{
+  const CertWarningFiles();
+}
+
+class CertCheckBlue implements CertEvent{
+  const CertCheckBlue();
+}
+
+class CertWarningBlueConnect implements CertEvent{
+  const CertWarningBlueConnect();
+}
+
+class CertStartOne implements CertEvent{
+  const CertStartOne();
 }
 
 class CertfOne implements CertEvent{
   const CertfOne();
 }
 
-class StartTwo implements CertEvent{
-  const StartTwo();
+class CertStartTwo implements CertEvent{
+  const CertStartTwo();
 }
 
 class CertfTwo implements CertEvent{
   const CertfTwo();
 }
 
-class StartThree implements CertEvent{
-  const StartThree();
+class CertStartThree implements CertEvent{
+  const CertStartThree();
 }
 
 class CertfThree implements CertEvent{
   const CertfThree();
 }
 
-class EndCertf implements CertEvent{
-  const EndCertf();
+class CertDeviceName implements CertEvent{
+  const CertDeviceName();
 }
+
+class CertEnd implements CertEvent{
+  const CertEnd();
+}
+//Fim Cadastro Celular Flow

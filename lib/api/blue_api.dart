@@ -24,6 +24,8 @@ class BlueController {
   bool _blueConnect = false;
 
   Function _funConectado = () => {};
+  Function _funDataRecived = () => {};
+
   late Function(int) _funCertState;
 
   // Creat Singleton
@@ -38,8 +40,9 @@ class BlueController {
   set setBlueIsScan(bool logic) => _blueIsScan = logic;
   set setBlueLinked(bool logic) => _blueLinked = logic;
   set setblueConnect(bool logic) => _blueConnect = logic;
-  
+
   set setfunConectado(Function fun) => _funConectado = fun;
+  set setfunDataRecived(Function fun) => _funDataRecived = fun;
   set setfunCertState(Function(int) fun) => _funCertState = fun;
 
   bool get getBlueSup => _blueSuported;
@@ -97,9 +100,11 @@ class BlueController {
     String comando = listRecived[0];
 
     print("Comando recebido: ${comando}");
+    print(listRecived);
 
     if (comando.substring(0, 1) == "+") {
-      if (comando.length < 5) { //Small comand dont need any IF check
+      if (comando.length < 5) {
+        //Small comand dont need any IF check
         data.setCert = comando.substring(1);
         mandaMensagem("Cert");
       } else {
@@ -110,33 +115,43 @@ class BlueController {
         } else if (comando.substring(0, 5) == "+!End") {
           int numCert = int.parse(listRecived[1]);
           _creatCertFile(numCert, data.getCert);
-          _funCertState(numCert+1);
-          
+          _funCertState(numCert + 1);
+
           //print(data.getCert1);
         } else {
           data.setCert = comando.substring(1);
           mandaMensagem("Cert");
         }
       }
+    } // End +++++ (Certificados)
+
+    if (comando == "DispName") {
+      _creatDispNameFile("ChurrasTech${listRecived[1]}");
+      _funCertState(4);
     }
 
     if (comando == "Pong") {
       _funConectado();
-    } else if (comando == "Temp") {
+    } // End Pong
+    else if (comando == "Temp") {
       data.setListTemp = [
         listRecived[1],
         listRecived[2],
         listRecived[3],
         listRecived[4]
       ];
-    } else if (comando == "AlarmG") {
-      int x = int.parse(listRecived[1]);
-      data.alarmeGraus[x] = [listRecived[2], listRecived[3]];
-      //attPage2([AlarmeGraus,AlarmeTimer]);
-    } else if (comando == "AlarmT") {
-      int x = int.parse(listRecived[1]);
-      data.alarmeTimer[x] = [listRecived[2], listRecived[3]];
-      //attPage2([AlarmeGraus,AlarmeTimer]);
+    } // End Temp
+    else if (comando == "AlarmZero") {
+      data.zeraAlarms();
+    } // End AlarmZero
+    else if (comando == "AlarmG") {
+      data.setAlarmGraus = [listRecived[2], listRecived[3]];
+    } // End AlarmG
+    else if (comando == "AlarmT") {
+      data.setAlarmeTimer = [listRecived[2], listRecived[3]];
+    } // End AlarmT
+    else if (comando == "AlarmEnd") {
+      _funDataRecived();
     } else if (comando == "NotT") {
       if (listRecived[1] == "0") {
         //NotificationService().showNotification(CustomNotification(id: 1, title: 'Alarme', body: 'Alarme de ${listRecived[2]} minutos concluído', payload: 'GoAlarmes'));
@@ -145,7 +160,8 @@ class BlueController {
       } else {
         //NotificationService().showNotification(CustomNotification(id: 1, title: 'Alarme', body: 'Alarme de ${listRecived[1]} horas e ${listRecived[2]} minutos concluído', payload: 'GoAlarmes'));
       }
-    } else if (comando == "NotG") {
+    } // End NotT
+    else if (comando == "NotG") {
       if (listRecived[1] == "Grelha") {
         //NotificationService().showNotification(CustomNotification(id: 1, title: 'Temperatura da ${listRecived[1]}', body: 'Temperatura da ${listRecived[1]} alcançou ${listRecived[2]} graus', payload: 'GoAlarmes'));
       } else if (listRecived[1] == "Sensor1") {
@@ -153,7 +169,19 @@ class BlueController {
       } else if (listRecived[1] == "Sensor2") {
         //NotificationService().showNotification(CustomNotification(id: 1, title: 'Temperatura do Sensor 2', body: 'Temperatura do Sensor 2 alcançou ${listRecived[2]} graus', payload: 'GoAlarmes'));
       }
-    }
+    } // End NotG
+
+    else if (comando == "Wifi") {
+      if (listRecived[1] == "Login") {
+        mandaMensagem("W!,${data.getWifiLogin}");
+      } else if (listRecived[1] == "Senha") {
+        mandaMensagem("W#,${data.getWifiPassword}");
+      } else if (listRecived[1] == "Recebido") {
+        mandaMensagem("WifiReiniciar");
+      }
+    } // End Wifi
+
+    // Fim Reciver Blue
   }
 
   void mandaMensagem(String msg) async {
@@ -165,7 +193,7 @@ class BlueController {
   }
 
   void _creatCertFile(int numCert, String _data) {
-    final _fileNames = ["device.pem.crt","private.pem.key","rootCA.pem"];
+    final _fileNames = ["device.pem.crt", "private.pem.key", "rootCA.pem"];
     File file;
     getApplicationDocumentsDirectory().then((directory) => {
           file = File('${directory.path}/AWS/${_fileNames[numCert]}'),
@@ -176,5 +204,17 @@ class BlueController {
         });
   }
 
+  void _creatDispNameFile(String _data) {
+    String _fileNames = "deviceName.key";
+    File file;
+    getApplicationDocumentsDirectory().then((directory) => {
+          file = File('${directory.path}/AWS/$_fileNames'),
+          file.create(recursive: true).then((_) => {
+                file.writeAsString(_data),
+                file.readAsString().then((contents) => print(contents))
+              }),
+        });
+  }
+  //
   //End blue Class
 }

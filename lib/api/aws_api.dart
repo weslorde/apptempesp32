@@ -36,13 +36,16 @@ class AwsController {
 
   late MqttServerClient _clientAWS;
 
+  late String _dispName;
+
   //Return true if all 3 files exists
   Future<bool> hasCertFiles() async {
     final directory = await getApplicationDocumentsDirectory();
     final List<String> listFileName = [
       'device.pem.crt',
       'private.pem.key',
-      'rootCA.pem'
+      'rootCA.pem',
+      'deviceName.key'
     ];
     for (String fileName in listFileName) {
       final file = File('${directory.path}/AWS/${fileName}');
@@ -73,6 +76,8 @@ class AwsController {
   }
 
   Future creatClient() async {
+    _dispName = await fileDataPicker();
+    //_dispName = "ChurrasTech2406";
     // Your AWS IoT Core endpoint url
     const url = "a35wgflbzj4nrh-ats.iot.sa-east-1.amazonaws.com";
     // AWS IoT MQTT default port
@@ -135,10 +140,10 @@ class AwsController {
 
       // Subscribe to the same topic
       _clientAWS.subscribe(
-          '\$aws/things/ChurrasTech2406/shadow/name/TemperaturesShadow/update/delta',
+          '\$aws/things/$_dispName/shadow/name/TemperaturesShadow/update/delta',
           MqttQos.atLeastOnce);
       _clientAWS.subscribe(
-          '\$aws/things/ChurrasTech2406/shadow/name/AlarmShadow/update/delta',
+          '\$aws/things/$_dispName/shadow/name/AlarmShadow/update/delta',
           MqttQos.atLeastOnce);
       // Print incoming messages from another client on this topic
 
@@ -161,7 +166,7 @@ class AwsController {
 
   void _awsListener(String topic, Map<String, dynamic> mapMsg) {
     if (topic ==
-        '\$aws/things/ChurrasTech2406/shadow/name/TemperaturesShadow/update/delta') {
+        '\$aws/things/$_dispName/shadow/name/TemperaturesShadow/update/delta') {
       if (mapMsg['state']['Enviar'] == "0") {
         var tgrelha = mapMsg['state']['Grelha'];
         var tsensor1 = mapMsg['state']['Temp1'];
@@ -171,7 +176,7 @@ class AwsController {
         //setTemp(Tgrelha, Tsensor1, Tsensor2, TempAlvo);
       }
     } else if (topic ==
-        '\$aws/things/ChurrasTech2406/shadow/name/AlarmShadow/update/delta') {
+        '\$aws/things/$_dispName/shadow/name/AlarmShadow/update/delta') {
       if (mapMsg['state']['Enviar'] == "0") {
         var alarmeTimer = mapMsg['state']['TimerAlarm'];
         var alarmeGraus = mapMsg['state']['GrausAlarm'];
@@ -189,6 +194,12 @@ class AwsController {
     print(file.readAsString());
     Uint8List bytes = file.readAsBytesSync();
     return ByteData.view(bytes.buffer);
+  }
+
+  Future<String> fileDataPicker() async{
+    final directory = await getApplicationDocumentsDirectory();
+    final file = File('${directory.path}/AWS/deviceName.key');
+    return file.readAsString();
   }
 
   void closeAWS() {

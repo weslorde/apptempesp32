@@ -14,7 +14,10 @@ class AllData {
   String _tAlvo = '000';
 
   String _cert = "";
-  
+
+  String _wifiLogin = "";
+  String _wifiPassword = "";
+
   get tGrelha => int.parse(_tGrelha);
   get tSensor1 => int.parse(_tSensor1);
   get tSensor2 => int.parse(_tSensor2);
@@ -24,35 +27,55 @@ class AllData {
 
   get getCert => _cert;
 
-  //////////////////////////////////////////////////////////////
-  
+  get getWifiLogin => _wifiLogin;
+  get getWifiPassword => _wifiPassword;
+
+  ///////////////////////// Set /////////////////////////////////////
+
   set setListTemp(List<String> list) {
     _tGrelha = list[0];
     _tSensor1 = list[1];
     _tSensor2 = list[2];
     _tAlvo = list[3];
-    attCalculaValores();
   }
 
-  set setCert(String part){_cert = _cert + part;}
-  setCertBlank(){_cert = "";}
+  set setCert(String part) {
+    _cert = _cert + part;
+  }
 
+  set setWifiLogin(wifiLogin) => _wifiLogin = wifiLogin;
+  set setWifiPassword(wifiPassword) => _wifiPassword = wifiPassword;
 
-  List alarmeGraus = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; //[0,0,0,0,0,0,0,0];
-  List alarmeTimer = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  setCertBlank() {
+    _cert = "";
+  }
+
+  List _alarmeGraus = [];
+  List _alarmeTimer = [];
+
+  zeraAlarms() {
+    _alarmeGraus = [];
+    _alarmeTimer = [];
+  }
+
+  set setAlarmGraus(alarm) => _alarmeGraus.add(alarm);
+  set setAlarmeTimer(alarm) => _alarmeTimer.add(alarm);
+
+  get getAlarmGraus => _alarmeGraus;
+  get getAlarmeTimer => _alarmeTimer;
 
   testPrint() async {
-    print(alarmeGraus);
-    //print(alarmeTimer);
+    print(_alarmeGraus);
+    print(_alarmeTimer);
   }
 
   List<List> getAlarm() {
-    return [alarmeGraus, alarmeTimer];
+    return [_alarmeGraus, _alarmeTimer];
   }
 
   void apagaAlarm(String name, int indice) {
     if (name == "timer") {
-      alarmeTimer = [
+      _alarmeTimer = [
         0,
         0,
         0,
@@ -65,33 +88,12 @@ class AllData {
         0
       ]; //Reinicia lista para receber os valores que ficaram
     } else {
-      alarmeGraus = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+      _alarmeGraus = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     }
-    print(alarmeTimer);
+
+    print(_alarmeTimer);
     _blue.mandaMensagem("DelAlarme,$name,$indice");
     //attPage2([alarmeGraus,alarmeTimer]);
     _blue.mandaMensagem("Alarme"); // Solicita os valores
   }
-
-  final _totalSteps = 50;
-  double _stepsToPi = 0.0;
-  int _currentStep = 0;
-  int _targetStep = 0;
-
-  void attCalculaValores() {
-    _stepsToPi = (2 * math.pi - 2 * math.pi / 6) /
-        _totalSteps; // (Total size - unused size) / number of Steps = Size of each steps
-    _currentStep = ((int.parse(_tGrelha) - 0) * (_totalSteps - 0) / (300 - 0) +
-            (0))
-        .toInt(); // ValNovaEscala = ((ValEscalaVelha - MinVelho) * (MaxNovo - (MinNovo)) / (MaxVelho - MinVelho) + (MinNovo))
-    _targetStep =
-        ((int.parse(_tAlvo) - 0) * (_totalSteps - 0) / (300 - 0) + (0)).toInt();
-  }
-
-  
-
-  get totalSteps => _totalSteps;
-  get stepsToPi => _stepsToPi;
-  get currentStep => _currentStep;
-  get targetStep => _targetStep;
 }

@@ -39,6 +39,10 @@ class BlueConectado implements BlueEvent{
   const BlueConectado();
 }
 
+class RecivedData implements BlueEvent{
+  const RecivedData();
+}
+
 /*
 class BlueServices implements AppEvent{
   const BlueServices();

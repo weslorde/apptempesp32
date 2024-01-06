@@ -1,11 +1,9 @@
 import 'package:apptempesp32/api/aws_api.dart';
-import 'package:apptempesp32/api/blue_api.dart';
 import 'package:apptempesp32/bloc/aws_bloc_files/aws_bloc_events.dart';
 import 'package:apptempesp32/bloc/aws_bloc_files/aws_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AwsBloc extends Bloc<AwsEvent, AwsState> {
-  final BlueController _blue = BlueController();
   final AwsController _aws = AwsController();
 
   void emitAll({required String stateActual, String msg = ''}) {
@@ -25,6 +23,21 @@ class AwsBloc extends Bloc<AwsEvent, AwsState> {
 
     on<InitState>((event, emit) async {
       emitAll(stateActual: 'InitState');
+    });
+
+    on<CheckFiles>((event, emit) async {
+      emitAll(stateActual: 'CheckFiles');
+      if (await _aws.hasCertFiles()) {
+        add(const CheckConnect());
+      } else {
+        add(const WarningFiles());
+      }
+    });
+
+    on<WarningFiles>((event, emit) async {
+      emitAll(stateActual: 'WarningFiles');
+      await Future.delayed(const Duration(seconds: 5));
+      add(const InitState());
     });
 
     on<CheckConnect>((event, emit) async {
@@ -56,7 +69,6 @@ class AwsBloc extends Bloc<AwsEvent, AwsState> {
     });
 
     on<SendAws>((event, emit) async {
-      print('send');
       emitAll(stateActual: 'SendAws');
       const topic =
           '\$aws/things/ChurrasTech2406/shadow/name/TemperaturesShadow/update';

@@ -1,13 +1,16 @@
+import 'package:apptempesp32/bloc/aws_bloc_files/aws_bloc.dart';
 import 'package:apptempesp32/bloc/blue_bloc_files/blue_bloc.dart';
 import 'package:apptempesp32/pages/alarm_page.dart';
 import 'package:apptempesp32/pages/cert_page.dart';
+import 'package:apptempesp32/pages/home_page.dart';
 import 'package:apptempesp32/pages/menus/controller_pages.dart';
 import 'package:apptempesp32/pages/monitorar_page1.dart';
 import 'package:apptempesp32/pages/motor_page.dart';
-import 'package:apptempesp32/pages/pag_test.dart';
+import 'package:apptempesp32/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 
 void main() {
   // Lock orientation to Portrait only
@@ -23,16 +26,18 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<BlueBloc>(
-        //BlocProvider above MaterialApp for all pages using the same bloc instance
-        create: (BuildContext context) =>
-            BlueBloc(), // Call AppBloc() to pick inicial state
+    return MultiBlocProvider(
+          providers: [
+            BlocProvider<BlueBloc>(
+              create: (BuildContext context) => BlueBloc(),
+            ),
+            BlocProvider<AwsBloc>(
+              create: (BuildContext context) => AwsBloc(),
+            )
+          ], // Call AppBloc() to pick inicial state
         child: MaterialApp(
           debugShowCheckedModeBanner: false, //Remove debug banner
-          theme: ThemeData(
-            useMaterial3: true,
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          ),
+          theme: myThemeData(),
           home: const SelectedPage(),
         ));
   }
@@ -65,10 +70,13 @@ class _SelectedPageState extends State<SelectedPage> {
   Widget build(BuildContext context) {
     return /*BlocListener<AppBloc, AppState>(listener: (context, state){if (state.blueIsOn){context.read<AppBloc>().add(const BlueIsOn());}}, child:*/ [
       //List of Pages
+      const HomePage(),
       const MonitorarPag(),
       const AlarmPage(),
       const MotorPage(),
-      const PagCert()
+      const MotorPage(),
+      const MotorPage(),
+      const PagCert(),
     ][_index];
   }
 }

@@ -52,13 +52,15 @@ class MonitorarPag extends StatelessWidget {
                           icon: const Icon(Icons.bluetooth)),
                       const SizedBox(),
                       Text(state.stateActual),
-                      Container(
-                        height: 400,
-                        child: SingleChildScrollView(                     
-                          scrollDirection: Axis.vertical,
-                          child: Text(_data.getCert, style: TextStyle(fontSize: 8),),
-                        ),
-                      ),
+                      const SizedBox(height: 60,),
+                      Text(_data.tGrelha.toString()),
+                      const SizedBox(height: 10,),
+                      Text(_data.tAlvo.toString()),
+                      const SizedBox(height: 80,),
+                      Text(_data.tSensor1.toString()),
+                      const SizedBox(height: 50,),
+                      Text(_data.tSensor2.toString()),
+
                     ],
                   );
                 }),

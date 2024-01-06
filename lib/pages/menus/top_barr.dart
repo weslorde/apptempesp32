@@ -1,4 +1,5 @@
 import 'package:apptempesp32/api/data_storege.dart';
+import 'package:apptempesp32/api/hex_to_colors.dart';
 import 'package:apptempesp32/pages/menus/controller_pages.dart';
 import 'package:apptempesp32/pages/cert_page.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,7 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
   const TopBar({super.key});
 
   @override
-  Size get preferredSize => const Size.fromHeight(50);
+  Size get preferredSize => const Size.fromHeight(60);
 
   @override
   Widget build(BuildContext context) {
@@ -15,16 +16,7 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
     final pageController = PageIndex();
 
     return AppBar(
-      backgroundColor: Colors.grey.shade400,
-      leading: IconButton(
-        onPressed: () {
-          print("perfil button");
-        }, //TODO Perfil icon superior esquedo
-        icon: const Icon(
-          Icons.account_circle_rounded,
-          size: 30,
-        ),
-      ),
+      backgroundColor: HexColor.fromHex("#fafaff"), 
       actions: [
         PopupMenuButton(
           itemBuilder: (context) => [
@@ -40,8 +32,8 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
           onSelected: (String newValue) {
             switch (newValue) {
               case 'Cert':
-                if (pageController.getIndex != 3) {
-                  pageController.setIndex = 3;
+                if (pageController.getIndex != 6) {
+                  pageController.setIndex = 6;
                 }
             }
           },
@@ -50,3 +42,10 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 }
+
+
+/*
+
+
+
+ */
