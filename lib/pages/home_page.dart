@@ -7,7 +7,7 @@ import 'package:apptempesp32/bloc/blue_bloc_files/blue_bloc_events.dart';
 import 'package:apptempesp32/pages/menus/body_top.dart';
 import 'package:apptempesp32/pages/menus/botton_barr.dart';
 import 'package:apptempesp32/pages/menus/top_barr.dart';
-import 'package:apptempesp32/widget/widget_text_yanKaf.dart';
+import 'package:apptempesp32/widget/widget_text_font.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';

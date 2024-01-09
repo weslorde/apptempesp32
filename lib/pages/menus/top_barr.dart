@@ -16,7 +16,8 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
     final pageController = PageIndex();
 
     return AppBar(
-      backgroundColor: HexColor.fromHex("#fafaff"), 
+      backgroundColor: HexColor.fromHex("#fafaff"),
+      surfaceTintColor: HexColor.fromHex("#fafaff"),
       actions: [
         PopupMenuButton(
           itemBuilder: (context) => [

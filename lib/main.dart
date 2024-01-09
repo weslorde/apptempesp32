@@ -6,6 +6,9 @@ import 'package:apptempesp32/pages/home_page.dart';
 import 'package:apptempesp32/pages/menus/controller_pages.dart';
 import 'package:apptempesp32/pages/monitorar_page1.dart';
 import 'package:apptempesp32/pages/motor_page.dart';
+import 'package:apptempesp32/pages/recipe_pages/one_recipe_page.dart';
+import 'package:apptempesp32/pages/recipe_pages/home_recipe_page.dart';
+import 'package:apptempesp32/pages/temperature_page.dart';
 import 'package:apptempesp32/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -71,11 +74,11 @@ class _SelectedPageState extends State<SelectedPage> {
     return /*BlocListener<AppBloc, AppState>(listener: (context, state){if (state.blueIsOn){context.read<AppBloc>().add(const BlueIsOn());}}, child:*/ [
       //List of Pages
       const HomePage(),
-      const MonitorarPag(),
+      const TemperaturePage(),
       const AlarmPage(),
       const MotorPage(),
-      const MotorPage(),
-      const MotorPage(),
+      const RecipeHomePag(),
+      const OneRecipePag(),
       const PagCert(),
     ][_index];
   }
