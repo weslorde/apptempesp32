@@ -24,19 +24,21 @@ class TextYanKaf extends StatelessWidget {
 }
 
 class TextFont extends StatelessWidget {
-  TextFont({super.key, required this.data, required this.weight, required this.hexColor, required this.size, required this.gFont, this.height = 1});
+  TextFont({super.key, required this.data, required this.weight, required this.hexColor, required this.size, required this.gFont, this.height = 1, this.letter = 0});
   String data;
   FontWeight weight;
   String hexColor;
   double size;
   double height;
   var gFont;
+  double letter;
 
   Widget build(BuildContext context) {
     return Text(
       data,
       style: gFont(
           textStyle: TextStyle(
+              letterSpacing: letter == 0 ? null : 0.01*size*letter, //Figma % convert, maybe wrong!
               height: height,
               fontWeight: weight,
               color: HexColor.fromHex(hexColor),

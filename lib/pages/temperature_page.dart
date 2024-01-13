@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'dart:ui';
 import 'package:apptempesp32/api/blue_api.dart';
 import 'package:apptempesp32/api/data_storege.dart';
 import 'package:apptempesp32/api/hex_to_colors.dart';
@@ -143,9 +144,39 @@ class TemperaturePage extends StatelessWidget {
               ),
               //
               SizedBox(
-                height: 50,
+                height: 30,
               ),
-              customLinearProgressTemperature(20, 100),
+              customLinearProgressTemperature(100, 300),
+              SizedBox(
+                height: 20,
+              ),
+              customLinearProgressTemperature(100, 300),
+              SizedBox(
+                height: 20,
+              ),
+              Container(
+                height: 62,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: HexColor.fromHex("#0B2235")),
+                margin: EdgeInsets.symmetric(horizontal: 25),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.timer, color: Colors.white, size: 23,),
+                    SizedBox(width: 10,),
+                    TextFont(
+                        data: "CRIAR ALARME",
+                        weight: FontWeight.w700,
+                        hexColor: "#FFFFFF",
+                        size: 16,
+                        height: 19.36/16,
+                        letter: 12,
+                        gFont: GoogleFonts.inter),
+                  ],
+                ),
+              )
             ],
           );
         }),
@@ -165,30 +196,128 @@ Color customColorCircularProgress(
 }
 
 Widget customLinearProgressTemperature(int actualStep, int totalSteps) {
-  return Column(
-    children: [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text("data"),
-          Text("data"),
-        ],
-      ),
-      StepProgressIndicator(
-        size: 15,
-        roundedEdges: const Radius.circular(10),
-        padding: 0,
-        currentStep: actualStep,
-        totalSteps: totalSteps,
-        selectedGradientColor: LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-            colors: [
-              HexColor.fromHex("#FF8D27"),
-              Color.lerp(HexColor.fromHex("#FF8D27"),
-                  HexColor.fromHex("#FF2E2E"), (actualStep / totalSteps))!
-            ]),
-      ),
-    ],
+  return Container(
+    margin: EdgeInsets.symmetric(horizontal: 25),
+    child: Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.thermostat,
+                  color: HexColor.fromHex("#FF5427"),
+                  size: 20,
+                ),
+                TextFont(
+                    data: "Sensor 01",
+                    weight: FontWeight.w700,
+                    hexColor: "#130F26",
+                    size: 15,
+                    height: 18.15 / 15,
+                    gFont: GoogleFonts.inter)
+              ],
+            ),
+            Row(
+              children: [
+                TextFont(
+                    data: "82º",
+                    weight: FontWeight.w700,
+                    hexColor: "#FF0000",
+                    size: 15,
+                    height: 18.15 / 15,
+                    gFont: GoogleFonts.inter),
+                TextFont(
+                    data: "/210º",
+                    weight: FontWeight.w700,
+                    hexColor: "#130F26",
+                    size: 15,
+                    height: 17.58 / 15,
+                    gFont: GoogleFonts.inter)
+              ],
+            ),
+          ],
+        ),
+        SizedBox(
+          height: 7,
+        ),
+        Stack(
+          children: [
+            StepProgressIndicator(
+              size: 26,
+              roundedEdges: const Radius.circular(26 / 2),
+              padding: 0,
+              currentStep: actualStep,
+              totalSteps: totalSteps,
+              unselectedColor: Colors.grey.shade100,
+              selectedGradientColor: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [
+                    HexColor.fromHex("#FF8D27"),
+                    Color.lerp(HexColor.fromHex("#FF8D27"),
+                        HexColor.fromHex("#FF2E2E"), (actualStep / totalSteps))!
+                  ]),
+            ),
+            Container(
+              height: 26,
+              width: double.infinity,
+              alignment: Alignment.centerLeft,
+              child: LayoutBuilder(builder: (context, constraints) {
+                return Padding(
+                  padding: EdgeInsets.only(
+                    left: circleLinearTemperaturePadding(
+                        actualStep, constraints.maxWidth, totalSteps),
+                  ),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        //margin: EdgeInsets.only(left: 0),
+                        width: 26,
+                        height: 26,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            gradient: LinearGradient(
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                                colors: [
+                                  Color.lerp(
+                                      HexColor.fromHex("#FF8D27"),
+                                      HexColor.fromHex("#FF2E2E"),
+                                      ((actualStep - 20) / totalSteps))!,
+                                  Color.lerp(
+                                      HexColor.fromHex("#FF8D27"),
+                                      HexColor.fromHex("#FF2E2E"),
+                                      (actualStep / totalSteps))!
+                                ])),
+                      ),
+                      Container(
+                        width: 20,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ),
+          ],
+        ),
+      ],
+    ),
   );
+}
+
+double circleLinearTemperaturePadding(actualStep, maxWidth, totalSteps) {
+  double calc = (actualStep * (maxWidth / totalSteps)) - 14;
+  if (calc < 0) {
+    return 3.0;
+  } else {
+    return calc;
+  }
 }
