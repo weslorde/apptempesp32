@@ -1,15 +1,17 @@
 import 'package:apptempesp32/bloc/aws_bloc_files/aws_bloc.dart';
 import 'package:apptempesp32/bloc/blue_bloc_files/blue_bloc.dart';
+import 'package:apptempesp32/bloc/dynamoDB_bloc_files/dynamo_bloc.dart';
 import 'package:apptempesp32/pages/alarm_page.dart';
 import 'package:apptempesp32/pages/cert_page.dart';
 import 'package:apptempesp32/pages/home_page.dart';
 import 'package:apptempesp32/pages/menus/controller_pages.dart';
-import 'package:apptempesp32/pages/monitorar_page1.dart';
 import 'package:apptempesp32/pages/motor_page.dart';
+import 'package:apptempesp32/pages/motor_page_Old.dart';
 import 'package:apptempesp32/pages/recipe_pages/one_recipe_page.dart';
 import 'package:apptempesp32/pages/recipe_pages/home_recipe_page.dart';
 import 'package:apptempesp32/pages/temperature_page.dart';
 import 'package:apptempesp32/theme_data.dart';
+import 'package:apptempesp32/widget/widget_alarm_creat.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -36,6 +38,9 @@ class MyApp extends StatelessWidget {
             ),
             BlocProvider<AwsBloc>(
               create: (BuildContext context) => AwsBloc(),
+            ),
+            BlocProvider<DynamoBloc>(
+              create: (BuildContext context) => DynamoBloc(),
             )
           ], // Call AppBloc() to pick inicial state
         child: MaterialApp(
@@ -75,8 +80,9 @@ class _SelectedPageState extends State<SelectedPage> {
       //List of Pages
       const HomePage(),
       const TemperaturePage(),
+      alarmBotModal(),
       const AlarmPage(),
-      const MotorPage(),
+      const MotorPage2(),
       const RecipeHomePag(),
       const OneRecipePag(),
       const PagCert(),

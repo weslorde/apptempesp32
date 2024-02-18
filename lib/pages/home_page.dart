@@ -210,7 +210,7 @@ Widget recipeCardsGenerator(String myText) {
         decoration: BoxDecoration(
           image: DecorationImage(
               image: NetworkImage(
-                  "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/220px-Image_created_with_a_mobile_phone.png"),
+                  "https://i.ibb.co/98CqG2n/Hi-Fi-Rush.png"),
               fit: BoxFit.cover),
           borderRadius: const BorderRadius.all(Radius.circular(10)),
         ),

@@ -13,7 +13,7 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final AllData data = AllData();
-    final pageController = PageIndex();
+    final PageIndex pageController = PageIndex();
 
     return AppBar(
       backgroundColor: HexColor.fromHex("#fafaff"),
@@ -33,8 +33,8 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
           onSelected: (String newValue) {
             switch (newValue) {
               case 'Cert':
-                if (pageController.getIndex != 6) {
-                  pageController.setIndex = 6;
+                if (pageController.getIndex != 7) {
+                  pageController.setIndex = 7;
                 }
             }
           },

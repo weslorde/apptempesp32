@@ -28,7 +28,7 @@ class BlueBloc extends Bloc<BlueEvent, BlueState> {
           const BlueState.empty(),
         ) {
     //Logic of ALL STATES -----------------------------------
-
+    
     on<InitState>((event, emit) async {
       _blue.setBlueLinked = false;
       _blue.setBlueIsOn = false;

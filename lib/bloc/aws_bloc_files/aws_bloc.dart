@@ -75,6 +75,7 @@ class AwsBloc extends Bloc<AwsEvent, AwsState> {
       const msg = '{"state": {"desired": {"TAlvoFlutter": "166"}}}';
       _aws.awsMsg(topic, msg);
     });
+    
 
 //'\$aws/things/ChurrasTech2406/shadow/name/MotorShadow/update', '{"state": {"desired": {"Sentido": "${comandos[1]}","Nivel": "${comandos[2]}"}}}'
 

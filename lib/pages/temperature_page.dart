@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'dart:ui';
@@ -11,21 +12,47 @@ import 'package:apptempesp32/pages/home_page.dart';
 import 'package:apptempesp32/pages/menus/body_top.dart';
 import 'package:apptempesp32/pages/menus/botton_barr.dart';
 import 'package:apptempesp32/pages/menus/top_barr.dart';
+import 'package:apptempesp32/widget/widget_blue_toggle.dart';
 import 'package:apptempesp32/widget/widget_text_font.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
 
-class TemperaturePage extends StatelessWidget {
+class TemperaturePage extends StatefulWidget {
   const TemperaturePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final AllData _data = AllData();
-    final BlueController _blue = BlueController();
+  State<TemperaturePage> createState() => _TemperaturePageState();
+}
 
-    int nowStep = 30;
+class _TemperaturePageState extends State<TemperaturePage> {
+  final AllData _data = AllData();
+  final BlueController _blue = BlueController();
+
+  late Timer _timer;
+  @override
+  void initState() {
+    if (_blue.getBlueSup) {
+      _blue.mandaMensagem("Temp");
+    }
+    _timer = Timer.periodic(Duration(seconds: 5), (Timer timer) {
+      if (_blue.getBlueSup) {
+        _blue.mandaMensagem("Temp");
+      }
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    int nowStep = 10;
     int nowStep2 = 300;
     return Scaffold(
       appBar: const TopBar(),
@@ -37,9 +64,7 @@ class TemperaturePage extends StatelessWidget {
           return BodyStart(
             children: [
               //
-              SizedBox(
-                height: 30,
-              ),
+              SizedBox(height: 30),
               //Title
               Container(
                 alignment: Alignment.center,
@@ -50,30 +75,57 @@ class TemperaturePage extends StatelessWidget {
                     size: 35,
                     gFont: GoogleFonts.yanoneKaffeesatz),
               ),
+               //
+              SizedBox(height: 5),
+              // Blue icon
+              blueToggle(status: state.stateActual),
               //
-              SizedBox(
-                height: 50,
-              ),
+              SizedBox(height: 5),
               //
               Stack(
                 alignment: Alignment.center,
                 children: [
-                  // Trace Target indicator
+                  // Shadow circle
+                  Container(
+                    width: 210,
+                    height: 210,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(210 / 2),
+                      boxShadow: [
+                        BoxShadow(
+                          color: HexColor.fromHex("#E6ECF2"),
+                          blurRadius: 14.4,
+                          offset:
+                              Offset(7.2, 7.2), // changes position of shadow
+                        ),
+                        BoxShadow(
+                          color: HexColor.fromHex("#80FFFFFF"),
+                          blurRadius: 14.4,
+                          offset:
+                              Offset(-7.2, -7.2), // changes position of shadow
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Mult Trace Target indicator
                   CircularStepProgressIndicator(
                     arcSize: pi * 4 / 3,
                     startingAngle: 2 * pi / 3,
                     padding: pi / 35,
                     totalSteps: 40,
-                    stepSize: 15,
-                    selectedStepSize: 15,
+                    stepSize: 12,
+                    selectedStepSize: 12,
                     currentStep: nowStep,
                     width: 260,
                     height: 260,
                     customColor: (drawStep) {
-                      return customColorCircularProgress(drawStep, nowStep, 40);
+                      return customColorTraceProgress(drawStep, nowStep, 40);
                     },
                   ),
+
                   // Full circle temperature indicator
+
                   CircularStepProgressIndicator(
                     customColor: (drawStep) {
                       return customColorCircularProgress(
@@ -111,6 +163,30 @@ class TemperaturePage extends StatelessWidget {
                       ),
                     ),
                   ),
+
+                  // Internal Circle (Color + Shadow)
+                  Container(
+                    width: 210 - 70,
+                    height: 210 - 70,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.centerRight,
+                        end: Alignment.centerLeft,
+                        colors: <Color>[
+                          HexColor.fromHex("#eaf0f6"),
+                          HexColor.fromHex("#eaeff5"),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(210 / 2),
+                      boxShadow: [
+                        BoxShadow(
+                          color: HexColor.fromHex("80747D8C"),
+                          blurRadius: 45.2,
+                        ),
+                      ],
+                    ),
+                  ),
+
                   // Inside of temperature circle (Values and Icon)
                   Container(
                     child: Column(
@@ -122,7 +198,7 @@ class TemperaturePage extends StatelessWidget {
                         ),
                         SizedBox(height: 3),
                         TextFont(
-                            data: "289º",
+                            data: "${_data.getListTemp[0]}º",
                             weight: FontWeight.w600,
                             hexColor: "#130F26",
                             size: 36,
@@ -130,7 +206,7 @@ class TemperaturePage extends StatelessWidget {
                             gFont: GoogleFonts.inter),
                         SizedBox(height: 3),
                         TextFont(
-                            data: "200",
+                            data: "${_data.getListTemp[2]}",
                             weight: FontWeight.w400,
                             hexColor: "#130F26",
                             size: 14.5,
@@ -139,18 +215,19 @@ class TemperaturePage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  //
+
+                  // End of Stack
                 ],
               ),
               //
               SizedBox(
                 height: 30,
               ),
-              customLinearProgressTemperature(100, 300),
+              customLinearProgressTemperature(100, 300, _data.getListTemp[1]),
               SizedBox(
                 height: 20,
               ),
-              customLinearProgressTemperature(100, 300),
+              customLinearProgressTemperature(100, 300, _data.getListTemp[2]),
               SizedBox(
                 height: 20,
               ),
@@ -161,20 +238,31 @@ class TemperaturePage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                     color: HexColor.fromHex("#0B2235")),
                 margin: EdgeInsets.symmetric(horizontal: 25),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.timer, color: Colors.white, size: 23,),
-                    SizedBox(width: 10,),
-                    TextFont(
-                        data: "CRIAR ALARME",
-                        weight: FontWeight.w700,
-                        hexColor: "#FFFFFF",
-                        size: 16,
-                        height: 19.36/16,
-                        letter: 12,
-                        gFont: GoogleFonts.inter),
-                  ],
+                child: GestureDetector(
+                  onTap: () {
+                    _blue.mandaMensagem("Temp");
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.timer,
+                        color: Colors.white,
+                        size: 23,
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      TextFont(
+                          data: "CRIAR ALARME",
+                          weight: FontWeight.w700,
+                          hexColor: "#FFFFFF",
+                          size: 16,
+                          height: 19.36 / 16,
+                          letter: 12,
+                          gFont: GoogleFonts.inter),
+                    ],
+                  ),
                 ),
               )
             ],
@@ -195,11 +283,22 @@ Color customColorCircularProgress(
   }
 }
 
-Widget customLinearProgressTemperature(int actualStep, int totalSteps) {
+Color customColorTraceProgress(int drawStep, int actualStep, int totalSteps) {
+  if (drawStep <= actualStep) {
+    return (Color.lerp(HexColor.fromHex("#FF8A25"), HexColor.fromHex("#FF2E2E"),
+        drawStep.toDouble() / totalSteps)!);
+  } else {
+    return HexColor.fromHex("#80747D8C");
+  }
+}
+
+Widget customLinearProgressTemperature(
+    int actualStep, int totalSteps, String temperature) {
   return Container(
     margin: EdgeInsets.symmetric(horizontal: 25),
     child: Column(
       children: [
+        // Text -> name and temperatures
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -222,7 +321,7 @@ Widget customLinearProgressTemperature(int actualStep, int totalSteps) {
             Row(
               children: [
                 TextFont(
-                    data: "82º",
+                    data: "$temperatureº",
                     weight: FontWeight.w700,
                     hexColor: "#FF0000",
                     size: 15,
@@ -239,11 +338,29 @@ Widget customLinearProgressTemperature(int actualStep, int totalSteps) {
             ),
           ],
         ),
-        SizedBox(
-          height: 7,
-        ),
+        //
+        SizedBox(height: 7),
+        // Linear Indicator + Ball white Mark
         Stack(
           children: [
+            // Shadow below of content
+            Container(
+              height: 26,
+              width: double.infinity,
+              decoration: BoxDecoration(boxShadow: [
+                BoxShadow(
+                  color: HexColor.fromHex("E6ECF2"),
+                  blurRadius: 9.2,
+                  offset: Offset(4.6, 4.6), // changes position of shadow
+                ),
+                BoxShadow(
+                  color: HexColor.fromHex("#80FFFFFF"),
+                  blurRadius: 9.2,
+                  offset: Offset(-4.6, 4.6), // changes position of shadow
+                ),
+              ], borderRadius: BorderRadius.circular(20)),
+            ),
+            // Linear Progress Bar
             StepProgressIndicator(
               size: 26,
               roundedEdges: const Radius.circular(26 / 2),
@@ -260,39 +377,50 @@ Widget customLinearProgressTemperature(int actualStep, int totalSteps) {
                         HexColor.fromHex("#FF2E2E"), (actualStep / totalSteps))!
                   ]),
             ),
+
+            // Mark white ball
             Container(
               height: 26,
               width: double.infinity,
               alignment: Alignment.centerLeft,
               child: LayoutBuilder(builder: (context, constraints) {
+                // LayoutBuilder to now the width of ProgressBar
                 return Padding(
                   padding: EdgeInsets.only(
                     left: circleLinearTemperaturePadding(
-                        actualStep, constraints.maxWidth, totalSteps),
+                        // Fun to set a minimum padding avoiding the Mark ball go out in the left of progressBar
+                        actualStep,
+                        constraints.maxWidth,
+                        totalSteps),
                   ),
                   child: Stack(
+                    // The White Mark Ball and Circular fake bar effect after de mark ball
                     alignment: Alignment.center,
                     children: [
+                      // Circular color end effect
                       Container(
                         //margin: EdgeInsets.only(left: 0),
                         width: 26,
                         height: 26,
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            gradient: LinearGradient(
-                                begin: Alignment.centerLeft,
-                                end: Alignment.centerRight,
-                                colors: [
-                                  Color.lerp(
-                                      HexColor.fromHex("#FF8D27"),
-                                      HexColor.fromHex("#FF2E2E"),
-                                      ((actualStep - 20) / totalSteps))!,
-                                  Color.lerp(
-                                      HexColor.fromHex("#FF8D27"),
-                                      HexColor.fromHex("#FF2E2E"),
-                                      (actualStep / totalSteps))!
-                                ])),
+                          borderRadius: BorderRadius.circular(20),
+                          gradient: LinearGradient(
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                            colors: [
+                              Color.lerp(
+                                  HexColor.fromHex("#FF8D27"),
+                                  HexColor.fromHex("#FF2E2E"),
+                                  ((actualStep - 20) / totalSteps))!,
+                              Color.lerp(
+                                  HexColor.fromHex("#FF8D27"),
+                                  HexColor.fromHex("#FF2E2E"),
+                                  (actualStep / totalSteps))!
+                            ],
+                          ),
+                        ),
                       ),
+                      // White Mark Ball
                       Container(
                         width: 20,
                         height: 20,
@@ -313,6 +441,7 @@ Widget customLinearProgressTemperature(int actualStep, int totalSteps) {
   );
 }
 
+// Fun to set a minimum padding avoiding the Mark ball go out in the left of progressBar
 double circleLinearTemperaturePadding(actualStep, maxWidth, totalSteps) {
   double calc = (actualStep * (maxWidth / totalSteps)) - 14;
   if (calc < 0) {

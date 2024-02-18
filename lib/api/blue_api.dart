@@ -23,6 +23,8 @@ class BlueController {
   bool _blueLinked = false;
   bool _blueConnect = false;
 
+  bool _toggleBool = false;
+
   Function _funConectado = () => {};
   Function _funDataRecived = () => {};
 
@@ -41,6 +43,8 @@ class BlueController {
   set setBlueLinked(bool logic) => _blueLinked = logic;
   set setblueConnect(bool logic) => _blueConnect = logic;
 
+  set setToggleBool(bool logic) => _toggleBool = logic;
+
   set setfunConectado(Function fun) => _funConectado = fun;
   set setfunDataRecived(Function fun) => _funDataRecived = fun;
   set setfunCertState(Function(int) fun) => _funCertState = fun;
@@ -52,6 +56,8 @@ class BlueController {
   bool get getBlueIsScan => _blueIsScan;
   bool get getBlueLinked => _blueLinked;
   bool get getblueConnect => _blueConnect;
+
+  bool get getToggleBool => _toggleBool;
 
   BluetoothDevice? get getDevice => _blueDevice;
 
@@ -152,7 +158,8 @@ class BlueController {
     } // End AlarmT
     else if (comando == "AlarmEnd") {
       _funDataRecived();
-    } else if (comando == "NotT") {
+    } // End AlarmEND
+    else if (comando == "NotT") {
       if (listRecived[1] == "0") {
         //NotificationService().showNotification(CustomNotification(id: 1, title: 'Alarme', body: 'Alarme de ${listRecived[2]} minutos concluído', payload: 'GoAlarmes'));
       } else if (listRecived[1] == "1") {
@@ -170,6 +177,9 @@ class BlueController {
         //NotificationService().showNotification(CustomNotification(id: 1, title: 'Temperatura do Sensor 2', body: 'Temperatura do Sensor 2 alcançou ${listRecived[2]} graus', payload: 'GoAlarmes'));
       }
     } // End NotG
+    else if (comando == "DelOk") {
+      mandaMensagem("Alarme");
+    } // End DelOk
 
     else if (comando == "Wifi") {
       if (listRecived[1] == "Login") {
@@ -182,6 +192,8 @@ class BlueController {
     } // End Wifi
 
     // Fim Reciver Blue
+
+    _funDataRecived();
   }
 
   void mandaMensagem(String msg) async {

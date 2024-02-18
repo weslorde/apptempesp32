@@ -18,17 +18,21 @@ class AllData {
   String _wifiLogin = "";
   String _wifiPassword = "";
 
+  String _selectedRecipe = "0";
+
   get tGrelha => int.parse(_tGrelha);
   get tSensor1 => int.parse(_tSensor1);
   get tSensor2 => int.parse(_tSensor2);
   get tAlvo => int.parse(_tAlvo);
-
+  
   get getListTemp => [_tGrelha, _tSensor1, _tSensor2, _tAlvo];
 
   get getCert => _cert;
 
   get getWifiLogin => _wifiLogin;
   get getWifiPassword => _wifiPassword;
+
+  get getSelectedRecipe => _selectedRecipe;
 
   ///////////////////////// Set /////////////////////////////////////
 
@@ -45,6 +49,8 @@ class AllData {
 
   set setWifiLogin(wifiLogin) => _wifiLogin = wifiLogin;
   set setWifiPassword(wifiPassword) => _wifiPassword = wifiPassword;
+
+  set setSelectedRecipe(idRecipe) => _selectedRecipe = idRecipe;
 
   setCertBlank() {
     _cert = "";
