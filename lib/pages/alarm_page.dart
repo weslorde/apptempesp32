@@ -11,6 +11,7 @@ import 'package:apptempesp32/pages/home_page.dart';
 import 'package:apptempesp32/pages/menus/body_top.dart';
 import 'package:apptempesp32/pages/menus/botton_barr.dart';
 import 'package:apptempesp32/pages/menus/top_barr.dart';
+import 'package:apptempesp32/widget/widget_alarm_creat.dart';
 import 'package:apptempesp32/widget/widget_blue_toggle.dart';
 import 'package:apptempesp32/widget/widget_text_font.dart';
 import 'package:flutter/material.dart';
@@ -60,7 +61,7 @@ class _AlarmPageState extends State<AlarmPage> {
                   child: TextFont(
                       data: "Meus Alarmes",
                       weight: FontWeight.w700,
-                      hexColor: "#130F26",
+                      hexColor: _data.darkMode ? "#130F26" : "FFFFFF",
                       size: 35,
                       gFont: GoogleFonts.yanoneKaffeesatz),
                 ),
@@ -77,11 +78,11 @@ class _AlarmPageState extends State<AlarmPage> {
                       for (int item = 0;
                           item < _data.getAlarmeTimer.length;
                           item++)
-                        alarmCard(0, item, _data.getAlarmeTimer[item], _blue),
+                        alarmCard(0, item, _data.getAlarmeTimer[item], _blue, _data),
                       for (int item = 0;
                           item < _data.getAlarmGraus.length;
                           item++)
-                        alarmCard(1, item, _data.getAlarmGraus[item], _blue),
+                        alarmCard(1, item, _data.getAlarmGraus[item], _blue, _data),
                     ],
                   ),
                 ),
@@ -96,33 +97,49 @@ class _AlarmPageState extends State<AlarmPage> {
               //
               SizedBox(height: 40),
               // Buttom new alarm
-              Container(
-                height: 62,
-                width: double.infinity,
-                decoration: BoxDecoration(
+              GestureDetector(
+                onTap: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return alarmChoiceModal();
+                    },
+                  );
+                },
+                child: Container(
+                  height: 62,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      width: 2,
+                      color: _data.darkMode ? Colors.white : HexColor.fromHex('#FF5427'),
+                    ),
                     borderRadius: BorderRadius.circular(12),
-                    color: HexColor.fromHex("#0B2235")),
-                margin: EdgeInsets.symmetric(horizontal: 25),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.timer,
-                      color: Colors.white,
-                      size: 23,
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    TextFont(
-                        data: "CRIAR ALARME",
-                        weight: FontWeight.w700,
-                        hexColor: "#FFFFFF",
-                        size: 16,
-                        height: 19.36 / 16,
-                        letter: 12,
-                        gFont: GoogleFonts.inter),
-                  ],
+                    color: _data.darkMode
+                        ? HexColor.fromHex("#0B2235")
+                        : Colors.transparent),
+                  margin: EdgeInsets.symmetric(horizontal: 25),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.timer,
+                        color: Colors.white,
+                        size: 23,
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      TextFont(
+                          data: "CRIAR ALARME",
+                          weight: FontWeight.w700,
+                          hexColor: "#FFFFFF",
+                          size: 16,
+                          height: 19.36 / 16,
+                          letter: 12,
+                          gFont: GoogleFonts.inter),
+                    ],
+                  ),
                 ),
               )
             ],
@@ -133,7 +150,7 @@ class _AlarmPageState extends State<AlarmPage> {
   }
 }
 
-Widget alarmCard(int type, int num, dynamic data, BlueController blue) {
+Widget alarmCard(int type, int num, dynamic data, BlueController blue, _data) {
   return Container(
     height: 66,
     margin: EdgeInsets.only(left: 24, right: 24, bottom: 30),
@@ -142,17 +159,17 @@ Widget alarmCard(int type, int num, dynamic data, BlueController blue) {
       decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
-              color: HexColor.fromHex("E6ECF2"),
+              color: _data.darkMode ? HexColor.fromHex("E6ECF2") : Colors.black,
               blurRadius: 16,
               offset: Offset(8, 8), // changes position of shadow
             ),
             BoxShadow(
-              color: HexColor.fromHex("#80FFFFFF"),
+              color: _data.darkMode ? HexColor.fromHex("#80FFFFFF") : Colors.black,
               blurRadius: 16,
               offset: Offset(-8, -8), // changes position of shadow
             ),
           ],
-          color: HexColor.fromHex("#F3F6F8"),
+          color: _data.darkMode ? HexColor.fromHex("#F3F6F8") : HexColor.fromHex('#131313'),
           borderRadius: BorderRadius.circular(10)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -172,7 +189,7 @@ Widget alarmCard(int type, int num, dynamic data, BlueController blue) {
                       ? "Timer em ${data[0]}h ${data[1]}m"
                       : "${data[0]} em ${data[1]} graus",
                   weight: FontWeight.w700,
-                  hexColor: "#000000",
+                  hexColor: _data.darkMode ? "#000000" : "FFFFFF",
                   size: 16,
                   height: 19.36 / 16,
                   gFont: GoogleFonts.inter),

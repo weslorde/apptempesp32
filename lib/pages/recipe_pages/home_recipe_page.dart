@@ -50,7 +50,7 @@ class RecipeHomePag extends StatelessWidget {
                       child: TextFont(
                           data: "O melhor jeito de \nfazer churrasco",
                           weight: FontWeight.w700,
-                          hexColor: "#0B2235",
+                          hexColor: _data.darkMode ? "#0B2235" : "#FFFFFF",
                           size: 47,
                           height: 40.89 / 47,
                           gFont: GoogleFonts.yanoneKaffeesatz),
@@ -58,7 +58,7 @@ class RecipeHomePag extends StatelessWidget {
                     //
                     const SizedBox(height: 25),
                     // Search Field
-                    Container(height: 60, child: barSerch()),
+                    Container(height: 60, child: barSerch(_data)),
                     //
                     const SizedBox(height: 25),
                     //
@@ -77,7 +77,7 @@ class RecipeHomePag extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     // Top Text Title
-                                    topTextCards("Mais acessadas", "Ver tudo"),
+                                    topTextCards("Mais acessadas", "Ver tudo", _data),
                                     //
                                     const SizedBox(height: 20),
                                     // Image Cards
@@ -96,7 +96,7 @@ class RecipeHomePag extends StatelessWidget {
                                                 state.recipesAll['Items']
                                                     [indice],
                                                 _data,
-                                                _pageController),
+                                                _pageController, _data),
                                         ],
                                       ),
                                     ),
@@ -104,7 +104,7 @@ class RecipeHomePag extends StatelessWidget {
                                     const SizedBox(height: 50),
 
                                     topTextCards(
-                                        "Receitas Recentes", "Ver mais"),
+                                        "Receitas Recentes", "Ver mais", _data),
                                     const SizedBox(height: 20),
 
                                     SingleChildScrollView(
@@ -125,7 +125,7 @@ class RecipeHomePag extends StatelessWidget {
                                                   state.recipesAll['Items']
                                                       [indice],
                                                   _data,
-                                                  _pageController),
+                                                  _pageController, _data),
                                           ],
                                         ),
                                       ),
@@ -149,7 +149,7 @@ class RecipeHomePag extends StatelessWidget {
   }
 }
 
-Widget barSerch() {
+Widget barSerch(_data) {
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 25.0),
     child: SearchAnchor(
@@ -167,10 +167,10 @@ Widget barSerch() {
           ),
         ),
         backgroundColor: MaterialStateColor.resolveWith(
-          (states) => HexColor.fromHex("#ffffffff"),
+          (states) => _data.darkMode ? HexColor.fromHex("#ffffffff") : HexColor.fromHex("#0Cffffff"),
         ),
         surfaceTintColor: MaterialStateColor.resolveWith(
-          (states) => HexColor.fromHex("#ffffffff"),
+          (states) => _data.darkMode ? HexColor.fromHex("#ffffffff") : HexColor.fromHex("#0Cffffff"),
         ),
         shape: MaterialStateProperty.all(
           const ContinuousRectangleBorder(
@@ -179,7 +179,7 @@ Widget barSerch() {
         ),
         elevation: MaterialStateProperty.all(0),
         side: MaterialStateProperty.all(
-            BorderSide(color: HexColor.fromHex("#D9D9D9"))),
+            BorderSide(color: _data.darkMode ? HexColor.fromHex("#D9D9D9") : HexColor.fromHex("#00D9D9D9") )),
         controller: controller,
         padding: const MaterialStatePropertyAll<EdgeInsets>(
             EdgeInsets.symmetric(horizontal: 16.0)),
@@ -201,9 +201,9 @@ Widget barSerch() {
       });
     }),
   );
-}
+} // barSerch
 
-Widget topTextCards(String title, String more) {
+Widget topTextCards(String title, String more, _data) {
   return Padding(
     padding: const EdgeInsets.only(right: 25),
     child: Row(
@@ -212,7 +212,7 @@ Widget topTextCards(String title, String more) {
         TextFont(
             data: title,
             weight: FontWeight.w700,
-            hexColor: "#303030",
+            hexColor: _data.darkMode ? "#303030" : "#FFFFFF",
             size: 20,
             height: 28 / 20,
             gFont: GoogleFonts.inter),
@@ -221,14 +221,14 @@ Widget topTextCards(String title, String more) {
             TextFont(
                 data: more,
                 weight: FontWeight.w600,
-                hexColor: "#E23E3E",
+                hexColor: _data.darkMode ? "#E23E3E": "#FF5427",
                 size: 14,
                 height: 19.6 / 14,
                 gFont: GoogleFonts.poppins),
             const SizedBox(width: 3),
             Icon(
               Icons.arrow_forward,
-              color: HexColor.fromHex("#E23E3E"),
+              color: _data.darkMode ? HexColor.fromHex("#E23E3E") : HexColor.fromHex("#FF5427"),
               size: 20,
             )
           ],
@@ -239,7 +239,7 @@ Widget topTextCards(String title, String more) {
 }
 
 Widget cardsMaisAcessadas(
-    dynamic recipeItem, AllData data, PageIndex pageController) {
+    dynamic recipeItem, AllData data, PageIndex pageController, _data) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
@@ -366,11 +366,12 @@ Widget cardsMaisAcessadas(
             TextFont(
                 data: recipeItem['titulo']['S'],
                 weight: FontWeight.w600,
-                hexColor: "#303030",
+                hexColor: _data.darkMode ? "#303030" : "#FFFFFF",
                 size: 16,
                 height: 22.4 / 16,
                 gFont: GoogleFonts.inter),
-            Icon(Icons.more_horiz)
+            // More Icon
+            Icon(Icons.more_horiz, color: _data.darkMode ? HexColor.fromHex("#000000") : HexColor.fromHex("#747D8C"),)
           ],
         ),
       )
@@ -379,7 +380,7 @@ Widget cardsMaisAcessadas(
 }
 
 Widget recipeCardsGenerator2(
-    dynamic recipeItem, AllData data, PageIndex pageController) {
+    dynamic recipeItem, AllData data, PageIndex pageController, _data) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
@@ -406,7 +407,7 @@ Widget recipeCardsGenerator2(
         child: TextFont(
           data: recipeItem['titulo']['S'],
           weight: FontWeight.w600,
-          hexColor: '#303030',
+          hexColor: _data.darkMode ? '#303030' : "FFFFFF",
           size: 14,
           height: 16.66 / 14,
           gFont: GoogleFonts.inter,

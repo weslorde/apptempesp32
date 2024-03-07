@@ -1,3 +1,4 @@
+import 'package:apptempesp32/api/data_storege.dart';
 import 'package:apptempesp32/pages/menus/controller_pages.dart';
 import 'package:apptempesp32/api/hex_to_colors.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,8 @@ class BottomBar extends StatefulWidget {
 
 class _BottomBar extends State<BottomBar> {
   final PageIndex pageIndex = PageIndex(); //Simple Pag Controller
+  final AllData _data = AllData();
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -19,7 +22,7 @@ class _BottomBar extends State<BottomBar> {
         items: listNavigation(),
         currentIndex: pageIndex.getNavBotIndex,
         onTap: pageIndex.onTap,
-        selectedItemColor: pageIndex.getIndex > 5 ? Colors.black : HexColor.fromHex("#FF5427"),
+        selectedItemColor: pageIndex.getIndex > 5 ? _data.darkMode ? Colors.black : Colors.white : HexColor.fromHex("#FF5427"),
       ),
     );
   }

@@ -52,8 +52,6 @@ class _TemperaturePageState extends State<TemperaturePage> {
 
   @override
   Widget build(BuildContext context) {
-    int nowStep = 10;
-    int nowStep2 = 300;
     return Scaffold(
       appBar: const TopBar(),
       //
@@ -61,6 +59,13 @@ class _TemperaturePageState extends State<TemperaturePage> {
       //
       body: BlocBuilder<BlueBloc, BlueState>(
         builder: ((context, state) {
+          //
+          int targetSteps = int.parse(_data.getListTemp[3]);
+          int grelhaSteps = int.parse(_data.getListTemp[0]);
+          int s1Steps = int.parse(_data.getListTemp[1]);
+          int s2Steps = int.parse(_data.getListTemp[2]);
+          //
+          
           return BodyStart(
             children: [
               //
@@ -71,11 +76,11 @@ class _TemperaturePageState extends State<TemperaturePage> {
                 child: TextFont(
                     data: "Ajuste a temperatura",
                     weight: FontWeight.w700,
-                    hexColor: "#130F26",
+                    hexColor: _data.darkMode ? "#130F26" : "FFFFFF",
                     size: 35,
                     gFont: GoogleFonts.yanoneKaffeesatz),
               ),
-               //
+              //
               SizedBox(height: 5),
               // Blue icon
               blueToggle(status: state.stateActual),
@@ -93,13 +98,17 @@ class _TemperaturePageState extends State<TemperaturePage> {
                       borderRadius: BorderRadius.circular(210 / 2),
                       boxShadow: [
                         BoxShadow(
-                          color: HexColor.fromHex("#E6ECF2"),
+                          color: _data.darkMode
+                              ? HexColor.fromHex("#E6ECF2")
+                              : Colors.black,
                           blurRadius: 14.4,
                           offset:
                               Offset(7.2, 7.2), // changes position of shadow
                         ),
                         BoxShadow(
-                          color: HexColor.fromHex("#80FFFFFF"),
+                          color: _data.darkMode
+                              ? HexColor.fromHex("#80FFFFFF")
+                              : Colors.black,
                           blurRadius: 14.4,
                           offset:
                               Offset(-7.2, -7.2), // changes position of shadow
@@ -116,26 +125,24 @@ class _TemperaturePageState extends State<TemperaturePage> {
                     totalSteps: 40,
                     stepSize: 12,
                     selectedStepSize: 12,
-                    currentStep: nowStep,
+                    currentStep: targetSteps,
                     width: 260,
                     height: 260,
                     customColor: (drawStep) {
-                      return customColorTraceProgress(drawStep, nowStep, 40);
+                      return customColorTraceProgress(drawStep, targetSteps, 40);
                     },
                   ),
 
                   // Full circle temperature indicator
-
                   CircularStepProgressIndicator(
                     customColor: (drawStep) {
                       return customColorCircularProgress(
-                          drawStep, nowStep2, 330);
+                          drawStep, grelhaSteps, 330, _data);
                     },
                     totalSteps: 500,
-                    currentStep: nowStep2,
+                    currentStep: grelhaSteps,
                     stepSize: 70 / 2,
                     selectedStepSize: 70 / 2,
-                    unselectedColor: HexColor.fromHex("#E6ECF2"),
                     padding: 0,
                     startingAngle: -2 * pi / 3,
                     width: 210,
@@ -144,7 +151,7 @@ class _TemperaturePageState extends State<TemperaturePage> {
                   ),
                   // End Mark White Circle
                   Transform.rotate(
-                    angle: nowStep2 * 2 * pi / 500 -
+                    angle: grelhaSteps * 2 * pi / 500 -
                         pi /
                             6, // step * 2 * pi / totalSteps of circular temperature - offset of startingAngle (pi/6 = pi*2/3 - 1/2 [1/2 is the start angle of Transform.rotate])
                     child: Container(
@@ -198,7 +205,7 @@ class _TemperaturePageState extends State<TemperaturePage> {
                         ),
                         SizedBox(height: 3),
                         TextFont(
-                            data: "${_data.getListTemp[0]}º",
+                            data: "${_data.getListTemp[1]}º",
                             weight: FontWeight.w600,
                             hexColor: "#130F26",
                             size: 36,
@@ -206,7 +213,7 @@ class _TemperaturePageState extends State<TemperaturePage> {
                             gFont: GoogleFonts.inter),
                         SizedBox(height: 3),
                         TextFont(
-                            data: "${_data.getListTemp[2]}",
+                            data: "${_data.getListTemp[3]}",
                             weight: FontWeight.w400,
                             hexColor: "#130F26",
                             size: 14.5,
@@ -220,23 +227,32 @@ class _TemperaturePageState extends State<TemperaturePage> {
                 ],
               ),
               //
-              SizedBox(
-                height: 30,
-              ),
-              customLinearProgressTemperature(100, 300, _data.getListTemp[1]),
-              SizedBox(
-                height: 20,
-              ),
-              customLinearProgressTemperature(100, 300, _data.getListTemp[2]),
-              SizedBox(
-                height: 20,
-              ),
+              SizedBox(height: 30),
+              // Linear Temperature 1
+              customLinearProgressTemperature(
+                  s1Steps, 300, _data.getListTemp[1], _data),
+              //
+              SizedBox(height: 20),
+              // Linear Temperature 2
+              customLinearProgressTemperature(
+                  s2Steps, 300, _data.getListTemp[2], _data),
+              //
+              SizedBox(height: 20),
+              // Button New Alarm
               Container(
                 height: 62,
                 width: double.infinity,
                 decoration: BoxDecoration(
+                    border: Border.all(
+                      width: 2,
+                      color: _data.darkMode
+                          ? Colors.white
+                          : HexColor.fromHex('#FF5427'),
+                    ),
                     borderRadius: BorderRadius.circular(12),
-                    color: HexColor.fromHex("#0B2235")),
+                    color: _data.darkMode
+                        ? HexColor.fromHex("#0B2235")
+                        : Colors.transparent),
                 margin: EdgeInsets.symmetric(horizontal: 25),
                 child: GestureDetector(
                   onTap: () {
@@ -274,12 +290,14 @@ class _TemperaturePageState extends State<TemperaturePage> {
 }
 
 Color customColorCircularProgress(
-    int drawStep, int actualStep, int totalSteps) {
+    int drawStep, int actualStep, int totalSteps, var _data) {
   if (drawStep <= actualStep) {
     return (Color.lerp(HexColor.fromHex("#FF8A25"), HexColor.fromHex("#FF2E2E"),
         drawStep.toDouble() / totalSteps)!);
   } else {
-    return HexColor.fromHex("#E6ECF2");
+    return _data.darkMode
+        ? HexColor.fromHex("#E6ECF2")
+        : HexColor.fromHex('#1D1E1F');
   }
 }
 
@@ -293,7 +311,7 @@ Color customColorTraceProgress(int drawStep, int actualStep, int totalSteps) {
 }
 
 Widget customLinearProgressTemperature(
-    int actualStep, int totalSteps, String temperature) {
+    int actualStep, int totalSteps, String temperature, var _data) {
   return Container(
     margin: EdgeInsets.symmetric(horizontal: 25),
     child: Column(
@@ -312,7 +330,7 @@ Widget customLinearProgressTemperature(
                 TextFont(
                     data: "Sensor 01",
                     weight: FontWeight.w700,
-                    hexColor: "#130F26",
+                    hexColor: _data.darkMode ? "#130F26" : "#FFFFFF",
                     size: 15,
                     height: 18.15 / 15,
                     gFont: GoogleFonts.inter)
@@ -323,14 +341,14 @@ Widget customLinearProgressTemperature(
                 TextFont(
                     data: "$temperatureº",
                     weight: FontWeight.w700,
-                    hexColor: "#FF0000",
+                    hexColor: _data.darkMode ? "#FF0000" : "#FF5427",
                     size: 15,
                     height: 18.15 / 15,
                     gFont: GoogleFonts.inter),
                 TextFont(
                     data: "/210º",
                     weight: FontWeight.w700,
-                    hexColor: "#130F26",
+                    hexColor: _data.darkMode ? "#130F26" : "#FFFFFF",
                     size: 15,
                     height: 17.58 / 15,
                     gFont: GoogleFonts.inter)
@@ -349,12 +367,16 @@ Widget customLinearProgressTemperature(
               width: double.infinity,
               decoration: BoxDecoration(boxShadow: [
                 BoxShadow(
-                  color: HexColor.fromHex("E6ECF2"),
+                  color: _data.darkMode
+                      ? HexColor.fromHex("E6ECF2")
+                      : Colors.black,
                   blurRadius: 9.2,
                   offset: Offset(4.6, 4.6), // changes position of shadow
                 ),
                 BoxShadow(
-                  color: HexColor.fromHex("#80FFFFFF"),
+                  color: _data.darkMode
+                      ? HexColor.fromHex("#80FFFFFF")
+                      : Colors.black,
                   blurRadius: 9.2,
                   offset: Offset(-4.6, 4.6), // changes position of shadow
                 ),
@@ -367,7 +389,9 @@ Widget customLinearProgressTemperature(
               padding: 0,
               currentStep: actualStep,
               totalSteps: totalSteps,
-              unselectedColor: Colors.grey.shade100,
+              unselectedColor: _data.darkMode
+                  ? Colors.grey.shade100
+                  : HexColor.fromHex('#1D1E1F'),
               selectedGradientColor: LinearGradient(
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,

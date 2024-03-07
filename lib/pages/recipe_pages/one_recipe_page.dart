@@ -47,13 +47,14 @@ class OneRecipePag extends StatelessWidget {
                               icon: Icon(
                                 Icons.arrow_back,
                                 size: 30,
-                                color: HexColor.fromHex("#0B2235"),
+                                color: _data.darkMode ? HexColor.fromHex("#0B2235") : HexColor.fromHex("#80FFFFFF"),
                               )),
                           IconButton(
                             onPressed: () {}, 
                             icon: Icon(
                               Icons.more_horiz,
                               size: 30,
+                              color: _data.darkMode ? HexColor.fromHex("#0B2235") : HexColor.fromHex("#80FFFFFF"),
                             ),
                           ),
                         ],
@@ -70,7 +71,7 @@ class OneRecipePag extends StatelessWidget {
                                   actualId, state.recipesAll)['titulo']['S']
                               .toString(),
                           weight: FontWeight.w700,
-                          hexColor: "#0B2235",
+                          hexColor: _data.darkMode ? "#0B2235" : "#FFFFFF",
                           size: 35,
                           height: 38.15 / 35,
                           gFont: GoogleFonts.yanoneKaffeesatz),
@@ -124,7 +125,7 @@ class OneRecipePag extends StatelessWidget {
                                     TextFont(
                                         data: "4,5",
                                         weight: FontWeight.w600,
-                                        hexColor: "#303030",
+                                        hexColor: _data.darkMode ? "#303030": "#747D8C",
                                         size: 14,
                                         height: 19.6 / 14,
                                         gFont: GoogleFonts.poppins),
@@ -134,7 +135,7 @@ class OneRecipePag extends StatelessWidget {
                                     TextFont(
                                         data: "(300 Reviews)",
                                         weight: FontWeight.w400,
-                                        hexColor: "#A9A9A9",
+                                        hexColor: _data.darkMode ? "#A9A9A9" : "#80747D8C",
                                         size: 14,
                                         height: 19.6 / 14,
                                         gFont: GoogleFonts.poppins),
@@ -151,7 +152,7 @@ class OneRecipePag extends StatelessWidget {
                                   title: TextFont(
                                       data: "Ingredientes:",
                                       weight: FontWeight.w700,
-                                      hexColor: "#000000",
+                                      hexColor: _data.darkMode ? "#000000" : "#FFFFFF",
                                       size: 14,
                                       height: 28.42 / 14,
                                       gFont: GoogleFonts.inter),
@@ -175,7 +176,7 @@ class OneRecipePag extends StatelessWidget {
                                             item++)
                                           ingredientsListItem(itemRecipeFinder(
                                                   actualId, state.recipesAll)[
-                                              'ingredientes']['L'][item]['S'])
+                                              'ingredientes']['L'][item]['S'], _data)
                                       ],
                                     ),
                                   ),
@@ -185,7 +186,7 @@ class OneRecipePag extends StatelessWidget {
                               recipeItemMethod(
                                   "Modo de Preparo:",
                                   itemRecipeFinder(actualId, state.recipesAll)['preparo']
-                                      ['L'])
+                                      ['L'], _data)
                               //
                             ],
                           ),
@@ -207,14 +208,14 @@ dynamic itemRecipeFinder(String recipeId, recipesAll) {
   return teste;
 }
 
-Widget recipeItemMethod(String title, List textList) {
+Widget recipeItemMethod(String title, List textList, _data) {
   return Container(
     child: ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 25),
       title: TextFont(
           data: title,
           weight: FontWeight.w700,
-          hexColor: "#000000",
+          hexColor: _data.darkMode ? "#000000" : "#FFFFFF",
           size: 14,
           height: 28.42 / 14,
           gFont: GoogleFonts.inter),
@@ -226,7 +227,7 @@ Widget recipeItemMethod(String title, List textList) {
             TextFont(
                 data: textList[0]['S'],
                 weight: FontWeight.w400,
-                hexColor: "#000000",
+                hexColor: _data.darkMode ? "#000000" : "#FFFFFF",
                 size: 14,
                 height: 23 / 14,
                 gFont: GoogleFonts.inter),
@@ -234,7 +235,7 @@ Widget recipeItemMethod(String title, List textList) {
               TextFont(
                   data: "\n ${textList[indice]['S']}",
                   weight: FontWeight.w400,
-                  hexColor: "#000000",
+                  hexColor: _data.darkMode ? "#000000" : "#FFFFFF",
                   size: 14,
                   height: 23 / 14,
                   gFont: GoogleFonts.inter),
@@ -245,7 +246,7 @@ Widget recipeItemMethod(String title, List textList) {
   );
 }
 
-Widget ingredientsListItem(text) {
+Widget ingredientsListItem(text, _data) {
   return Row(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: <Widget>[
@@ -253,7 +254,7 @@ Widget ingredientsListItem(text) {
       TextFont(
           data: " \u2022 ",
           weight: FontWeight.w400,
-          hexColor: "#000000",
+          hexColor: _data.darkMode ? "#000000" : "#FFFFFF",
           size: 14,
           height: 25 / 14,
           gFont: GoogleFonts.inter),
@@ -261,7 +262,7 @@ Widget ingredientsListItem(text) {
         child: TextFont(
             data: text,
             weight: FontWeight.w400,
-            hexColor: "#000000",
+            hexColor: _data.darkMode ? "#000000" : "#FFFFFF",
             size: 14,
             height: 28.42 / 14,
             gFont: GoogleFonts.inter),

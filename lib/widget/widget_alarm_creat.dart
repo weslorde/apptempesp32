@@ -1,6 +1,5 @@
-import 'dart:ffi';
 import 'dart:io';
-
+import 'package:apptempesp32/api/blue_api.dart';
 import 'package:apptempesp32/api/hex_to_colors.dart';
 import 'package:apptempesp32/pages/temperature_page.dart';
 import 'package:apptempesp32/widget/widget_text_font.dart';
@@ -8,43 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
 
-class alarmBotModal extends StatefulWidget {
-  alarmBotModal({super.key});
+class alarmChoiceModal extends StatefulWidget {
+  alarmChoiceModal({super.key});
 
   @override
-  State<alarmBotModal> createState() => _alarmBotModalState();
+  State<alarmChoiceModal> createState() => _alarmChoiceModalState();
 }
 
-class _alarmBotModalState extends State<alarmBotModal> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      child: Center(
-        child: ElevatedButton(
-          child: const Text('showModalBottomSheet'),
-          onPressed: () {
-            showModalBottomSheet(
-              context: context,
-              builder: (BuildContext context) {
-                return alarmBotModal2();
-              },
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
-
-class alarmBotModal2 extends StatefulWidget {
-  alarmBotModal2({super.key});
-
-  @override
-  State<alarmBotModal2> createState() => _alarmBotModalState2();
-}
-
-class _alarmBotModalState2 extends State<alarmBotModal2> {
+class _alarmChoiceModalState extends State<alarmChoiceModal> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -79,30 +49,200 @@ class _alarmBotModalState2 extends State<alarmBotModal2> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // BUTTON TIMER ALARM
                 GestureDetector(
                   onTap: () {
                     showModalBottomSheet(
                       context: context,
                       builder: (BuildContext context) {
-                        return alarmBotModal3();
+                        return alarmTimerModal();
                       },
                     );
                   },
                   child: buttonNewAlarm("Tempo", Icons.timer),
                 ),
-                SizedBox(
-                  width: 5,
+                //
+                SizedBox(width: 5),
+                // BUTTON TEMPERATURE ALARM
+                GestureDetector(
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return alarmTemperatureModal();
+                      },
+                    );
+                  },
+                  child: buttonNewAlarm("Temperatura", Icons.fireplace),
                 ),
-                buttonNewAlarm("Temperatura", Icons.fireplace),
               ],
             ),
-
+            //
             SizedBox(height: 30),
             //
+          ],
+        ),
+      ),
+    );
+  }
+}
 
-            ElevatedButton(
-              child: const Text('Close BottomSheet'),
-              onPressed: () => Navigator.pop(context),
+class alarmTemperatureModal extends StatefulWidget {
+  alarmTemperatureModal({super.key});
+
+  @override
+  State<alarmTemperatureModal> createState() => _alarmTemperatureModalState();
+}
+
+class _alarmTemperatureModalState extends State<alarmTemperatureModal> {
+  final BlueController _blue = BlueController();
+  double grausStep = 3;
+  int sensorSelected = 1;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 380,
+      color: HexColor.fromHex("#E6ECF2"),
+      child: Center(
+        child: Column(
+          children: [
+            //
+            SizedBox(height: 30),
+            // Titulo Grande
+            TextFont(
+                data: "${(grausStep.toInt() + 1) * 25}º",
+                weight: FontWeight.w700,
+                hexColor: "#0B2235",
+                size: 44,
+                gFont: GoogleFonts.yanoneKaffeesatz),
+            //
+            SizedBox(height: 30),
+            // Minutos
+            Column(
+              children: [
+                // Num Minutos
+                Padding(
+                  padding: const EdgeInsets.only(left: 10, right: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      for (int x = 50; x < 301; x += 50) Text("${x}º")
+                    ],
+                  ),
+                ),
+                // Marcas Minutos
+                Padding(
+                  padding: const EdgeInsets.only(left: 20, right: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      for (int x = 0; x < 56; x += 5)
+                        x % 10 == 0
+                            ? Text("|")
+                            : Text("|", style: TextStyle(fontSize: 10))
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            // Barra Minutos
+            GestureDetector(
+              onTapDown: (details) {
+                grausStep = test3Fun(details, grausStep);
+                setState(() {});
+              },
+              onHorizontalDragUpdate: (details) {
+                grausStep = test3Fun(details, grausStep);
+                setState(() {});
+              },
+              child: customLinearProgressTemperature2(
+                  (grausStep.toInt() * 8), 100, "200"),
+            ),
+            //
+            SizedBox(height: 25),
+            // Sensor temperature SELECT
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // GRELHA Select
+                  GestureDetector(
+                    onTap: () {
+                      sensorSelected = 1;
+                      setState(() {});
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      width: 70,
+                      height: 50,
+                      decoration: BoxDecoration(
+                          color: sensorSelected == 1
+                              ? HexColor.fromHex("#B00B2235")
+                              : HexColor.fromHex("#0B2235"),
+                          borderRadius: BorderRadius.horizontal(
+                              left: Radius.circular(25))),
+                      child: Text(
+                        "Grelha",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  // Sensor 1 Select
+                  GestureDetector(
+                    onTap: () {
+                      sensorSelected = 2;
+                      setState(() {});
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      width: 70,
+                      height: 50,
+                      color: sensorSelected == 2
+                          ? HexColor.fromHex("#B00B2235")
+                          : HexColor.fromHex("#0B2235"),
+                      child: Text(
+                        "Sensor 1",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  // Sensor 2 Select
+                  GestureDetector(
+                    onTap: () {
+                      sensorSelected = 3;
+                      setState(() {});
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      width: 75,
+                      height: 50,
+                      decoration: BoxDecoration(
+                          color: sensorSelected == 3
+                              ? HexColor.fromHex("#B00B2235")
+                              : HexColor.fromHex("#0B2235"),
+                          borderRadius: BorderRadius.horizontal(
+                              right: Radius.circular(25))),
+                      child: Text(
+                        "Sensor 2",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            //
+            SizedBox(height: 25),
+            //
+            GestureDetector(
+              onTap: () {
+                _blue.mandaMensagem("GAl,${['Grelha', 'Sensor1', 'Sensor2'][sensorSelected]},${(grausStep.toInt() + 1) * 25}");
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+              child: buttonNewAlarm("teste", Icons.timer),
             ),
           ],
         ),
@@ -111,17 +251,18 @@ class _alarmBotModalState2 extends State<alarmBotModal2> {
   }
 }
 
-class alarmBotModal3 extends StatefulWidget {
-  alarmBotModal3({super.key});
+class alarmTimerModal extends StatefulWidget {
+  alarmTimerModal({super.key});
 
   @override
-  State<alarmBotModal3> createState() => _alarmBotModalState3();
+  State<alarmTimerModal> createState() => _alarmTimerModalState();
 }
 
-class _alarmBotModalState3 extends State<alarmBotModal3> {
+class _alarmTimerModalState extends State<alarmTimerModal> {
   double hoursStep = 2;
   int hoursBaseNum = 0;
   double minutesStep = 2;
+  final BlueController _blue = BlueController();
 
   @override
   Widget build(BuildContext context) {
@@ -210,10 +351,18 @@ class _alarmBotModalState3 extends State<alarmBotModal3> {
                 ),
                 // Marcas Minutos
                 Padding(
-                  padding: const EdgeInsets.only(left:20, right: 10),
+                  padding: const EdgeInsets.only(left: 20, right: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [for (int x = 0; x < 56; x += 5) x%10==0 ? Text("|"): Text("|",style: TextStyle(fontSize: 10),)],
+                    children: [
+                      for (int x = 0; x < 56; x += 5)
+                        x % 10 == 0
+                            ? Text("|")
+                            : Text(
+                                "|",
+                                style: TextStyle(fontSize: 10),
+                              )
+                    ],
                   ),
                 ),
               ],
@@ -232,7 +381,16 @@ class _alarmBotModalState3 extends State<alarmBotModal3> {
                   (minutesStep.toInt() * 8), 100, "200"),
             ),
             SizedBox(height: 25),
-            buttonNewAlarm("teste",Icons.timer),
+
+            GestureDetector(
+              onTap: () {
+                _blue.mandaMensagem(
+                    "TAl,${hoursStep.toInt() + hoursBaseNum - 1},${(minutesStep.toInt() - 1) * 5}");
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+              child: buttonNewAlarm("teste", Icons.timer),
+            ),
           ],
         ),
       ),

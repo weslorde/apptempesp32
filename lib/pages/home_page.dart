@@ -20,6 +20,8 @@ class HomePage extends StatelessWidget {
     final AllData _data = AllData();
     final BlueController _blue = BlueController();
 
+    print(Theme.of(context).colorScheme.secondary);
+
     return Scaffold(
       appBar: const TopBar(),
       //
@@ -34,10 +36,10 @@ class HomePage extends StatelessWidget {
               margin: const EdgeInsets.only(left: 28, top: 26),
               child: Row(
                 children: [
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 46 / 2,
                     backgroundColor: Colors.white,
-                    child: Icon(
+                    child: const Icon(
                         size: 46,
                         color: Colors.black45,
                         Icons.supervised_user_circle),
@@ -49,7 +51,7 @@ class HomePage extends StatelessWidget {
                       style: GoogleFonts.yanoneKaffeesatz(
                           textStyle: TextStyle(
                               fontWeight: FontWeight.w600,
-                              color: HexColor.fromHex("#303030"),
+                              color: _data.darkMode ? HexColor.fromHex("#303030") : Colors.white,
                               fontSize: 33)),
                     ),
                   )
@@ -67,7 +69,7 @@ class HomePage extends StatelessWidget {
                     style: GoogleFonts.yanoneKaffeesatz(
                         textStyle: TextStyle(
                             fontWeight: FontWeight.w500,
-                            color: HexColor.fromHex("#690B2235"),
+                            color: _data.darkMode ? HexColor.fromHex("#690B2235") : Colors.white,
                             fontSize: 16)),
                   ),
                   Row(
@@ -116,7 +118,7 @@ class HomePage extends StatelessWidget {
                         "Deixe seu churrasco                                                                     com ainda mais sabor",
                     height: 0.87,
                     weight: FontWeight.w700,
-                    hexColor: "#0B2235",
+                    hexColor: _data.darkMode ? "#0B2235" : "#FFFFFF",
                     size: 35,
                   ),
                 ),
@@ -129,10 +131,10 @@ class HomePage extends StatelessWidget {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
-                        recipeCardsGenerator("teste"),
-                        recipeCardsGenerator("teste"),
-                        recipeCardsGenerator("teste"),
-                        recipeCardsGenerator("teste")
+                        recipeCardsGenerator("teste",_data),
+                        recipeCardsGenerator("teste",_data),
+                        recipeCardsGenerator("teste",_data),
+                        recipeCardsGenerator("teste",_data)
                       ],
                     ),
                   ),
@@ -199,7 +201,7 @@ List<Widget> homeCardsGenerator(
   ];
 }
 
-Widget recipeCardsGenerator(String myText) {
+Widget recipeCardsGenerator(String myText, var _data) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
@@ -221,7 +223,7 @@ Widget recipeCardsGenerator(String myText) {
         child: TextFont(
           data: "Alcatra com            alho e mostarda",
           weight: FontWeight.w600,
-          hexColor: '#303030',
+          hexColor: _data.darkMode ? '#303030' : '#FFFFFF',
           size: 14,
           height: 16.66 / 14,
           gFont: GoogleFonts.inter,

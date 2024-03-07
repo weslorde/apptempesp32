@@ -9,15 +9,16 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize => const Size.fromHeight(60);
+  
 
   @override
   Widget build(BuildContext context) {
-    final AllData data = AllData();
+    final AllData _data = AllData();
     final PageIndex pageController = PageIndex();
 
     return AppBar(
-      backgroundColor: HexColor.fromHex("#fafaff"),
-      surfaceTintColor: HexColor.fromHex("#fafaff"),
+      backgroundColor: _data.darkMode ? HexColor.fromHex("#fafaff") : HexColor.fromHex('#101010'),
+      surfaceTintColor: _data.darkMode ? HexColor.fromHex("#fafaff") : HexColor.fromHex('#101010'),
       actions: [
         PopupMenuButton(
           itemBuilder: (context) => [

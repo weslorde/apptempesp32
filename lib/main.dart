@@ -16,7 +16,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-
 void main() {
   // Lock orientation to Portrait only
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,20 +31,33 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-          providers: [
-            BlocProvider<BlueBloc>(
-              create: (BuildContext context) => BlueBloc(),
-            ),
-            BlocProvider<AwsBloc>(
-              create: (BuildContext context) => AwsBloc(),
-            ),
-            BlocProvider<DynamoBloc>(
-              create: (BuildContext context) => DynamoBloc(),
-            )
-          ], // Call AppBloc() to pick inicial state
+        providers: [
+          BlocProvider<BlueBloc>(
+            create: (BuildContext context) => BlueBloc(),
+          ),
+          BlocProvider<AwsBloc>(
+            create: (BuildContext context) => AwsBloc(),
+          ),
+          BlocProvider<DynamoBloc>(
+            create: (BuildContext context) => DynamoBloc(),
+          )
+        ], // Call AppBloc() to pick inicial state
+        /*
+                theme: ThemeData(
+                  brightness: Brightness.light,
+                  /* light theme settings */
+                ),
+                darkTheme: ThemeData(
+                  brightness: Brightness.dark,
+                  /* dark theme settings */
+                ),
+                themeMode: ThemeMode.dark,
+
+          */
+
         child: MaterialApp(
           debugShowCheckedModeBanner: false, //Remove debug banner
-          theme: myThemeData(),
+          theme: myLightThemeData(), // standard dark theme
           home: const SelectedPage(),
         ));
   }
@@ -80,7 +92,7 @@ class _SelectedPageState extends State<SelectedPage> {
       //List of Pages
       const HomePage(),
       const TemperaturePage(),
-      alarmBotModal(),
+      const MotorPage2(),
       const AlarmPage(),
       const MotorPage2(),
       const RecipeHomePag(),

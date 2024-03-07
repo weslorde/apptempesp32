@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:apptempesp32/api/blue_api.dart';
 import 'dart:math' as math;
 
@@ -7,6 +9,8 @@ class AllData {
   factory AllData({Function(int)? attPageState}) => _shared;
 
   final BlueController _blue = BlueController();
+
+  bool _darkMode = false;
 
   String _tGrelha = '000';
   String _tSensor1 = '000';
@@ -19,6 +23,8 @@ class AllData {
   String _wifiPassword = "";
 
   String _selectedRecipe = "0";
+
+  get darkMode => (_darkMode);
 
   get tGrelha => int.parse(_tGrelha);
   get tSensor1 => int.parse(_tSensor1);
@@ -35,6 +41,8 @@ class AllData {
   get getSelectedRecipe => _selectedRecipe;
 
   ///////////////////////// Set /////////////////////////////////////
+
+  set setDarkMode(mode) => _darkMode = mode;
 
   set setListTemp(List<String> list) {
     _tGrelha = list[0];
