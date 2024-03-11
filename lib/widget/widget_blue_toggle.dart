@@ -29,8 +29,8 @@ class _blueToggleState extends State<blueToggle> {
 
     Map<String, dynamic> statusToColor = {
       'Conectado': "#FF5427",
-      'Conectar': "#FF8D27",
-      'Desconectado': "#BBC8D6"
+      'Conectando': "#FF8D27",
+      'Buscando' : "#FF8D27",
     };
 
     return Container(
@@ -43,7 +43,8 @@ class _blueToggleState extends State<blueToggle> {
           child: Container(
             padding: EdgeInsets.all(10),
             decoration: BoxDecoration(
-                color: HexColor.fromHex(statusToColor[widget.status] ?? "#BBC8D6"),
+                color:
+                    HexColor.fromHex(statusToColor[widget.status] ?? "#BBC8D6"),
                 borderRadius:
                     BorderRadius.horizontal(left: Radius.circular(6))),
             child: Row(

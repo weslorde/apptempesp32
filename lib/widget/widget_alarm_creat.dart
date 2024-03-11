@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:apptempesp32/api/blue_api.dart';
+import 'package:apptempesp32/api/data_storege.dart';
 import 'package:apptempesp32/api/hex_to_colors.dart';
 import 'package:apptempesp32/pages/temperature_page.dart';
 import 'package:apptempesp32/widget/widget_text_font.dart';
@@ -15,11 +16,15 @@ class alarmChoiceModal extends StatefulWidget {
 }
 
 class _alarmChoiceModalState extends State<alarmChoiceModal> {
+  final AllData _data = AllData();
+
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 380,
-      color: HexColor.fromHex("#E6ECF2"),
+      color: _data.darkMode
+          ? HexColor.fromHex("#E6ECF2")
+          : HexColor.fromHex('#101010'),
       child: Center(
         child: Column(
           children: [
@@ -29,7 +34,7 @@ class _alarmChoiceModalState extends State<alarmChoiceModal> {
             TextFont(
                 data: "Criar Alarme",
                 weight: FontWeight.w700,
-                hexColor: "#0B2235",
+                hexColor: _data.darkMode ? "#0B2235" : "#FFFFFF",
                 size: 44,
                 gFont: GoogleFonts.yanoneKaffeesatz),
             //
@@ -38,7 +43,7 @@ class _alarmChoiceModalState extends State<alarmChoiceModal> {
             TextFont(
                 data: "Qual tipo de alarme você deseja criar?",
                 weight: FontWeight.w500,
-                hexColor: "#8A0B2235",
+                hexColor: _data.darkMode ? "#8A0B2235" : "#979797",
                 size: 14,
                 height: 17 / 14,
                 letter: 4,
@@ -59,7 +64,7 @@ class _alarmChoiceModalState extends State<alarmChoiceModal> {
                       },
                     );
                   },
-                  child: buttonNewAlarm("Tempo", Icons.timer),
+                  child: buttonNewAlarm("Tempo", Icons.timer, _data),
                 ),
                 //
                 SizedBox(width: 5),
@@ -73,7 +78,7 @@ class _alarmChoiceModalState extends State<alarmChoiceModal> {
                       },
                     );
                   },
-                  child: buttonNewAlarm("Temperatura", Icons.fireplace),
+                  child: buttonNewAlarm("Temperatura", Icons.fireplace, _data),
                 ),
               ],
             ),
@@ -96,6 +101,7 @@ class alarmTemperatureModal extends StatefulWidget {
 
 class _alarmTemperatureModalState extends State<alarmTemperatureModal> {
   final BlueController _blue = BlueController();
+  final AllData _data = AllData();
   double grausStep = 3;
   int sensorSelected = 1;
 
@@ -103,7 +109,9 @@ class _alarmTemperatureModalState extends State<alarmTemperatureModal> {
   Widget build(BuildContext context) {
     return Container(
       height: 380,
-      color: HexColor.fromHex("#E6ECF2"),
+      color: _data.darkMode
+          ? HexColor.fromHex("#E6ECF2")
+          : HexColor.fromHex("#101010"),
       child: Center(
         child: Column(
           children: [
@@ -113,7 +121,7 @@ class _alarmTemperatureModalState extends State<alarmTemperatureModal> {
             TextFont(
                 data: "${(grausStep.toInt() + 1) * 25}º",
                 weight: FontWeight.w700,
-                hexColor: "#0B2235",
+                hexColor: _data.darkMode ? "#0B2235" : "#FFFFFF",
                 size: 44,
                 gFont: GoogleFonts.yanoneKaffeesatz),
             //
@@ -127,7 +135,15 @@ class _alarmTemperatureModalState extends State<alarmTemperatureModal> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      for (int x = 50; x < 301; x += 50) Text("${x}º")
+                      for (int x = 50; x < 301; x += 50)
+                        Text(
+                          "${x}º",
+                          style: TextStyle(
+                            color: _data.darkMode
+                                ? HexColor.fromHex("#0B2235")
+                                : HexColor.fromHex("#747D8C"),
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -139,8 +155,23 @@ class _alarmTemperatureModalState extends State<alarmTemperatureModal> {
                     children: [
                       for (int x = 0; x < 56; x += 5)
                         x % 10 == 0
-                            ? Text("|")
-                            : Text("|", style: TextStyle(fontSize: 10))
+                            ? Text(
+                                "|",
+                                style: TextStyle(
+                                  color: _data.darkMode
+                                      ? HexColor.fromHex("#0B2235")
+                                      : HexColor.fromHex("#747D8C"),
+                                ),
+                              )
+                            : Text(
+                                "|",
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: _data.darkMode
+                                      ? HexColor.fromHex("#0B2235")
+                                      : HexColor.fromHex("#747D8C"),
+                                ),
+                              ),
                     ],
                   ),
                 ),
@@ -157,7 +188,7 @@ class _alarmTemperatureModalState extends State<alarmTemperatureModal> {
                 setState(() {});
               },
               child: customLinearProgressTemperature2(
-                  (grausStep.toInt() * 8), 100, "200"),
+                  (grausStep.toInt() * 8), 100, "200", _data),
             ),
             //
             SizedBox(height: 25),
@@ -178,9 +209,15 @@ class _alarmTemperatureModalState extends State<alarmTemperatureModal> {
                       width: 70,
                       height: 50,
                       decoration: BoxDecoration(
-                          color: sensorSelected == 1
-                              ? HexColor.fromHex("#B00B2235")
-                              : HexColor.fromHex("#0B2235"),
+                          border: Border.all(
+                              width: 1, color: HexColor.fromHex("#FF5427")),
+                          color: _data.darkMode
+                              ? sensorSelected == 1
+                                  ? HexColor.fromHex("#B00B2235")
+                                  : HexColor.fromHex("#1D1E1F")
+                              : sensorSelected == 1
+                                  ? HexColor.fromHex("#40FFFFFF")
+                                  : HexColor.fromHex("#101010"),
                           borderRadius: BorderRadius.horizontal(
                               left: Radius.circular(25))),
                       child: Text(
@@ -199,9 +236,17 @@ class _alarmTemperatureModalState extends State<alarmTemperatureModal> {
                       alignment: Alignment.center,
                       width: 70,
                       height: 50,
-                      color: sensorSelected == 2
-                          ? HexColor.fromHex("#B00B2235")
-                          : HexColor.fromHex("#0B2235"),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                            width: 1, color: HexColor.fromHex("#FF5427")),
+                        color: _data.darkMode
+                            ? sensorSelected == 2
+                                ? HexColor.fromHex("#B00B2235")
+                                : HexColor.fromHex("#1D1E1F")
+                            : sensorSelected == 2
+                                ? HexColor.fromHex("#40FFFFFF")
+                                : HexColor.fromHex("#101010"),
+                      ),
                       child: Text(
                         "Sensor 1",
                         style: TextStyle(color: Colors.white),
@@ -219,9 +264,15 @@ class _alarmTemperatureModalState extends State<alarmTemperatureModal> {
                       width: 75,
                       height: 50,
                       decoration: BoxDecoration(
-                          color: sensorSelected == 3
-                              ? HexColor.fromHex("#B00B2235")
-                              : HexColor.fromHex("#0B2235"),
+                          border: Border.all(
+                              width: 1, color: HexColor.fromHex("#FF5427")),
+                          color: _data.darkMode
+                              ? sensorSelected == 3
+                                  ? HexColor.fromHex("#B00B2235")
+                                  : HexColor.fromHex("#1D1E1F")
+                              : sensorSelected == 3
+                                  ? HexColor.fromHex("#40FFFFFF")
+                                  : HexColor.fromHex("#101010"),
                           borderRadius: BorderRadius.horizontal(
                               right: Radius.circular(25))),
                       child: Text(
@@ -238,11 +289,15 @@ class _alarmTemperatureModalState extends State<alarmTemperatureModal> {
             //
             GestureDetector(
               onTap: () {
-                _blue.mandaMensagem("GAl,${['Grelha', 'Sensor1', 'Sensor2'][sensorSelected]},${(grausStep.toInt() + 1) * 25}");
+                _blue.mandaMensagem("GAl,${[
+                  'Grelha',
+                  'Sensor1',
+                  'Sensor2'
+                ][sensorSelected - 1]},${(grausStep.toInt() + 1) * 25}");
                 Navigator.pop(context);
                 Navigator.pop(context);
               },
-              child: buttonNewAlarm("teste", Icons.timer),
+              child: buttonNewAlarmBig("CRIAR ALARME", Icons.timer, _data),
             ),
           ],
         ),
@@ -263,12 +318,15 @@ class _alarmTimerModalState extends State<alarmTimerModal> {
   int hoursBaseNum = 0;
   double minutesStep = 2;
   final BlueController _blue = BlueController();
+  final AllData _data = AllData();
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 380,
-      color: HexColor.fromHex("#E6ECF2"),
+      height: 400,
+      color: _data.darkMode
+          ? HexColor.fromHex("#E6ECF2")
+          : HexColor.fromHex("#131313"),
       child: Center(
         child: Column(
           children: [
@@ -277,9 +335,9 @@ class _alarmTimerModalState extends State<alarmTimerModal> {
             // Titulo Grande
             TextFont(
                 data:
-                    "${hoursStep.toInt() + hoursBaseNum - 1}h ${(minutesStep.toInt() - 1) * 5}m",
+                    "${hoursStep.toInt() + hoursBaseNum - 1} h  ${(minutesStep.toInt() - 1) * 5} min",
                 weight: FontWeight.w700,
-                hexColor: "#0B2235",
+                hexColor: _data.darkMode ? "#0B2235" : "#FFFFFF",
                 size: 44,
                 gFont: GoogleFonts.yanoneKaffeesatz),
             //
@@ -294,7 +352,14 @@ class _alarmTimerModalState extends State<alarmTimerModal> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       for (int x = hoursBaseNum; x < hoursBaseNum + 6; x++)
-                        Text("${x}h")
+                        Text(
+                          "${x}h",
+                          style: TextStyle(
+                            color: _data.darkMode
+                                ? HexColor.fromHex("#0B2235")
+                                : HexColor.fromHex("#747D8C"),
+                          ),
+                        )
                     ],
                   ),
                 ),
@@ -305,7 +370,14 @@ class _alarmTimerModalState extends State<alarmTimerModal> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       for (int x = hoursBaseNum; x < hoursBaseNum + 6; x++)
-                        Text("|")
+                        Text(
+                          "|",
+                          style: TextStyle(
+                            color: _data.darkMode
+                                ? HexColor.fromHex("#0B2235")
+                                : HexColor.fromHex("#747D8C"),
+                          ),
+                        )
                     ],
                   ),
                 ),
@@ -334,7 +406,7 @@ class _alarmTimerModalState extends State<alarmTimerModal> {
                 setState(() {});
               },
               child: customLinearProgressTemperature2(
-                  (hoursStep.toInt() * 16) - 7, 100, "200"),
+                  (hoursStep.toInt() * 16) - 7, 100, "200", _data),
             ),
             //
             SizedBox(height: 30),
@@ -346,7 +418,17 @@ class _alarmTimerModalState extends State<alarmTimerModal> {
                   padding: const EdgeInsets.only(left: 10, right: 20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [for (int x = 0; x < 51; x += 10) Text("${x}m")],
+                    children: [
+                      for (int x = 0; x < 51; x += 10)
+                        Text(
+                          "${x}m",
+                          style: TextStyle(
+                            color: _data.darkMode
+                                ? HexColor.fromHex("#0B2235")
+                                : HexColor.fromHex("#747D8C"),
+                          ),
+                        )
+                    ],
                   ),
                 ),
                 // Marcas Minutos
@@ -357,10 +439,22 @@ class _alarmTimerModalState extends State<alarmTimerModal> {
                     children: [
                       for (int x = 0; x < 56; x += 5)
                         x % 10 == 0
-                            ? Text("|")
+                            ? Text(
+                                "|",
+                                style: TextStyle(
+                                  color: _data.darkMode
+                                      ? HexColor.fromHex("#0B2235")
+                                      : HexColor.fromHex("#747D8C"),
+                                ),
+                              )
                             : Text(
                                 "|",
-                                style: TextStyle(fontSize: 10),
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: _data.darkMode
+                                      ? HexColor.fromHex("#0B2235")
+                                      : HexColor.fromHex("#747D8C"),
+                                ),
                               )
                     ],
                   ),
@@ -378,9 +472,9 @@ class _alarmTimerModalState extends State<alarmTimerModal> {
                 setState(() {});
               },
               child: customLinearProgressTemperature2(
-                  (minutesStep.toInt() * 8), 100, "200"),
+                  (minutesStep.toInt() * 8), 100, "200", _data),
             ),
-            SizedBox(height: 25),
+            SizedBox(height: 30),
 
             GestureDetector(
               onTap: () {
@@ -389,8 +483,9 @@ class _alarmTimerModalState extends State<alarmTimerModal> {
                 Navigator.pop(context);
                 Navigator.pop(context);
               },
-              child: buttonNewAlarm("teste", Icons.timer),
+              child: buttonNewAlarmBig("CRIAR ALARME", Icons.timer, _data),
             ),
+            SizedBox(height: 20),
           ],
         ),
       ),
@@ -398,13 +493,19 @@ class _alarmTimerModalState extends State<alarmTimerModal> {
   }
 }
 
-Widget buttonNewAlarm(String text, IconData icon) {
+Widget buttonNewAlarm(String text, IconData icon, _data) {
   return Container(
     height: 45,
     width: 158,
     decoration: BoxDecoration(
+        border: Border.all(
+            width: 1.5,
+            color: _data.darkMode
+                ? Colors.transparent
+                : HexColor.fromHex("#FF5427")),
         borderRadius: BorderRadius.circular(12),
-        color: HexColor.fromHex("#0B2235")),
+        color:
+            _data.darkMode ? HexColor.fromHex("#0B2235") : Colors.transparent),
     //margin: EdgeInsets.symmetric(horizontal: 25),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -429,8 +530,46 @@ Widget buttonNewAlarm(String text, IconData icon) {
   );
 }
 
+Widget buttonNewAlarmBig(String text, IconData icon, _data) {
+  return Container(
+    height: 62,
+    width: 300,
+    decoration: BoxDecoration(
+        border: Border.all(
+            width: 1.5,
+            color: _data.darkMode
+                ? Colors.transparent
+                : HexColor.fromHex("#FF5427")),
+        borderRadius: BorderRadius.circular(12),
+        color:
+            _data.darkMode ? HexColor.fromHex("#0B2235") : Colors.transparent),
+    //margin: EdgeInsets.symmetric(horizontal: 25),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          icon,
+          color: HexColor.fromHex("#FF5427"),
+          size: 23,
+        ),
+        SizedBox(
+          width: 10,
+        ),
+        TextFont(
+            data: text,
+            weight: FontWeight.w700,
+            hexColor: "#FFFFFF",
+            size: 15,
+            height: 18.15 / 15,
+            letter: 12,
+            gFont: GoogleFonts.inter),
+      ],
+    ),
+  );
+}
+
 Widget customLinearProgressTemperature2(
-    int actualStep, int totalSteps, String temperature) {
+    int actualStep, int totalSteps, String temperature, _data) {
   return Container(
     margin: EdgeInsets.symmetric(horizontal: 25),
     child: Column(
@@ -446,12 +585,16 @@ Widget customLinearProgressTemperature2(
               width: double.infinity,
               decoration: BoxDecoration(boxShadow: [
                 BoxShadow(
-                  color: HexColor.fromHex("E6ECF2"),
+                  color: _data.darkMode
+                      ? HexColor.fromHex("#30E6ECF2")
+                      : HexColor.fromHex("#000000"),
                   blurRadius: 9.2,
                   offset: Offset(4.6, 4.6), // changes position of shadow
                 ),
                 BoxShadow(
-                  color: HexColor.fromHex("#80FFFFFF"),
+                  color: _data.darkMode
+                      ? HexColor.fromHex("#20FFFFFF")
+                      : HexColor.fromHex("#80000000"),
                   blurRadius: 9.2,
                   offset: Offset(-4.6, 4.6), // changes position of shadow
                 ),
@@ -464,7 +607,9 @@ Widget customLinearProgressTemperature2(
               padding: 0,
               currentStep: actualStep,
               totalSteps: totalSteps,
-              unselectedColor: Colors.grey.shade100,
+              unselectedColor: _data.darkMode
+                  ? Colors.grey.shade100
+                  : HexColor.fromHex("#1D1E1F"),
               selectedGradientColor: LinearGradient(
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,

@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart' show immutable;
 @immutable
 class BlueState {
   final String stateActual;
+  final String screenMsg;
   final bool blueSuported;
   final bool blueIsOn;
   final bool blueTurningOn;
@@ -13,6 +14,7 @@ class BlueState {
 
   const BlueState({
     required this.stateActual,
+    required this.screenMsg,
     required this.blueSuported,
     required this.blueIsOn,
     required this.blueTurningOn,
@@ -23,6 +25,7 @@ class BlueState {
 
   const BlueState.empty()
       : stateActual = 'empty',
+        screenMsg = 'vazio',
         blueSuported = false,
         blueIsOn = false,
         blueTurningOn = false,

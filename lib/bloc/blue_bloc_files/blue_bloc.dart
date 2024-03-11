@@ -13,6 +13,7 @@ class BlueBloc extends Bloc<BlueEvent, BlueState> {
     emit(
       BlueState(
         stateActual: stateActual,
+        screenMsg: _blue.getScreenMsg,
         blueSuported: _blue.getBlueSup,
         blueIsOn: _blue.getBlueIsOn,
         blueTurningOn: _blue.getBlueTurningOn,
@@ -40,6 +41,7 @@ class BlueBloc extends Bloc<BlueEvent, BlueState> {
       // check adapter availability
       // Note: The platform is initialized on the first call to any FlutterBluePlus method.
       bool test = await FlutterBluePlus.isAvailable;
+      _blue.setScreenMsg = 'Iniciando';
       if (test == false) {
         _blue.setblueSup = false;
         emitAll(stateActual: 'BlueIsSup');
@@ -52,6 +54,7 @@ class BlueBloc extends Bloc<BlueEvent, BlueState> {
     });
 
     on<WarningBlueSup>((event, emit) async {
+      _blue.setScreenMsg = 'Falha';
       emitAll(stateActual: 'WarningBlueSup', msg: 'Bluetooth não suportado');
       await Future.delayed(const Duration(seconds: 5));
       add(const InitState());
@@ -63,7 +66,6 @@ class BlueBloc extends Bloc<BlueEvent, BlueState> {
         Permission.bluetoothConnect,
         Permission.bluetoothScan
       ].request().then((status) {});
-
       FlutterBluePlus.setLogLevel(LogLevel.verbose);
       // handle bluetooth on & off
       // note: for iOS the initial state is typically BluetoothAdapterState.unknown
@@ -87,6 +89,7 @@ class BlueBloc extends Bloc<BlueEvent, BlueState> {
     });
 
     on<WarningBlueOff>((event, emit) async {
+      _blue.setScreenMsg = 'Bluetooth Desligado';
       emitAll(stateActual: 'WarningBlueOff', msg: 'Bluetooth não está ligado');
       await Future.delayed(const Duration(seconds: 2));
 
@@ -116,6 +119,7 @@ class BlueBloc extends Bloc<BlueEvent, BlueState> {
     });
 
     on<WarningLocationOff>((event, emit) async {
+      _blue.setScreenMsg = 'GPS Desligado';
       _blue.setBlueIsOn = false; //When try to conect again need to be false
       emitAll(
           stateActual: 'WarningLocationOff',
@@ -125,8 +129,8 @@ class BlueBloc extends Bloc<BlueEvent, BlueState> {
     });
 
     on<BlueStartScan>((event, emit) async {
+      _blue.setScreenMsg = 'Buscando';
       emitAll(stateActual: 'BlueStartScan');
-
       // Creating the scanResults Listen
       Set<DeviceIdentifier> seen = {}; //Save all devices founds in ScanResult
       FlutterBluePlus.scanResults.listen((results) async {
@@ -163,6 +167,7 @@ class BlueBloc extends Bloc<BlueEvent, BlueState> {
     });
 
     on<WarningDeviceNotFound>((event, emit) async {
+      _blue.setScreenMsg = 'Churrasqueira não encontrada';
       emitAll(
           stateActual: 'WarningDeviceNotFound',
           msg: 'Dispositivo Não encontrado');
@@ -171,6 +176,7 @@ class BlueBloc extends Bloc<BlueEvent, BlueState> {
     });
 
     on<BlueStartConnect>((event, emit) async {
+      _blue.setScreenMsg = 'Conectando';
       emitAll(stateActual: 'BlueStartConnect', msg: 'Iniciando Conexão');
       final device = _blue.getDevice!;
       device.connectionState.listen((BluetoothConnectionState connectState) {
@@ -188,6 +194,7 @@ class BlueBloc extends Bloc<BlueEvent, BlueState> {
     });
 
     on<WarningBlueDisconnect>((event, emit) async {
+      _blue.setScreenMsg = 'Desconectado';
       emitAll(
           stateActual: 'WarningBlueDisconnect',
           msg: 'Dispositivo Desconectado');
@@ -204,6 +211,10 @@ class BlueBloc extends Bloc<BlueEvent, BlueState> {
     });
 
     on<BlueConectado>((event, emit) async {
+      _blue.setScreenMsg = 'Conectado';
+      if (_blue.getblueConnect){ //if has not conneted close ToggleBlue
+        _blue.setToggleBool = false;
+      }
       _blue.setblueConnect = true;
       emitAll(stateActual: 'BlueConectado');
     });

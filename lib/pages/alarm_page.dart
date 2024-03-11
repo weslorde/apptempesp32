@@ -7,6 +7,7 @@ import 'package:apptempesp32/api/hex_to_colors.dart';
 import 'package:apptempesp32/bloc/blue_bloc_files/blue_bloc.dart';
 import 'package:apptempesp32/bloc/blue_bloc_files/blue_state.dart';
 import 'package:apptempesp32/bloc/blue_bloc_files/blue_bloc_events.dart';
+import 'package:apptempesp32/dialogs/close_alert.dart';
 import 'package:apptempesp32/pages/home_page.dart';
 import 'package:apptempesp32/pages/menus/body_top.dart';
 import 'package:apptempesp32/pages/menus/botton_barr.dart';
@@ -40,111 +41,123 @@ class _AlarmPageState extends State<AlarmPage> {
   Widget build(BuildContext context) {
     int nowStep = 30;
     int nowStep2 = 300;
-    return Scaffold(
-      appBar: const TopBar(),
-      //
-      bottomNavigationBar: const BottomBar(),
-      //
-      body: BlocBuilder<BlueBloc, BlueState>(
-        builder: ((context, state) {
-          return BodyStart(
-            children: [
-              //
-              SizedBox(
-                height: 30,
-              ),
-              //Title
-              Stack(children: [
-                Container(
-                  margin: EdgeInsets.only(left: 30),
-                  alignment: Alignment.centerLeft,
-                  child: TextFont(
-                      data: "Meus Alarmes",
-                      weight: FontWeight.w700,
-                      hexColor: _data.darkMode ? "#130F26" : "FFFFFF",
-                      size: 35,
-                      gFont: GoogleFonts.yanoneKaffeesatz),
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (_) => {onBackPressed(context)},
+      child: Scaffold(
+        backgroundColor: _data.darkMode ? Colors.white : HexColor.fromHex('#101010'),
+        appBar: const TopBar(),
+        //
+        bottomNavigationBar: BottomBar(),
+        //
+        body: BlocBuilder<BlueBloc, BlueState>(
+          builder: ((context, state) {
+            return BodyStart(
+              children: [
+                //
+                SizedBox(
+                  height: 30,
                 ),
-                blueToggle(status: state.stateActual),
-              ]),
-              //
-              SizedBox(height: 20),
-              //
-
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      for (int item = 0;
-                          item < _data.getAlarmeTimer.length;
-                          item++)
-                        alarmCard(0, item, _data.getAlarmeTimer[item], _blue, _data),
-                      for (int item = 0;
-                          item < _data.getAlarmGraus.length;
-                          item++)
-                        alarmCard(1, item, _data.getAlarmGraus[item], _blue, _data),
-                    ],
+                //Title
+                Stack(children: [
+                  Container(
+                    margin: EdgeInsets.only(left: 30),
+                    alignment: Alignment.centerLeft,
+                    child: TextFont(
+                        data: "Meus Alarmes",
+                        weight: FontWeight.w700,
+                        hexColor: _data.darkMode ? "#130F26" : "FFFFFF",
+                        size: 35,
+                        gFont: GoogleFonts.yanoneKaffeesatz),
                   ),
-                ),
-              ),
+                  blueToggle(status: state.screenMsg),
+                ]),
+                //
+                SizedBox(height: 20),
+                //
 
-              //alarmCard(0, _data.getAlarmeTimer[0]),
-              //alarmCard(0, _data.getAlarmeTimer[1]),
-              //alarmCard(0, _data.getAlarmeTimer[2]),
-
-              //alarmCard(0, _data.getAlarmeTimer[1][0], _data.getAlarmeTimer[1][1]),
-              //alarmCard(0, _data.getAlarmeTimer[2][0], _data.getAlarmeTimer[2][1]),
-              //
-              SizedBox(height: 40),
-              // Buttom new alarm
-              GestureDetector(
-                onTap: () {
-                  showModalBottomSheet(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return alarmChoiceModal();
-                    },
-                  );
-                },
-                child: Container(
-                  height: 62,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      width: 2,
-                      color: _data.darkMode ? Colors.white : HexColor.fromHex('#FF5427'),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        for (int item = 0;
+                            item < _data.getAlarmeTimer.length;
+                            item++)
+                          alarmCard(0, item, _data.getAlarmeTimer[item], _blue,
+                              _data),
+                        for (int item = 0;
+                            item < _data.getAlarmGraus.length;
+                            item++)
+                          alarmCard(
+                              1, item, _data.getAlarmGraus[item], _blue, _data),
+                      ],
                     ),
-                    borderRadius: BorderRadius.circular(12),
-                    color: _data.darkMode
-                        ? HexColor.fromHex("#0B2235")
-                        : Colors.transparent),
-                  margin: EdgeInsets.symmetric(horizontal: 25),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.timer,
-                        color: Colors.white,
-                        size: 23,
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      TextFont(
-                          data: "CRIAR ALARME",
-                          weight: FontWeight.w700,
-                          hexColor: "#FFFFFF",
-                          size: 16,
-                          height: 19.36 / 16,
-                          letter: 12,
-                          gFont: GoogleFonts.inter),
-                    ],
                   ),
                 ),
-              )
-            ],
-          );
-        }),
+
+                //alarmCard(0, _data.getAlarmeTimer[0]),
+                //alarmCard(0, _data.getAlarmeTimer[1]),
+                //alarmCard(0, _data.getAlarmeTimer[2]),
+
+                //alarmCard(0, _data.getAlarmeTimer[1][0], _data.getAlarmeTimer[1][1]),
+                //alarmCard(0, _data.getAlarmeTimer[2][0], _data.getAlarmeTimer[2][1]),
+                //
+                SizedBox(height: 40),
+                // Buttom new alarm
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  child: GestureDetector(
+                    onTap: () {
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return alarmChoiceModal();
+                        },
+                      );
+                    },
+                    child: Container(
+                      height: 62,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                            width: 2,
+                            color: _data.darkMode
+                                ? Colors.white
+                                : HexColor.fromHex('#FF5427'),
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          color: _data.darkMode
+                              ? HexColor.fromHex("#0B2235")
+                              : Colors.transparent),
+                      margin: EdgeInsets.symmetric(horizontal: 25),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.timer,
+                            color: Colors.white,
+                            size: 23,
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          TextFont(
+                              data: "CRIAR ALARME",
+                              weight: FontWeight.w700,
+                              hexColor: "#FFFFFF",
+                              size: 16,
+                              height: 19.36 / 16,
+                              letter: 12,
+                              gFont: GoogleFonts.inter),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            );
+          }),
+        ),
       ),
     );
   }
@@ -164,12 +177,15 @@ Widget alarmCard(int type, int num, dynamic data, BlueController blue, _data) {
               offset: Offset(8, 8), // changes position of shadow
             ),
             BoxShadow(
-              color: _data.darkMode ? HexColor.fromHex("#80FFFFFF") : Colors.black,
+              color:
+                  _data.darkMode ? HexColor.fromHex("#80FFFFFF") : Colors.black,
               blurRadius: 16,
               offset: Offset(-8, -8), // changes position of shadow
             ),
           ],
-          color: _data.darkMode ? HexColor.fromHex("#F3F6F8") : HexColor.fromHex('#131313'),
+          color: _data.darkMode
+              ? HexColor.fromHex("#F3F6F8")
+              : HexColor.fromHex('#131313'),
           borderRadius: BorderRadius.circular(10)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

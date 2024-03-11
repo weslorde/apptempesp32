@@ -15,6 +15,7 @@ class BlueController {
   final String _characterMandarUuid = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
   final String _characterReceberUuid = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
 
+  String _screenMsg = "Desligado";
   bool _blueSuported = false;
   bool _blueIsOn = false;
   bool _blueTurningOn = false;
@@ -35,6 +36,7 @@ class BlueController {
   BlueController._sharedInstance();
   factory BlueController({Function(int)? attPageState}) => _shared;
 
+  set setScreenMsg(String msg) =>  _screenMsg = msg;
   set setblueSup(bool logic) => _blueSuported = logic;
   set setBlueIsOn(bool logic) => _blueIsOn = logic;
   set setBlueTurningOn(bool logic) => _blueTurningOn = logic;
@@ -49,6 +51,7 @@ class BlueController {
   set setfunDataRecived(Function fun) => _funDataRecived = fun;
   set setfunCertState(Function(int) fun) => _funCertState = fun;
 
+  String get getScreenMsg =>  _screenMsg;
   bool get getBlueSup => _blueSuported;
   bool get getBlueIsOn => _blueIsOn;
   bool get getBlueTurningOn => _blueTurningOn;
@@ -147,6 +150,9 @@ class BlueController {
         listRecived[4]
       ];
     } // End Temp
+    else if (comando == "TempOk") {
+      mandaMensagem("Alarme");
+    }
     else if (comando == "AlarmZero") {
       data.zeraAlarms();
     } // End AlarmZero

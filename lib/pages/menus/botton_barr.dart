@@ -4,7 +4,7 @@ import 'package:apptempesp32/api/hex_to_colors.dart';
 import 'package:flutter/material.dart';
 
 class BottomBar extends StatefulWidget {
-  const BottomBar({super.key});
+  BottomBar({super.key});
 
   @override
   State<BottomBar> createState() => _BottomBar();
@@ -17,12 +17,25 @@ class _BottomBar extends State<BottomBar> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(30.0),
-      child: BottomNavigationBar(
-        items: listNavigation(),
-        currentIndex: pageIndex.getNavBotIndex,
-        onTap: pageIndex.onTap,
-        selectedItemColor: pageIndex.getIndex > 5 ? _data.darkMode ? Colors.black : Colors.white : HexColor.fromHex("#FF5427"),
+      padding: const EdgeInsets.only(left: 30, right: 30, bottom: 20, top: 10),
+      child: Container(
+        child: BottomNavigationBar(
+          backgroundColor:
+              _data.darkMode ? Colors.white : HexColor.fromHex('#101010'),
+          unselectedItemColor: _data.darkMode ? Colors.black : Colors.white,
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          type: BottomNavigationBarType.fixed,
+          elevation: 0.0,
+          items: listNavigation(),
+          currentIndex: pageIndex.getNavBotIndex,
+          onTap: pageIndex.onTap,
+          selectedItemColor: pageIndex.getIndex > 4
+              ? _data.darkMode
+                  ? Colors.black
+                  : Colors.white
+              : HexColor.fromHex("#FF5427"),
+        ),
       ),
     );
   }

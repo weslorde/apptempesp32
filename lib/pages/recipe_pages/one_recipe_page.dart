@@ -23,180 +23,202 @@ class OneRecipePag extends StatelessWidget {
 
     String actualId = _data.getSelectedRecipe;
 
-    return Scaffold(
-      appBar: const TopBar(),
-      //
-      bottomNavigationBar: const BottomBar(),
-      //
-      body: BlocBuilder<DynamoBloc, DynamoState>(
-        builder: ((context, state) {
-          if (state.stateActual == 'empty') {
-            context.read<DynamoBloc>().add(const CheckData());
-          }
-          return state.stateActual == 'DataOk'
-              ? BodyStart(
-                  children: [
-                    // Top Back Icon and More Icon
-                    Container(
-                      margin: EdgeInsets.symmetric(horizontal: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          IconButton(
-                              onPressed: () {_pageController.setIndex = 5;}, //Go to home recipes Page
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (_) => {_pageController.setIndex = 4},
+      child: Scaffold(
+        backgroundColor: _data.darkMode ? Colors.white : HexColor.fromHex('#101010'),
+        appBar: const TopBar(),
+        //
+        bottomNavigationBar: BottomBar(),
+        //
+        body: BlocBuilder<DynamoBloc, DynamoState>(
+          builder: ((context, state) {
+            if (state.stateActual == 'empty') {
+              context.read<DynamoBloc>().add(const CheckData());
+            }
+            return state.stateActual == 'DataOk'
+                ? BodyStart(
+                    children: [
+                      // Top Back Icon and More Icon
+                      Container(
+                        margin: EdgeInsets.symmetric(horizontal: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            IconButton(
+                                onPressed: () {
+                                  _pageController.setIndex = 4;
+                                }, //Go to home recipes Page
+                                icon: Icon(
+                                  Icons.arrow_back,
+                                  size: 30,
+                                  color: _data.darkMode
+                                      ? HexColor.fromHex("#0B2235")
+                                      : HexColor.fromHex("#80FFFFFF"),
+                                )),
+                            IconButton(
+                              onPressed: () {},
                               icon: Icon(
-                                Icons.arrow_back,
+                                Icons.more_horiz,
                                 size: 30,
-                                color: _data.darkMode ? HexColor.fromHex("#0B2235") : HexColor.fromHex("#80FFFFFF"),
-                              )),
-                          IconButton(
-                            onPressed: () {}, 
-                            icon: Icon(
-                              Icons.more_horiz,
-                              size: 30,
-                              color: _data.darkMode ? HexColor.fromHex("#0B2235") : HexColor.fromHex("#80FFFFFF"),
+                                color: _data.darkMode
+                                    ? HexColor.fromHex("#0B2235")
+                                    : HexColor.fromHex("#80FFFFFF"),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    //
-                    const SizedBox(height: 30),
-                    // Title
-                    Container(
-                      margin: EdgeInsets.symmetric(horizontal: 20),
-                      alignment: AlignmentDirectional.centerStart,
-                      child: TextFont(
-                          data: itemRecipeFinder(
-                                  actualId, state.recipesAll)['titulo']['S']
-                              .toString(),
-                          weight: FontWeight.w700,
-                          hexColor: _data.darkMode ? "#0B2235" : "#FFFFFF",
-                          size: 35,
-                          height: 38.15 / 35,
-                          gFont: GoogleFonts.yanoneKaffeesatz),
-                    ),
-                    //
-                    const SizedBox(height: 25),
-                    //
-                    // Scrollable Pag
-                    //
-                    Expanded(
-                      child: SingleChildScrollView(
-                        key: const Key("ScrollReceitaFullPag"),
-                        child: Container(
-                          child: Column(
-                            children: [
-                              // Image Banner
-                              Container(
-                                margin: EdgeInsets.symmetric(horizontal: 20),
-                                alignment: AlignmentDirectional.centerStart,
-                                child: Container(
-                                  height: 200,
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(20)),
-                                    image: DecorationImage(
-                                      fit: BoxFit.fill,
-                                      image: NetworkImage(
-                                        "https://${itemRecipeFinder(actualId, state.recipesAll)['imagem']['S']}.png",
+                      //
+                      const SizedBox(height: 30),
+                      // Title
+                      Container(
+                        margin: EdgeInsets.symmetric(horizontal: 20),
+                        alignment: AlignmentDirectional.centerStart,
+                        child: TextFont(
+                            data: itemRecipeFinder(
+                                    actualId, state.recipesAll)['titulo']['S']
+                                .toString(),
+                            weight: FontWeight.w700,
+                            hexColor: _data.darkMode ? "#0B2235" : "#FFFFFF",
+                            size: 35,
+                            height: 38.15 / 35,
+                            gFont: GoogleFonts.yanoneKaffeesatz),
+                      ),
+                      //
+                      const SizedBox(height: 25),
+                      //
+                      // Scrollable Pag
+                      //
+                      Expanded(
+                        child: SingleChildScrollView(
+                          key: const Key("ScrollReceitaFullPag"),
+                          child: Container(
+                            child: Column(
+                              children: [
+                                // Image Banner
+                                Container(
+                                  margin: EdgeInsets.symmetric(horizontal: 20),
+                                  alignment: AlignmentDirectional.centerStart,
+                                  child: Container(
+                                    height: 200,
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(20)),
+                                      image: DecorationImage(
+                                        fit: BoxFit.fill,
+                                        image: NetworkImage(
+                                          "https://${itemRecipeFinder(actualId, state.recipesAll)['imagem']['S']}.png",
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              //
-                              const SizedBox(height: 15),
-                              // Star and Review
-                              Container(
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 20),
-                                alignment: AlignmentDirectional.centerStart,
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.star,
-                                        size: 16,
-                                        color: HexColor.fromHex("#FFB661")),
-                                    const SizedBox(
-                                      width: 4,
-                                    ),
-                                    TextFont(
-                                        data: "4,5",
-                                        weight: FontWeight.w600,
-                                        hexColor: _data.darkMode ? "#303030": "#747D8C",
-                                        size: 14,
-                                        height: 19.6 / 14,
-                                        gFont: GoogleFonts.poppins),
-                                    const SizedBox(
-                                      width: 4,
-                                    ),
-                                    TextFont(
-                                        data: "(300 Reviews)",
-                                        weight: FontWeight.w400,
-                                        hexColor: _data.darkMode ? "#A9A9A9" : "#80747D8C",
-                                        size: 14,
-                                        height: 19.6 / 14,
-                                        gFont: GoogleFonts.poppins),
-                                  ],
+                                //
+                                const SizedBox(height: 15),
+                                // Star and Review
+                                Container(
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 20),
+                                  alignment: AlignmentDirectional.centerStart,
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.star,
+                                          size: 16,
+                                          color: HexColor.fromHex("#FFB661")),
+                                      const SizedBox(
+                                        width: 4,
+                                      ),
+                                      TextFont(
+                                          data: "4,5",
+                                          weight: FontWeight.w600,
+                                          hexColor: _data.darkMode
+                                              ? "#303030"
+                                              : "#747D8C",
+                                          size: 14,
+                                          height: 19.6 / 14,
+                                          gFont: GoogleFonts.poppins),
+                                      const SizedBox(
+                                        width: 4,
+                                      ),
+                                      TextFont(
+                                          data: "(300 Reviews)",
+                                          weight: FontWeight.w400,
+                                          hexColor: _data.darkMode
+                                              ? "#A9A9A9"
+                                              : "#80747D8C",
+                                          size: 14,
+                                          height: 19.6 / 14,
+                                          gFont: GoogleFonts.poppins),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              //
-                              const SizedBox(height: 20),
-                              // Ingredientes
-                              Container(
-                                child: ListTile(
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 25),
-                                  title: TextFont(
-                                      data: "Ingredientes:",
-                                      weight: FontWeight.w700,
-                                      hexColor: _data.darkMode ? "#000000" : "#FFFFFF",
-                                      size: 14,
-                                      height: 28.42 / 14,
-                                      gFont: GoogleFonts.inter),
-                                  subtitle: Padding(
-                                    padding: const EdgeInsets.only(
-                                        right:
-                                            20), // Right limit of text until jump a line
-                                    child: Column(
-                                      children: // Lista ingredientes
-                                          [
-                                        //{state.recipesAll['Items'][actualId]['ingredientes']['L']}
+                                //
+                                const SizedBox(height: 20),
+                                // Ingredientes
+                                Container(
+                                  child: ListTile(
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 25),
+                                    title: TextFont(
+                                        data: "Ingredientes:",
+                                        weight: FontWeight.w700,
+                                        hexColor: _data.darkMode
+                                            ? "#000000"
+                                            : "#FFFFFF",
+                                        size: 14,
+                                        height: 28.42 / 14,
+                                        gFont: GoogleFonts.inter),
+                                    subtitle: Padding(
+                                      padding: const EdgeInsets.only(
+                                          right:
+                                              20), // Right limit of text until jump a line
+                                      child: Column(
+                                        children: // Lista ingredientes
+                                            [
+                                          //{state.recipesAll['Items'][actualId]['ingredientes']['L']}
 
-                                        //ingredientsListItem(state.recipesAll['Items'][actualId]['ingredientes']['L']),
+                                          //ingredientsListItem(state.recipesAll['Items'][actualId]['ingredientes']['L']),
 
-                                        for (var item = 0;
-                                            item <
+                                          for (var item = 0;
+                                              item <
+                                                  itemRecipeFinder(actualId,
+                                                              state.recipesAll)[
+                                                          'ingredientes']['L']
+                                                      .length;
+                                              item++)
+                                            ingredientsListItem(
                                                 itemRecipeFinder(actualId,
                                                             state.recipesAll)[
                                                         'ingredientes']['L']
-                                                    .length;
-                                            item++)
-                                          ingredientsListItem(itemRecipeFinder(
-                                                  actualId, state.recipesAll)[
-                                              'ingredientes']['L'][item]['S'], _data)
-                                      ],
+                                                    [item]['S'],
+                                                _data)
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              // Preparo
-                              recipeItemMethod(
-                                  "Modo de Preparo:",
-                                  itemRecipeFinder(actualId, state.recipesAll)['preparo']
-                                      ['L'], _data)
-                              //
-                            ],
+                                // Preparo
+                                recipeItemMethod(
+                                    "Modo de Preparo:",
+                                    itemRecipeFinder(actualId,
+                                        state.recipesAll)['preparo']['L'],
+                                    _data)
+                                //
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                )
-              : BodyStart(children: []); // Vazio caso nao tiver data Ok
-        }),
+                    ],
+                  )
+                : BodyStart(children: []); // Vazio caso nao tiver data Ok
+          }),
+        ),
       ),
     );
   }

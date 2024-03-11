@@ -16,6 +16,8 @@ class AllData {
   String _tSensor1 = '000';
   String _tSensor2 = '000';
   String _tAlvo = '000';
+  String _S1Alvo = '000';
+  String _S2Alvo = '000';
 
   String _cert = "";
 
@@ -30,6 +32,8 @@ class AllData {
   get tSensor1 => int.parse(_tSensor1);
   get tSensor2 => int.parse(_tSensor2);
   get tAlvo => int.parse(_tAlvo);
+
+  get getTargetTemp => [_S1Alvo, _S2Alvo];
   
   get getListTemp => [_tGrelha, _tSensor1, _tSensor2, _tAlvo];
 

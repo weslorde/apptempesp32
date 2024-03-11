@@ -11,10 +11,10 @@ List<BottomNavigationBarItem> listNavigation() {
       icon: Icon(Icons.speed),
       label: 'Temperatura',
     ),
-    BottomNavigationBarItem(
+    /*BottomNavigationBarItem(
       icon: Icon(Icons.local_fire_department_outlined),
       label: 'Churrasco',
-    ),
+    ),*/
     BottomNavigationBarItem(
       icon: Icon(Icons.timer_sharp),
       label: 'Alarme',
@@ -56,7 +56,7 @@ class PageIndex {
 
   int get getIndex => _currentIndex;
   int get getNavBotIndex {
-    if (_currentIndex > 5) {
+    if (_currentIndex > 4) {
       return 0;
     } else {
       return _currentIndex;

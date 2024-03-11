@@ -38,7 +38,7 @@ class MotorPage2 extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                blueToggle(status: state.stateActual),
+                blueToggle(status: state.screenMsg),
                 Text(texto),
                 const SizedBox(height: 100),
                 Listener(

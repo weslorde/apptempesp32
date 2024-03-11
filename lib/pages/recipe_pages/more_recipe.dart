@@ -9,7 +9,6 @@ import 'package:apptempesp32/bloc/blue_bloc_files/blue_bloc_events.dart';
 import 'package:apptempesp32/bloc/dynamoDB_bloc_files/dynamo_bloc.dart';
 import 'package:apptempesp32/bloc/dynamoDB_bloc_files/dynamo_bloc_events.dart';
 import 'package:apptempesp32/bloc/dynamoDB_bloc_files/dynamo_state.dart';
-import 'package:apptempesp32/dialogs/close_alert.dart';
 import 'package:apptempesp32/pages/home_page.dart';
 import 'package:apptempesp32/pages/menus/body_top.dart';
 import 'package:apptempesp32/pages/menus/botton_barr.dart';
@@ -20,8 +19,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class RecipeHomePag extends StatelessWidget {
-  const RecipeHomePag({super.key});
+class MoreRecipePag extends StatelessWidget {
+  const MoreRecipePag({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +30,7 @@ class RecipeHomePag extends StatelessWidget {
 
     return PopScope(
       canPop: false,
-      onPopInvoked: (_) => {onBackPressed(context)},
+      onPopInvoked: (_) => {_pageController.setIndex = 4},
       child: Scaffold(
         backgroundColor: _data.darkMode ? Colors.white : HexColor.fromHex('#101010'),
         appBar: const TopBar(),
@@ -53,7 +52,7 @@ class RecipeHomePag extends StatelessWidget {
                         margin: EdgeInsets.symmetric(horizontal: 20),
                         alignment: AlignmentDirectional.centerStart,
                         child: TextFont(
-                            data: "O melhor jeito de \nfazer churrasco",
+                            data: "Todas as receitas",
                             weight: FontWeight.w700,
                             hexColor: _data.darkMode ? "#0B2235" : "#FFFFFF",
                             size: 47,
@@ -63,7 +62,7 @@ class RecipeHomePag extends StatelessWidget {
                       //
                       const SizedBox(height: 25),
                       // Search Field
-                      Container(height: 60, child: barSerch(_data)),
+                      //Container(height: 60, child: barSerch(_data)),
                       //
                       const SizedBox(height: 25),
                       //
@@ -83,8 +82,7 @@ class RecipeHomePag extends StatelessWidget {
                                         CrossAxisAlignment.start,
                                     children: [
                                       // Top Text Title
-                                      topTextCards("Mais acessadas", "Ver tudo",
-                                          _data, _pageController),
+                                      topTextCards2("Favoritas", _data),
                                       //
                                       const SizedBox(height: 20),
                                       // Image Cards
@@ -111,31 +109,37 @@ class RecipeHomePag extends StatelessWidget {
 
                                       const SizedBox(height: 50),
 
-                                      topTextCards("Receitas Recentes",
-                                          "Ver mais", _data, _pageController),
-                                      const SizedBox(height: 20),
+                                      topTextCards2("Mais Receitas", _data),
+                                      const SizedBox(height: 30),
 
                                       SingleChildScrollView(
                                         key: const Key("ScrollReceitasHome"),
-                                        scrollDirection: Axis.horizontal,
+                                        scrollDirection: Axis.vertical,
                                         child: Transform.translate(
                                           // Negative magin to match the function left preset margin with this pag pattern margin
                                           offset: Offset(-12, 0),
-                                          child: Row(
-                                            children: [
-                                              for (int indice = state
-                                                          .recipesAll['Items']
-                                                          .length -
-                                                      1;
-                                                  indice >= 0;
-                                                  indice--)
-                                                recipeCardsGenerator2(
-                                                    state.recipesAll['Items']
-                                                        [indice],
-                                                    _data,
-                                                    _pageController,
-                                                    _data),
-                                            ],
+                                          child: Center(
+                                            child: Column(
+                                              children: [
+                                                for (int indice = state
+                                                            .recipesAll['Items']
+                                                            .length -
+                                                        1;
+                                                    indice >= 0;
+                                                    indice--)
+                                                  Column(children: [
+                                                    cardsMaisAcessadas(
+                                                        state.recipesAll[
+                                                            'Items'][indice],
+                                                        _data,
+                                                        _pageController,
+                                                        _data),
+                                                    SizedBox(
+                                                      height: 40,
+                                                    )
+                                                  ]),
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -219,12 +223,7 @@ Widget barSerch(_data) {
   );
 } // barSerch
 
-Widget topTextCards(
-  String title,
-  String more,
-  _data,
-  PageIndex pageController,
-) {
+Widget topTextCards2(String title, _data) {
   return Padding(
     padding: const EdgeInsets.only(right: 25),
     child: Row(
@@ -237,30 +236,6 @@ Widget topTextCards(
             size: 20,
             height: 28 / 20,
             gFont: GoogleFonts.inter),
-        GestureDetector(
-          onTap: () {
-            pageController.setIndex = 6;
-          },
-          child: Row(
-            children: [
-              TextFont(
-                  data: more,
-                  weight: FontWeight.w600,
-                  hexColor: _data.darkMode ? "#E23E3E" : "#FF5427",
-                  size: 14,
-                  height: 19.6 / 14,
-                  gFont: GoogleFonts.poppins),
-              const SizedBox(width: 3),
-              Icon(
-                Icons.arrow_forward,
-                color: _data.darkMode
-                    ? HexColor.fromHex("#E23E3E")
-                    : HexColor.fromHex("#FF5427"),
-                size: 20,
-              )
-            ],
-          ),
-        )
       ],
     ),
   );
@@ -278,7 +253,7 @@ Widget cardsMaisAcessadas(
           GestureDetector(
             onTap: () {
               data.setSelectedRecipe = recipeItem['receitaid']['S'];
-              pageController.setIndex = 5;
+              pageController.setIndex = 6;
             },
             child: Container(
               margin: EdgeInsets.only(left: 8),
@@ -420,7 +395,7 @@ Widget recipeCardsGenerator2(
       GestureDetector(
         onTap: () {
           data.setSelectedRecipe = recipeItem['receitaid']['S'];
-          pageController.setIndex = 5;
+          pageController.setIndex = 6;
         },
         child: Container(
           margin: const EdgeInsets.only(left: 21),

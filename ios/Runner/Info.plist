@@ -13,7 +13,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>apptempesp32</string>
+	<string>Monzio Smart Churrasco</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -48,15 +48,15 @@
 
 
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Need BLE permission</string>
+	<string>Para aproveitar ao máximo todas as funcionalidades do aplicativo, ative o Bluetooth do seu dispositivo. Não se preocupe, nós respeitamos sua privacidade e não coletamos nenhum dado. O Bluetooth é essencial para estabelecer a conexão com o equipamento e garantir a melhor experiência de uso.</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>Need BLE permission</string>
+	<string>Para aproveitar ao máximo todas as funcionalidades do aplicativo, ative o Bluetooth do seu dispositivo. Não se preocupe, nós respeitamos sua privacidade e não coletamos nenhum dado. O Bluetooth é essencial para estabelecer a conexão com o equipamento e garantir a melhor experiência de uso.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Need Location permission</string>
+	<string>Para garantir uma conexão eficiente com o equipamento, ative a localização apenas durante o uso do aplicativo. Não se preocupe, não coletamos nenhum dado pessoal. A localização é necessária apenas no momento da conexão.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Need Location permission</string>
+	<string>Para garantir uma conexão eficiente com o equipamento, ative a localização apenas durante o uso do aplicativo. Não se preocupe, não coletamos nenhum dado pessoal. A localização é necessária apenas no momento da conexão.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Need Location permission</string>
+	<string>Para garantir uma conexão eficiente com o equipamento, ative a localização apenas durante o uso do aplicativo. Não se preocupe, não coletamos nenhum dado pessoal. A localização é necessária apenas no momento da conexão.</string>
 
 
 </dict>

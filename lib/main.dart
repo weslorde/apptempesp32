@@ -6,7 +6,7 @@ import 'package:apptempesp32/pages/cert_page.dart';
 import 'package:apptempesp32/pages/home_page.dart';
 import 'package:apptempesp32/pages/menus/controller_pages.dart';
 import 'package:apptempesp32/pages/motor_page.dart';
-import 'package:apptempesp32/pages/motor_page_Old.dart';
+import 'package:apptempesp32/pages/recipe_pages/more_recipe.dart';
 import 'package:apptempesp32/pages/recipe_pages/one_recipe_page.dart';
 import 'package:apptempesp32/pages/recipe_pages/home_recipe_page.dart';
 import 'package:apptempesp32/pages/temperature_page.dart';
@@ -92,11 +92,12 @@ class _SelectedPageState extends State<SelectedPage> {
       //List of Pages
       const HomePage(),
       const TemperaturePage(),
-      const MotorPage2(),
+      //const MotorPage2(),
       const AlarmPage(),
-      const MotorPage2(),
+      const MotorPage(),
       const RecipeHomePag(),
       const OneRecipePag(),
+      const MoreRecipePag(),
       const PagCert(),
     ][_index];
   }
