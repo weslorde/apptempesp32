@@ -48,6 +48,7 @@ dependencies:
   internet_connection_checker: ^1.0.0+1
   connectivity_plus: ^5.0.2
   google_fonts: ^4.0.4
+  shared_preferences: ^2.0.8
 
 dev_dependencies:
   flutter_test:
@@ -75,7 +76,8 @@ flutter:
   assets:
       - lib/assets/images/TargetCircular.png
       - lib/assets/images/TargetIcon.png
-      - lib/assets/icons/Icon.png
+      - lib/assets/images/bannerChurrasco.png
+      - lib/assets/images/logoNome.png
       - lib/assets/awsCert/rootCA.pem
       - lib/assets/awsCert/device.pem.crt
       - lib/assets/awsCert/private.pem.key

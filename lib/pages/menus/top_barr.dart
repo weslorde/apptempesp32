@@ -20,7 +20,7 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: _data.darkMode ? HexColor.fromHex("#fafaff") : HexColor.fromHex('#101010'),
       surfaceTintColor: _data.darkMode ? HexColor.fromHex("#fafaff") : HexColor.fromHex('#101010'),
       actions: [
-        PopupMenuButton(
+        /*PopupMenuButton(
           itemBuilder: (context) => [
             const PopupMenuItem(value: 'Cert', child: Text('Certificado')),
             const PopupMenuItem(value: 'Config', child: Text('Configuração')),
@@ -39,7 +39,7 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
                 }
             }
           },
-        ),
+        ),*/
       ],
     );
   }

@@ -1,9 +1,11 @@
+import 'package:apptempesp32/api/data_storege.dart';
 import 'package:apptempesp32/bloc/aws_bloc_files/aws_bloc.dart';
 import 'package:apptempesp32/bloc/blue_bloc_files/blue_bloc.dart';
 import 'package:apptempesp32/bloc/dynamoDB_bloc_files/dynamo_bloc.dart';
 import 'package:apptempesp32/pages/alarm_page.dart';
 import 'package:apptempesp32/pages/cert_page.dart';
 import 'package:apptempesp32/pages/home_page.dart';
+import 'package:apptempesp32/pages/init_banner.dart';
 import 'package:apptempesp32/pages/menus/controller_pages.dart';
 import 'package:apptempesp32/pages/motor_page.dart';
 import 'package:apptempesp32/pages/recipe_pages/more_recipe.dart';
@@ -81,6 +83,12 @@ class _SelectedPageState extends State<SelectedPage> {
 
   @override
   void initState() {
+    final AllData _data = AllData();
+    _data.loadDarkMode().then((_) {
+      Future.delayed(Duration(seconds: 3)).then((_) {
+        attPageState(0);
+      });
+    });
     _index = PageIndex(attPageState: attPageState)
         .getIndex; //Passing fun to PageIndex and obtain inicial index
     super.initState();
@@ -99,6 +107,7 @@ class _SelectedPageState extends State<SelectedPage> {
       const OneRecipePag(),
       const MoreRecipePag(),
       const PagCert(),
+      const BannerInit(),
     ][_index];
   }
 }

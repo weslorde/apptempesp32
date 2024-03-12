@@ -32,7 +32,7 @@ List<BottomNavigationBarItem> listNavigation() {
 
 //Simple Page controller
 class PageIndex {
-  int _currentIndex = 0; //Actual page index
+  int _currentIndex = 8; //Actual page index
   Function(int) _attPageState = (int _) {}; //Fun to updateState
 
   // Creat Singleton

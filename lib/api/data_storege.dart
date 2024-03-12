@@ -3,6 +3,8 @@ import 'dart:ffi';
 import 'package:apptempesp32/api/blue_api.dart';
 import 'dart:math' as math;
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 class AllData {
   static final AllData _shared = AllData._sharedInstance();
   AllData._sharedInstance();
@@ -19,6 +21,8 @@ class AllData {
   String _S1Alvo = '000';
   String _S2Alvo = '000';
 
+  String _motorPos = "2";
+
   String _cert = "";
 
   String _wifiLogin = "";
@@ -26,7 +30,7 @@ class AllData {
 
   String _selectedRecipe = "0";
 
-  get darkMode => (_darkMode);
+  get darkMode => _darkMode;
 
   get tGrelha => int.parse(_tGrelha);
   get tSensor1 => int.parse(_tSensor1);
@@ -34,7 +38,7 @@ class AllData {
   get tAlvo => int.parse(_tAlvo);
 
   get getTargetTemp => [_S1Alvo, _S2Alvo];
-  
+
   get getListTemp => [_tGrelha, _tSensor1, _tSensor2, _tAlvo];
 
   get getCert => _cert;
@@ -44,9 +48,14 @@ class AllData {
 
   get getSelectedRecipe => _selectedRecipe;
 
+  get getMotorPos => int.parse(_motorPos);
+
   ///////////////////////// Set /////////////////////////////////////
 
-  set setDarkMode(mode) => _darkMode = mode;
+  setDarkMode() {
+    _darkMode = !_darkMode;
+    _saveDarkMode();
+  }
 
   set setListTemp(List<String> list) {
     _tGrelha = list[0];
@@ -63,6 +72,8 @@ class AllData {
   set setWifiPassword(wifiPassword) => _wifiPassword = wifiPassword;
 
   set setSelectedRecipe(idRecipe) => _selectedRecipe = idRecipe;
+
+  set setMotorPos(pos) => _motorPos = pos;
 
   setCertBlank() {
     _cert = "";
@@ -113,5 +124,18 @@ class AllData {
     _blue.mandaMensagem("DelAlarme,$name,$indice");
     //attPage2([alarmeGraus,alarmeTimer]);
     _blue.mandaMensagem("Alarme"); // Solicita os valores
+  }
+  
+
+  Future<void> loadDarkMode() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    print("LOAD: ${prefs.getBool('darkMode')}");
+    _darkMode = prefs.getBool('darkMode') ?? false;
+
+  }
+
+  Future<void> _saveDarkMode() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('darkMode', _darkMode);
   }
 }

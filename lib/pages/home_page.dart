@@ -28,8 +28,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void attState() {
     //fun to update current body Page
-    setState(() {
-    });
+    setState(() {});
   }
 
   @override
@@ -73,10 +72,10 @@ class _HomePageState extends State<HomePage> {
                             children: [
                               Row(
                                 children: [
-                                  CircleAvatar(
+                                  const CircleAvatar(
                                     radius: 46 / 2,
                                     backgroundColor: Colors.white,
-                                    child: const Icon(
+                                    child: Icon(
                                         size: 46,
                                         color: Colors.black45,
                                         Icons.supervised_user_circle),
@@ -99,23 +98,25 @@ class _HomePageState extends State<HomePage> {
                               // Icon Dark Mode
                               GestureDetector(
                                 onTap: () {
-                                  _data.setDarkMode = !_data.darkMode;
+                                  _data.setDarkMode();
                                   attState();
                                 },
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 15.0),
-                                  child: _data.darkMode
-                                      ? Icon(
-                                          Icons.dark_mode_outlined,
-                                          color: Colors.black,
-                                        )
-                                      : Icon(
-                                          Icons.light_mode,
-                                          color: Colors.white,
-                                        ),
+                                child: Container(
+                                    height: 40,
+                                    width: 70,
+                                    //color: Colors.amber,
+                                    child: _data.darkMode
+                                        ? const Icon(
+                                            Icons.dark_mode_outlined,
+                                            color: Colors.black,
+                                          )
+                                        : const Icon(
+                                            Icons.light_mode,
+                                            color: Colors.white,
+                                          ),
+                                  ),
                                 ),
-                              ),
+                              
                             ],
                           ),
                         ),

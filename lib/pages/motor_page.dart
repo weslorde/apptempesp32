@@ -33,6 +33,20 @@ class _MotorPageState extends State<MotorPage> {
   final AllData _data = AllData();
   final BlueController _blue = BlueController();
 
+  late Timer _timer;
+  @override
+  void initState() {
+    if (_blue.getblueConnect) {
+      _blue.mandaMensagem("Mpos");
+    }
+    _timer = Timer.periodic(Duration(seconds: 1), (Timer timer) {
+      if (_blue.getblueConnect) {
+        _blue.mandaMensagem("Mpos");
+      }
+    });
+    super.initState();
+  }
+
   @override
   void dispose() {
     _blue.mandaMensagem("Motor,Up,Release");
@@ -85,7 +99,7 @@ class _MotorPageState extends State<MotorPage> {
                 // Blue icon
                 blueToggle(status: state.screenMsg),
 
-                SizedBox(height: 50),
+                SizedBox(height: 100),
 
                 // Motor Position and Buttons
                 Row(
@@ -94,8 +108,7 @@ class _MotorPageState extends State<MotorPage> {
                     //
                     SizedBox(width: 30),
                     // Motor Position
-                    customLinearProgressTemperatureVertical(
-                        s1Steps, 300, _data.getListTemp[1], _data, 0),
+                    customLinearProgressTemperatureVertical(_data),
                     //
                     SizedBox(width: 60),
                     // Move motor Buttons
@@ -122,11 +135,12 @@ class _MotorPageState extends State<MotorPage> {
                               height: 80,
                               width: 80,
                               decoration: BoxDecoration(
+                                color: _data.darkMode ? HexColor.fromHex("#0B2235"): Colors.transparent,
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(10)),
                                 border: Border.all(
                                   width: 1.5,
-                                  color: HexColor.fromHex("#FF5427"),
+                                  color: _data.darkMode ? Colors.transparent : HexColor.fromHex("#FF5427"),
                                 ),
                               ),
                               child: Icon(Icons.add,
@@ -156,17 +170,18 @@ class _MotorPageState extends State<MotorPage> {
                               height: 80,
                               width: 80,
                               decoration: BoxDecoration(
+                                color: _data.darkMode ? HexColor.fromHex("#0B2235"): Colors.transparent,
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(10)),
                                 border: Border.all(
                                   width: 1.5,
-                                  color: HexColor.fromHex("#FF5427"),
+                                  color: _data.darkMode ? Colors.transparent : HexColor.fromHex("#FF5427"),
                                 ),
                               ),
                               child: Icon(Icons.remove,
                                   size: 40,
                                   opticalSize: 60,
-                                  color: Colors.white),
+                                  color: Colors.white ),
                             ),
                           ),
                         ],
@@ -207,10 +222,9 @@ Color customColorTraceProgress(int drawStep, int actualStep, int totalSteps) {
   }
 }
 
-Widget customLinearProgressTemperatureVertical(
-    int actualStep, int totalSteps, String temperature, var _data, int indice) {
-  totalSteps = 100;
-  actualStep = 50; // Min 8, Max 98 [10,25,50,75,98]
+Widget customLinearProgressTemperatureVertical(_data) {
+  int totalSteps = 100;
+  int actualStep = [10,30,55,75,98][_data.getMotorPos]; // Min 8, Max 98 
   return Container(
     height: 300,
     child: Row(

@@ -197,6 +197,10 @@ class BlueController {
       }
     } // End Wifi
 
+    else if (comando == "Mpos") {
+      data.setMotorPos = listRecived[1];
+    }
+
     // Fim Reciver Blue
 
     _funDataRecived();
