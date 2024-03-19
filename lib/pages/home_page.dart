@@ -11,9 +11,12 @@ import 'package:apptempesp32/pages/menus/body_top.dart';
 import 'package:apptempesp32/pages/menus/botton_barr.dart';
 import 'package:apptempesp32/pages/menus/controller_pages.dart';
 import 'package:apptempesp32/pages/menus/top_barr.dart';
+import 'package:apptempesp32/pages/recipe_pages/cards_recipe.dart';
 import 'package:apptempesp32/pages/recipe_pages/home_recipe_page.dart';
 import 'package:apptempesp32/widget/widget_text_font.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -53,192 +56,206 @@ class _HomePageState extends State<HomePage> {
               create: (BuildContext context) => DynamoBloc(),
             )
           ],
-          child: BodyStart(children: [
-            Builder(builder: (context) {
-              final dynamoState = context.watch<DynamoBloc>().state;
-              final blueState = context.watch<BlueBloc>().state;
-              if (dynamoState.stateActual == 'empty') {
-                context.read<DynamoBloc>().add(const CheckData());
-              }
-              return dynamoState.stateActual == 'DataOk'
-                  ? Column(
-                      children: [
-                        // Top spacing need - 20 px to macth
-                        // Start of Perfil Avatar and Text
-                        Container(
-                          margin: const EdgeInsets.only(left: 28, top: 26),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  const CircleAvatar(
-                                    radius: 46 / 2,
-                                    backgroundColor: Colors.white,
-                                    child: Icon(
-                                        size: 46,
-                                        color: Colors.black45,
-                                        Icons.supervised_user_circle),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 15),
-                                    child: Text(
-                                      "Olá!",
-                                      style: GoogleFonts.yanoneKaffeesatz(
-                                          textStyle: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              color: _data.darkMode
-                                                  ? HexColor.fromHex("#303030")
-                                                  : Colors.white,
-                                              fontSize: 33)),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              // Icon Dark Mode
-                              GestureDetector(
-                                onTap: () {
-                                  _data.setDarkMode();
-                                  attState();
-                                },
-                                child: Container(
-                                    height: 40,
-                                    width: 70,
-                                    //color: Colors.amber,
-                                    child: _data.darkMode
-                                        ? const Icon(
-                                            Icons.dark_mode_outlined,
-                                            color: Colors.black,
-                                          )
-                                        : const Icon(
-                                            Icons.light_mode,
-                                            color: Colors.white,
-                                          ),
-                                  ),
-                                ),
-                              
-                            ],
-                          ),
-                        ),
-                        //TEXTO Quadros Acesso Rapido
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              left: 24, right: 24, top: 50),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Seus acessos rápidos",
-                                style: GoogleFonts.yanoneKaffeesatz(
-                                    textStyle: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        color: _data.darkMode
-                                            ? HexColor.fromHex("#690B2235")
-                                            : Colors.white,
-                                        fontSize: 16)),
-                              ),
-                              Row(
-                                children: [
-                                  roundedBarIcons(4, 4, "#FF8D27"),
-                                  roundedBarIcons(4, 20, "#D9D9D9"),
-                                  roundedBarIcons(4, 20, "#D9D9D9"),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        //Quadros Acesso Rapido
-                        Container(
-                          margin: const EdgeInsets.only(top: 15, bottom: 15),
-                          height: 117,
-                          child: SingleChildScrollView(
-                            key: const Key("ScrollAcessoRapido"),
-                            scrollDirection: Axis.horizontal,
-                            child: Container(
-                              margin: const EdgeInsets.only(left: 24),
-                              child: Row(
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {},
-                                    child: homeCardsGenerator(Icons.key,
-                                        "Meus             Dispositivos", 0),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      _pageController.setIndex = 2;
-                                    },
-                                    child: homeCardsGenerator(Icons.timer_sharp,
-                                        "Meus             Alarmes", 1),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      _pageController.setIndex = 7;
-                                    },
-                                    child: homeCardsGenerator(Icons.wifi,
-                                        "Configurar       Wi-fi", 2),
-                                  ),
-                                  //...homeCardsGenerator(
-                                  //    Icons.key, "Meus Dispositivos", 0),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        // Space
-                        SizedBox(height: 40),
-                        //Quadro Receitas
-                        Column(
+          child: Builder(builder: (context) {
+            final dynamoState = context.watch<DynamoBloc>().state;
+            final blueState = context.watch<BlueBloc>().state;
+            if (dynamoState.stateActual == 'empty') {
+              context.read<DynamoBloc>().add(const CheckData());
+            }
+            return dynamoState.stateActual == 'DataOk'
+                ? BodyStart(children: [
+                      // Top spacing need - 20 px to macth
+                      // Start of Perfil Avatar and Text
+                      Container(
+                        margin: const EdgeInsets.only(left: 28, top: 26),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            // TEXTO Quadro Receitas
-                            Container(
-                              margin: EdgeInsets.only(left: 22),
-                              child: TextYanKaf(
-                                data:
-                                    "Deixe seu churrasco                                                                     com ainda mais sabor",
-                                height: 0.87,
-                                weight: FontWeight.w700,
-                                hexColor:
-                                    _data.darkMode ? "#0B2235" : "#FFFFFF",
-                                size: 35,
-                              ),
-                            ),
-                            // Space
-                            SizedBox(
-                              height: 20,
-                            ),
-                            // QUADRO Receitas
-                            SingleChildScrollView(
-                              key: const Key("ScrollReceitasHome"),
-                              scrollDirection: Axis.horizontal,
-                              child: Transform.translate(
-                                // Negative magin to match the function left preset margin with this pag pattern margin
-                                offset: Offset(-40, 0),
-                                child: Row(
-                                  children: [
-                                    for (int indice = dynamoState
-                                                .recipesAll['Items'].length -
-                                            1;
-                                        indice >= 0;
-                                        indice--)
-                                      recipeCardsGenerator3(
-                                          dynamoState.recipesAll['Items']
-                                              [indice],
-                                          _data,
-                                          _pageController,
-                                          _data),
-                                  ],
+                            Row(
+                              children: [
+                                const CircleAvatar(
+                                  radius: 46 / 2,
+                                  backgroundColor: Colors.white,
+                                  child: Icon(
+                                      size: 46,
+                                      color: Colors.black45,
+                                      Icons.supervised_user_circle),
                                 ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 15),
+                                  child: Text(
+                                    "Olá!",
+                                    style: GoogleFonts.yanoneKaffeesatz(
+                                        textStyle: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            color: _data.darkMode
+                                                ? HexColor.fromHex("#303030")
+                                                : Colors.white,
+                                            fontSize: 33)),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            // Icon Dark Mode
+                            GestureDetector(
+                              onTap: () {
+                                _data.setDarkMode();
+                                attState();
+                              },
+                              child: Container(
+                                height: 40,
+                                width: 70,
+                                //color: Colors.amber,
+                                child: _data.darkMode
+                                    ? const Icon(
+                                        Icons.dark_mode_outlined,
+                                        color: Colors.black,
+                                      )
+                                    : const Icon(
+                                        Icons.light_mode,
+                                        color: Colors.white,
+                                      ),
                               ),
                             ),
                           ],
-                        )
-                      ],
-                    )
-                  : Column(children: []); // Vazio caso nao tiver data Ok
-            }),
-            // End of return of Bloc Builder
-          ]),
+                        ),
+                      ),
+                      //Scrool screen
+          
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              //TEXTO Quadros Acesso Rapido
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 24, right: 24, top: 50),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Seus acessos rápidos",
+                                      style: GoogleFonts.yanoneKaffeesatz(
+                                          textStyle: TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                              color: _data.darkMode
+                                                  ? HexColor.fromHex(
+                                                      "#690B2235")
+                                                  : Colors.white,
+                                              fontSize: 16)),
+                                    ),
+                                    Row(
+                                      children: [
+                                        roundedBarIcons(4, 4, "#FF8D27"),
+                                        roundedBarIcons(4, 20, "#D9D9D9"),
+                                        roundedBarIcons(4, 20, "#D9D9D9"),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              //Quadros Acesso Rapido
+                              Container(
+                                margin:
+                                    const EdgeInsets.only(top: 15, bottom: 15),
+                                height: 117,
+                                child: SingleChildScrollView(
+                                  key: const Key("ScrollAcessoRapido"),
+                                  scrollDirection: Axis.horizontal,
+                                  child: Container(
+                                    margin: const EdgeInsets.only(left: 24),
+                                    child: Row(
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () {},
+                                          child: homeCardsGenerator(
+                                              Icons.key,
+                                              "Meus             Dispositivos",
+                                              0),
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            _pageController.setIndex = 2;
+                                          },
+                                          child: homeCardsGenerator(
+                                              Icons.timer_sharp,
+                                              "Meus             Alarmes",
+                                              1),
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            _pageController.setIndex = 7;
+                                          },
+                                          child: homeCardsGenerator(Icons.wifi,
+                                              "Configurar       Wi-fi", 2),
+                                        ),
+                                        //...homeCardsGenerator(
+                                        //    Icons.key, "Meus Dispositivos", 0),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                        
+                              // Space
+                              SizedBox(height: 40),
+                              //Quadro Receitas
+                              Column(
+                                children: [
+                                  // TEXTO Quadro Receitas
+                                  Container(
+                                    margin: EdgeInsets.only(left: 22),
+                                    child: TextYanKaf(
+                                      data:
+                                          "Deixe seu churrasco                                                                     com ainda mais sabor",
+                                      height: 0.87,
+                                      weight: FontWeight.w700,
+                                      hexColor: _data.darkMode
+                                          ? "#0B2235"
+                                          : "#FFFFFF",
+                                      size: 35,
+                                    ),
+                                  ),
+                                  // Space
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  // QUADRO Receitas
+                                  SingleChildScrollView(
+                                    key: const Key("ScrollReceitasHome"),
+                                    scrollDirection: Axis.horizontal,
+                                    child: Transform.translate(
+                                      // Negative magin to match the function left preset margin with this pag pattern margin
+                                      offset: Offset(-40, 0),
+                                      child: Row(
+                                        children: [
+                                          for (int indice = dynamoState
+                                                      .recipesAll['Items']
+                                                      .length -
+                                                  1;
+                                              indice >= 0;
+                                              indice--)
+                                            recipeCardsGenerator3(
+                                                dynamoState.recipesAll['Items']
+                                                    [indice],
+                                                _data,
+                                                _pageController,
+                                                _data),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  )
+                : Column(children: []); // Vazio caso nao tiver data Ok
+          }),
         ),
       ),
     );
