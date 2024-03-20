@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:apptempesp32/api/data_storege.dart';
@@ -24,6 +25,7 @@ class BlueController {
   bool _blueIsScan = false;
   bool _blueLinked = false;
   bool _blueConnect = false;
+  bool _blueListenNotify = false;
 
   bool _toggleBool = false;
 
@@ -37,7 +39,7 @@ class BlueController {
   BlueController._sharedInstance();
   factory BlueController({Function(int)? attPageState}) => _shared;
 
-  set setScreenMsg(String msg) =>  _screenMsg = msg;
+  set setScreenMsg(String msg) => _screenMsg = msg;
   set setblueSup(bool logic) => _blueSuported = logic;
   set setBlueIsOn(bool logic) => _blueIsOn = logic;
   set setBlueTurningOn(bool logic) => _blueTurningOn = logic;
@@ -52,7 +54,7 @@ class BlueController {
   set setfunDataRecived(Function fun) => _funDataRecived = fun;
   set setfunCertState(Function(int) fun) => _funCertState = fun;
 
-  String get getScreenMsg =>  _screenMsg;
+  String get getScreenMsg => _screenMsg;
   bool get getBlueSup => _blueSuported;
   bool get getBlueIsOn => _blueIsOn;
   bool get getBlueTurningOn => _blueTurningOn;
@@ -94,12 +96,14 @@ class BlueController {
 
   void criaLeitor() async {
     if (_blueCharacteristicToRecive == null) {
-      print("EEEEEEEEEEERRRRRRRRRRRRRRRRRRROOOOOOOOOOOORRRRRRRRRRRRRRR");
-    } else {
+      print("ERRRRROOOOO AO CRIAR LEITOR BLUE_API");
+    } else if (!_blueListenNotify) {
       _blueCharacteristicToRecive?.onValueReceived.listen((value) =>
           blueNotify(value)); //Creat listen using function blueNotify
-      await _blueCharacteristicToRecive?.setNotifyValue(true);
+
+      _blueListenNotify = true;
     }
+    await _blueCharacteristicToRecive?.setNotifyValue(true);
   }
 
   //Fun to recive All Blue DATA
@@ -153,8 +157,7 @@ class BlueController {
     } // End Temp
     else if (comando == "TempOk") {
       mandaMensagem("Alarme");
-    }
-    else if (comando == "AlarmZero") {
+    } else if (comando == "AlarmZero") {
       data.zeraAlarms();
     } // End AlarmZero
     else if (comando == "AlarmG") {
@@ -168,20 +171,47 @@ class BlueController {
     } // End AlarmEND
     else if (comando == "NotT") {
       if (listRecived[1] == "0") {
-        NotificationService().showNotification(CustomNotification(id: 1, title: 'Alarme', body: 'Alarme de ${listRecived[2]} minutos concluído', payload: 'GoAlarmes'));
+        NotificationService().showNotification(CustomNotification(
+            id: 1,
+            title: 'Alarme',
+            body: 'Alarme de ${listRecived[2]} minutos concluído',
+            payload: 'GoAlarmes'));
       } else if (listRecived[1] == "1") {
-        NotificationService().showNotification(CustomNotification(id: 1, title: 'Alarme', body: 'Alarme de ${listRecived[1]} hora e ${listRecived[2]} minutos concluído', payload: 'GoAlarmes'));
+        NotificationService().showNotification(CustomNotification(
+            id: 1,
+            title: 'Alarme',
+            body:
+                'Alarme de ${listRecived[1]} hora e ${listRecived[2]} minutos concluído',
+            payload: 'GoAlarmes'));
       } else {
-        NotificationService().showNotification(CustomNotification(id: 1, title: 'Alarme', body: 'Alarme de ${listRecived[1]} horas e ${listRecived[2]} minutos concluído', payload: 'GoAlarmes'));
+        NotificationService().showNotification(CustomNotification(
+            id: 1,
+            title: 'Alarme',
+            body:
+                'Alarme de ${listRecived[1]} horas e ${listRecived[2]} minutos concluído',
+            payload: 'GoAlarmes'));
       }
     } // End NotT
     else if (comando == "NotG") {
       if (listRecived[1] == "Grelha") {
-        NotificationService().showNotification(CustomNotification(id: 1, title: 'Temperatura da ${listRecived[1]}', body: 'Temperatura da ${listRecived[1]} alcançou ${listRecived[2]} graus', payload: 'GoAlarmes'));
+        NotificationService().showNotification(CustomNotification(
+            id: 1,
+            title: 'Temperatura da ${listRecived[1]}',
+            body:
+                'Temperatura da ${listRecived[1]} alcançou ${listRecived[2]} graus',
+            payload: 'GoAlarmes'));
       } else if (listRecived[1] == "Sensor1") {
-        NotificationService().showNotification(CustomNotification(id: 1, title: 'Temperatura do Sensor 1', body: 'Temperatura do Sensor 1 alcançou ${listRecived[2]} graus', payload: 'GoAlarmes'));
+        NotificationService().showNotification(CustomNotification(
+            id: 1,
+            title: 'Temperatura do Sensor 1',
+            body: 'Temperatura do Sensor 1 alcançou ${listRecived[2]} graus',
+            payload: 'GoAlarmes'));
       } else if (listRecived[1] == "Sensor2") {
-        NotificationService().showNotification(CustomNotification(id: 1, title: 'Temperatura do Sensor 2', body: 'Temperatura do Sensor 2 alcançou ${listRecived[2]} graus', payload: 'GoAlarmes'));
+        NotificationService().showNotification(CustomNotification(
+            id: 1,
+            title: 'Temperatura do Sensor 2',
+            body: 'Temperatura do Sensor 2 alcançou ${listRecived[2]} graus',
+            payload: 'GoAlarmes'));
       }
     } // End NotG
     else if (comando == "DelOk") {
@@ -210,7 +240,7 @@ class BlueController {
   void mandaMensagem(String msg) async {
     if (_blueCharacteristicToSend == null) {
       print("EEEEEEEEEEERRRRRRRRRRRRRRRRRRROOOOOOOOOOOORRRRRRRRRRRRRRR");
-    } else {
+    } else if(_blueLinked) {
       _blueCharacteristicToSend!.write(utf8.encode(msg)); //Só para mandar
     }
   }

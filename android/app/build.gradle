@@ -29,7 +29,7 @@ if (keystorePropertiesFile.exists()){
 }
 
 android {
-    namespace "com.makermais.apptempesp32"
+    namespace "com.example.apptempesp32"
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 

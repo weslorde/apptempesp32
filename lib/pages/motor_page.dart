@@ -53,6 +53,7 @@ class _MotorPageState extends State<MotorPage> {
     _blue.mandaMensagem("Motor,Up,Release");
     sleep(Durations.medium1);
     _blue.mandaMensagem("Motor,Down,Release");
+    _timer.cancel();
     super.dispose();
   }
 
