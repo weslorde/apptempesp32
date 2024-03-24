@@ -3,7 +3,7 @@ import 'package:apptempesp32/bloc/aws_bloc_files/aws_bloc.dart';
 import 'package:apptempesp32/bloc/blue_bloc_files/blue_bloc.dart';
 import 'package:apptempesp32/bloc/dynamoDB_bloc_files/dynamo_bloc.dart';
 import 'package:apptempesp32/pages/alarm_page.dart';
-import 'package:apptempesp32/pages/cert_page.dart';
+import 'package:apptempesp32/pages/cert_page2.dart';
 import 'package:apptempesp32/pages/home_page.dart';
 import 'package:apptempesp32/pages/init_banner.dart';
 import 'package:apptempesp32/pages/menus/controller_pages.dart';

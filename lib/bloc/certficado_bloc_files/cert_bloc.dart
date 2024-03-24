@@ -44,8 +44,7 @@ class CertBloc extends Bloc<CertEvent, CertState> {
     //
     on<InitWifiToBoard>((event, emit) async {
       emitAll(stateActual: 'InitWifiToBoard');
-      add(const WifiForm());
-      
+      add(const WifiCheckBlue());
     });
 
     on<WifiCheckBlue>((event, emit) async {
@@ -65,9 +64,7 @@ class CertBloc extends Bloc<CertEvent, CertState> {
 
     on<WifiForm>((event, emit) async {
       emitAll(stateActual: 'WifiForm');
-      
     });
-
 
     //
     // Alexa link Email and Disp Flow
@@ -81,6 +78,7 @@ class CertBloc extends Bloc<CertEvent, CertState> {
     //
     on<InitCertFiles>((event, emit) async {
       emitAll(stateActual: 'InitCertFiles');
+      add(const CertCheckFiles());
     });
 
     on<CertCheckFiles>((event, emit) async {
