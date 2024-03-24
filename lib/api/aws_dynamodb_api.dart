@@ -73,8 +73,9 @@ class AwsDynamoDB {
   }
 
   Future<void> getAllData() async {
-    var url = Uri.https(
-        'h2k2lfbpqioi443tmo3uiqcamm0scrvi.lambda-url.sa-east-1.on.aws',
+    var url = Uri.https( 
+        //'h2k2lfbpqioi443tmo3uiqcamm0scrvi.lambda-url.sa-east-1.on.aws', // Conta antiga
+        'hx2dsfyi7oiej24l23aylzkkzu0bcdiy.lambda-url.sa-east-1.on.aws', // Conta nova
         '',
         {'fun': 'getAll'});
     final response = await http.get(url);
@@ -91,7 +92,8 @@ class AwsDynamoDB {
 
   Future<void> getById(String recipeId) async {
     var url = Uri.https(
-        'h2k2lfbpqioi443tmo3uiqcamm0scrvi.lambda-url.sa-east-1.on.aws',
+        //'h2k2lfbpqioi443tmo3uiqcamm0scrvi.lambda-url.sa-east-1.on.aws', Conta Antiga
+        'hx2dsfyi7oiej24l23aylzkkzu0bcdiy.lambda-url.sa-east-1.on.aws', // Conta Nova
         '',
         {'fun': 'getById', 'id': recipeId});
     final response = await http.get(url);

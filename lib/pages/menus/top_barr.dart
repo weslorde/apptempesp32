@@ -8,7 +8,7 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
   const TopBar({super.key});
 
   @override
-  Size get preferredSize => const Size.fromHeight(60);
+  Size get preferredSize => const Size.fromHeight(20);
   
 
   @override

@@ -74,6 +74,7 @@ class SelectedPage extends StatefulWidget {
 
 class _SelectedPageState extends State<SelectedPage> {
   late int _index;
+  final PageIndex _pageController = PageIndex();
   void attPageState(int index) {
     //fun to update current body Page
     setState(() {
@@ -84,9 +85,10 @@ class _SelectedPageState extends State<SelectedPage> {
   @override
   void initState() {
     final AllData _data = AllData();
+    _data.loadFavoriteIdList();
     _data.loadDarkMode().then((_) {
       Future.delayed(Duration(seconds: 3)).then((_) {
-        attPageState(0);
+        _pageController.setIndex = 0;
       });
     });
     _index = PageIndex(attPageState: attPageState)

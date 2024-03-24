@@ -16,6 +16,7 @@ import 'package:apptempesp32/pages/menus/botton_barr.dart';
 import 'package:apptempesp32/pages/menus/top_barr.dart';
 import 'package:apptempesp32/widget/widget_blue_toggle.dart';
 import 'package:apptempesp32/widget/widget_text_font.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -52,6 +53,7 @@ class _MotorPageState extends State<MotorPage> {
     _blue.mandaMensagem("Motor,Up,Release");
     sleep(Durations.medium1);
     _blue.mandaMensagem("Motor,Down,Release");
+    _timer.cancel();
     super.dispose();
   }
 
@@ -99,95 +101,103 @@ class _MotorPageState extends State<MotorPage> {
                 // Blue icon
                 blueToggle(status: state.screenMsg),
 
-                SizedBox(height: 100),
+                SizedBox(height: 10),
 
                 // Motor Position and Buttons
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    //
-                    SizedBox(width: 30),
-                    // Motor Position
-                    customLinearProgressTemperatureVertical(_data),
-                    //
-                    SizedBox(width: 60),
-                    // Move motor Buttons
-                    Container(
-                      child: Column(
+                Expanded(
+                  child: Center(
+                    child: Container(
+                      height: 300,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          // Plus Button
-                          GestureDetector(
-                            onLongPress: () {
-                              // On press start motor Up
-                              _blue.mandaMensagem("Motor,Up,Press");
-                              print("1");
-                            },
-                            onLongPressUp: () {
-                              // On release stop motor
-                              _blue.mandaMensagem("Motor,Up,Release");
-                              print("2");
-                            },
-                            onLongPressCancel: () {
-                              // On "problem" stop motor
-                              _blue.mandaMensagem("Motor,Up,Release");
-                            },
-                            child: Container(
-                              height: 80,
-                              width: 80,
-                              decoration: BoxDecoration(
-                                color: _data.darkMode ? HexColor.fromHex("#0B2235"): Colors.transparent,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10)),
-                                border: Border.all(
-                                  width: 1.5,
-                                  color: _data.darkMode ? Colors.transparent : HexColor.fromHex("#FF5427"),
+                          //
+                          SizedBox(width: 30),
+                          // Motor Position
+                          customLinearProgressTemperatureVertical(_data),
+                          //
+                          SizedBox(width: 60),
+                          // Move motor Buttons
+                          Container(
+                            child: Column(
+                              children: [
+                                SizedBox(height: 40,),
+                                // Plus Button
+                                GestureDetector(
+                                  onLongPress: () {
+                                    // On press start motor Up
+                                    _blue.mandaMensagem("Motor,Up,Press");
+                                    print("1");
+                                  },
+                                  onLongPressUp: () {
+                                    // On release stop motor
+                                    _blue.mandaMensagem("Motor,Up,Release");
+                                    print("2");
+                                  },
+                                  onLongPressCancel: () {
+                                    // On "problem" stop motor
+                                    _blue.mandaMensagem("Motor,Up,Release");
+                                  },
+                                  child: Container(
+                                    height: 80,
+                                    width: 80,
+                                    decoration: BoxDecoration(
+                                      color: _data.darkMode ? HexColor.fromHex("#0B2235"): Colors.transparent,
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(10)),
+                                      border: Border.all(
+                                        width: 1.5,
+                                        color: _data.darkMode ? Colors.transparent : HexColor.fromHex("#FF5427"),
+                                      ),
+                                    ),
+                                    child: Icon(Icons.add,
+                                        size: 40,
+                                        opticalSize: 60,
+                                        color: Colors.white),
+                                  ),
                                 ),
-                              ),
-                              child: Icon(Icons.add,
-                                  size: 40,
-                                  opticalSize: 60,
-                                  color: Colors.white),
-                            ),
-                          ),
-                          SizedBox(height: 60),
-                          // Minus Button
-                          GestureDetector(
-                            onLongPress: () {
-                              // On press start motor Up
-                              _blue.mandaMensagem("Motor,Down,Press");
-                              print("1");
-                            },
-                            onLongPressUp: () {
-                              // On release stop motor
-                              _blue.mandaMensagem("Motor,Down,Release");
-                              print("2");
-                            },
-                            onLongPressCancel: () {
-                              // On "problem" stop motor
-                              _blue.mandaMensagem("Motor,Down,Release");
-                            },
-                            child: Container(
-                              height: 80,
-                              width: 80,
-                              decoration: BoxDecoration(
-                                color: _data.darkMode ? HexColor.fromHex("#0B2235"): Colors.transparent,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10)),
-                                border: Border.all(
-                                  width: 1.5,
-                                  color: _data.darkMode ? Colors.transparent : HexColor.fromHex("#FF5427"),
+                                SizedBox(height: 60),
+                                // Minus Button
+                                GestureDetector(
+                                  onLongPress: () {
+                                    // On press start motor Up
+                                    _blue.mandaMensagem("Motor,Down,Press");
+                                    print("1");
+                                  },
+                                  onLongPressUp: () {
+                                    // On release stop motor
+                                    _blue.mandaMensagem("Motor,Down,Release");
+                                    print("2");
+                                  },
+                                  onLongPressCancel: () {
+                                    // On "problem" stop motor
+                                    _blue.mandaMensagem("Motor,Down,Release");
+                                  },
+                                  child: Container(
+                                    height: 80,
+                                    width: 80,
+                                    decoration: BoxDecoration(
+                                      color: _data.darkMode ? HexColor.fromHex("#0B2235"): Colors.transparent,
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(10)),
+                                      border: Border.all(
+                                        width: 1.5,
+                                        color: _data.darkMode ? Colors.transparent : HexColor.fromHex("#FF5427"),
+                                      ),
+                                    ),
+                                    child: Icon(Icons.remove,
+                                        size: 40,
+                                        opticalSize: 60,
+                                        color: Colors.white ),
+                                  ),
                                 ),
-                              ),
-                              child: Icon(Icons.remove,
-                                  size: 40,
-                                  opticalSize: 60,
-                                  color: Colors.white ),
+                              ],
                             ),
                           ),
                         ],
                       ),
                     ),
-                  ],
+                  ),
                 ),
 
                 //

@@ -14,25 +14,44 @@ import 'package:apptempesp32/pages/menus/body_top.dart';
 import 'package:apptempesp32/pages/menus/botton_barr.dart';
 import 'package:apptempesp32/pages/menus/controller_pages.dart';
 import 'package:apptempesp32/pages/menus/top_barr.dart';
+import 'package:apptempesp32/pages/recipe_pages/cards_recipe.dart';
 import 'package:apptempesp32/widget/widget_text_font.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class MoreRecipePag extends StatelessWidget {
+class MoreRecipePag extends StatefulWidget {
   const MoreRecipePag({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final AllData _data = AllData();
-    final BlueController _blue = BlueController();
-    final PageIndex _pageController = PageIndex();
+  State<MoreRecipePag> createState() => _MoreRecipePagState();
+}
 
+class _MoreRecipePagState extends State<MoreRecipePag> {
+  final AllData _data = AllData();
+  final BlueController _blue = BlueController();
+  final PageIndex _pageController = PageIndex();
+
+  @override
+  void initState() {
+    _data.loadFavoriteIdList();
+    _data.setFavoritesUpdate(favoritesUpdate);
+    super.initState();
+  }
+
+  void favoritesUpdate() {
+    setState(() {
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
       onPopInvoked: (_) => {_pageController.setIndex = 4},
       child: Scaffold(
-        backgroundColor: _data.darkMode ? Colors.white : HexColor.fromHex('#101010'),
+        backgroundColor:
+            _data.darkMode ? Colors.white : HexColor.fromHex('#101010'),
         appBar: const TopBar(),
         //
         bottomNavigationBar: BottomBar(),
@@ -91,18 +110,19 @@ class MoreRecipePag extends StatelessWidget {
                                         child: Row(
                                           children: [
                                             // For creat all the cards on Mais acessadas
+
                                             for (int indice = state
                                                         .recipesAll['Items']
                                                         .length -
                                                     1;
                                                 indice >= 0;
                                                 indice--)
-                                              cardsMaisAcessadas(
+                                              isInFavorites(state.recipesAll['Items'][indice], _data) ? cardsMaisAcessadas(
                                                   state.recipesAll['Items']
                                                       [indice],
                                                   _data,
-                                                  _pageController,
-                                                  _data),
+                                                  _pageController)
+                                              : SizedBox(),
                                           ],
                                         ),
                                       ),
@@ -127,17 +147,17 @@ class MoreRecipePag extends StatelessWidget {
                                                         1;
                                                     indice >= 0;
                                                     indice--)
-                                                  Column(children: [
-                                                    cardsMaisAcessadas(
-                                                        state.recipesAll[
-                                                            'Items'][indice],
-                                                        _data,
-                                                        _pageController,
-                                                        _data),
-                                                    SizedBox(
-                                                      height: 40,
-                                                    )
-                                                  ]),
+                                                  Column(
+                                                    children: [
+                                                      cardsMaisAcessadas(
+                                                          state.recipesAll[
+                                                              'Items'][indice],
+                                                          _data,
+                                                          _pageController),
+                                                      //
+                                                      SizedBox(height: 40)
+                                                    ],
+                                                  ),
                                               ],
                                             ),
                                           ),
@@ -163,66 +183,6 @@ class MoreRecipePag extends StatelessWidget {
   }
 }
 
-Widget barSerch(_data) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 25.0),
-    child: SearchAnchor(
-        builder: (BuildContext context, SearchController controller) {
-      return SearchBar(
-        hintText: "Procurar Receitas",
-        textStyle: MaterialStateTextStyle.resolveWith(
-          (states) => GoogleFonts.poppins(
-            textStyle: TextStyle(
-              fontWeight: FontWeight.w400,
-              fontSize: 14,
-              height: 19.6 / 14,
-              color: HexColor.fromHex("#C1C1C1"),
-            ),
-          ),
-        ),
-        backgroundColor: MaterialStateColor.resolveWith(
-          (states) => _data.darkMode
-              ? HexColor.fromHex("#ffffffff")
-              : HexColor.fromHex("#0Cffffff"),
-        ),
-        surfaceTintColor: MaterialStateColor.resolveWith(
-          (states) => _data.darkMode
-              ? HexColor.fromHex("#ffffffff")
-              : HexColor.fromHex("#0Cffffff"),
-        ),
-        shape: MaterialStateProperty.all(
-          const ContinuousRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-          ),
-        ),
-        elevation: MaterialStateProperty.all(0),
-        side: MaterialStateProperty.all(BorderSide(
-            color: _data.darkMode
-                ? HexColor.fromHex("#D9D9D9")
-                : HexColor.fromHex("#00D9D9D9"))),
-        controller: controller,
-        padding: const MaterialStatePropertyAll<EdgeInsets>(
-            EdgeInsets.symmetric(horizontal: 16.0)),
-        onTap: () {
-          controller.openView();
-        },
-        onChanged: (_) {
-          controller.openView();
-        },
-        leading: Icon(Icons.search, color: HexColor.fromHex("#D9D9D9")),
-      );
-    }, suggestionsBuilder: (BuildContext context, SearchController controller) {
-      return List<ListTile>.generate(5, (int index) {
-        final String item = 'item $index';
-        return ListTile(
-          title: Text(item),
-          onTap: () {},
-        );
-      });
-    }),
-  );
-} // barSerch
-
 Widget topTextCards2(String title, _data) {
   return Padding(
     padding: const EdgeInsets.only(right: 25),
@@ -241,8 +201,9 @@ Widget topTextCards2(String title, _data) {
   );
 }
 
+/*
 Widget cardsMaisAcessadas(
-    dynamic recipeItem, AllData data, PageIndex pageController, _data) {
+    dynamic recipeItem, AllData _data, PageIndex pageController) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
@@ -252,7 +213,7 @@ Widget cardsMaisAcessadas(
           // Image Container
           GestureDetector(
             onTap: () {
-              data.setSelectedRecipe = recipeItem['receitaid']['S'];
+              _data.setSelectedRecipe = recipeItem['receitaid']['S'];
               pageController.setIndex = 6;
             },
             child: Container(
@@ -386,6 +347,7 @@ Widget cardsMaisAcessadas(
     ],
   );
 }
+*/
 
 Widget recipeCardsGenerator2(
     dynamic recipeItem, AllData data, PageIndex pageController, _data) {
@@ -461,4 +423,11 @@ String calcDeltaTime(String dataTime) {
       return "há ${deltaWeek} semanas";
     }
   }
+}
+
+bool isInFavorites(_recipeData, _data) {
+  // state.recipesAll['Items']
+  var IdFavorites = _data.getFavoriteIdList;
+  bool containsValue = IdFavorites.contains(_recipeData['receitaid']['S']);
+  return containsValue;
 }

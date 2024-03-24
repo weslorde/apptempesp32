@@ -15,7 +15,9 @@ import 'package:apptempesp32/pages/menus/botton_barr.dart';
 import 'package:apptempesp32/pages/menus/top_barr.dart';
 import 'package:apptempesp32/widget/widget_blue_toggle.dart';
 import 'package:apptempesp32/widget/widget_text_font.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
@@ -57,7 +59,8 @@ class _TemperaturePageState extends State<TemperaturePage> {
       canPop: false,
       onPopInvoked: (_) => {onBackPressed(context)},
       child: Scaffold(
-        backgroundColor: _data.darkMode ? Colors.white : HexColor.fromHex('#101010'),
+        backgroundColor:
+            _data.darkMode ? Colors.white : HexColor.fromHex('#101010'),
         appBar: const TopBar(),
         //
         bottomNavigationBar: BottomBar(),
@@ -90,207 +93,220 @@ class _TemperaturePageState extends State<TemperaturePage> {
                       gFont: GoogleFonts.yanoneKaffeesatz),
                 ),
                 //
-                SizedBox(height: 5),
-                // Blue icon
-                blueToggle(status: state.screenMsg),
+                SizedBox(height: 10),
                 //
-                SizedBox(height: 5),
-                //
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    // Shadow circle
-                    Container(
-                      width: 210,
-                      height: 210,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(210 / 2),
-                        boxShadow: [
-                          BoxShadow(
-                            color: _data.darkMode
-                                ? HexColor.fromHex("#E6ECF2")
-                                : Colors.black,
-                            blurRadius: 14.4,
-                            offset:
-                                Offset(7.2, 7.2), // changes position of shadow
-                          ),
-                          BoxShadow(
-                            color: _data.darkMode
-                                ? HexColor.fromHex("#80FFFFFF")
-                                : Colors.black,
-                            blurRadius: 14.4,
-                            offset: Offset(
-                                -7.2, -7.2), // changes position of shadow
-                          ),
-                        ],
-                      ),
-                    ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            //
+                            SizedBox(height: 5),
+                            //
+                            // Shadow circle
+                            Container(
+                              width: 210,
+                              height: 210,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(210 / 2),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: _data.darkMode
+                                        ? HexColor.fromHex("#E6ECF2")
+                                        : HexColor.fromHex("7D000000"),
+                                    blurRadius: 14.4,
+                                    offset: Offset(
+                                        7.2, 7.2), // changes position of shadow
+                                  ),
+                                  BoxShadow(
+                                    color: _data.darkMode
+                                        ? HexColor.fromHex("#80FFFFFF")
+                                        : HexColor.fromHex("7D000000"),
+                                    blurRadius: 14.4,
+                                    offset: Offset(-7.2,
+                                        -7.2), // changes position of shadow
+                                  ),
+                                ],
+                              ),
+                            ),
 
-                    // Mult Trace Target indicator
-                    CircularStepProgressIndicator(
-                      arcSize: pi * 4 / 3,
-                      startingAngle: 2 * pi / 3,
-                      padding: pi / 35,
-                      totalSteps: 40,
-                      stepSize: 12,
-                      selectedStepSize: 12,
-                      currentStep: targetSteps,
-                      width: 260,
-                      height: 260,
-                      customColor: (drawStep) {
-                        return customColorTraceProgress(
-                            drawStep, targetSteps, 40);
-                      },
-                    ),
+                            // Mult Trace Target indicator
+                            CircularStepProgressIndicator(
+                              arcSize: pi * 4 / 3,
+                              startingAngle: 2 * pi / 3,
+                              padding: pi / 35,
+                              totalSteps: 40,
+                              stepSize: 12,
+                              selectedStepSize: 12,
+                              currentStep: targetSteps,
+                              width: 260,
+                              height: 260,
+                              customColor: (drawStep) {
+                                return customColorTraceProgress(
+                                    drawStep, targetSteps, 40);
+                              },
+                            ),
 
-                    // Full circle temperature indicator
-                    CircularStepProgressIndicator(
-                      customColor: (drawStep) {
-                        return customColorCircularProgress(
-                            drawStep, grelhaSteps, 330, _data);
-                      },
-                      totalSteps: 500,
-                      currentStep: grelhaSteps,
-                      stepSize: 70 / 2,
-                      selectedStepSize: 70 / 2,
-                      padding: 0,
-                      startingAngle: -2 * pi / 3,
-                      width: 210,
-                      height: 210,
-                      roundedCap: (_, __) => true,
-                    ),
-                    // End Mark White Circle
-                    Transform.rotate(
-                      angle: grelhaSteps * 2 * pi / 500 -
-                          pi /
-                              6, // step * 2 * pi / totalSteps of circular temperature - offset of startingAngle (pi/6 = pi*2/3 - 1/2 [1/2 is the start angle of Transform.rotate])
-                      child: Container(
-                        height: 260 -
-                            25 -
-                            70 /
-                                2, // Size of circular temperature indicator - size of this mark circle - StepSize of circular temperature
-                        width: 260 - 25 - 70 / 2,
-                        alignment: Alignment.centerLeft,
-                        child: Container(
-                          width: 25,
-                          height: 25,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(25),
-                              color: Colors.white),
-                        ),
-                      ),
-                    ),
+                            // Full circle temperature indicator
+                            CircularStepProgressIndicator(
+                              customColor: (drawStep) {
+                                return customColorCircularProgress(
+                                    drawStep, grelhaSteps, 330, _data);
+                              },
+                              totalSteps: 500,
+                              currentStep: grelhaSteps,
+                              stepSize: 70 / 2,
+                              selectedStepSize: 70 / 2,
+                              padding: 0,
+                              startingAngle: -2 * pi / 3,
+                              width: 210,
+                              height: 210,
+                              roundedCap: (_, __) => true,
+                            ),
+                            // End Mark White Circle
+                            Transform.rotate(
+                              angle: grelhaSteps * 2 * pi / 500 -
+                                  pi /
+                                      6, // step * 2 * pi / totalSteps of circular temperature - offset of startingAngle (pi/6 = pi*2/3 - 1/2 [1/2 is the start angle of Transform.rotate])
+                              child: Container(
+                                height: 260 -
+                                    25 -
+                                    70 /
+                                        2, // Size of circular temperature indicator - size of this mark circle - StepSize of circular temperature
+                                width: 260 - 25 - 70 / 2,
+                                alignment: Alignment.centerLeft,
+                                child: Container(
+                                  width: 25,
+                                  height: 25,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(25),
+                                      color: Colors.white),
+                                ),
+                              ),
+                            ),
 
-                    // Internal Circle (Color + Shadow)
-                    Container(
-                      width: 210 - 70,
-                      height: 210 - 70,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.centerRight,
-                          end: Alignment.centerLeft,
-                          colors: <Color>[
-                            HexColor.fromHex("#eaf0f6"),
-                            HexColor.fromHex("#eaeff5"),
+                            // Internal Circle (Color + Shadow)
+                            Container(
+                              width: 210 - 70,
+                              height: 210 - 70,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.centerRight,
+                                  end: Alignment.centerLeft,
+                                  colors: <Color>[
+                                    HexColor.fromHex("#eaf0f6"),
+                                    HexColor.fromHex("#eaeff5"),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(210 / 2),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: HexColor.fromHex("80747D8C"),
+                                    blurRadius: 45.2,
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            // Inside of temperature circle (Values and Icon)
+                            Container(
+                              child: Column(
+                                children: [
+                                  Icon(
+                                    Icons.task_alt_sharp,
+                                    color: HexColor.fromHex("#FF5427"),
+                                    size: 18,
+                                  ),
+                                  SizedBox(height: 3),
+                                  TextFont(
+                                      data: "${_data.getListTemp[1]}º",
+                                      weight: FontWeight.w600,
+                                      hexColor: "#130F26",
+                                      size: 36,
+                                      height: 44 / 36,
+                                      gFont: GoogleFonts.inter),
+                                  SizedBox(height: 3),
+                                  TextFont(
+                                      data: "${_data.getListTemp[3]}",
+                                      weight: FontWeight.w400,
+                                      hexColor: "#130F26",
+                                      size: 14.5,
+                                      height: 17.5 / 14.5,
+                                      gFont: GoogleFonts.inter)
+                                ],
+                              ),
+                            ),
+                            //
+                            // Blue icon
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 210),
+                              child: blueToggle(status: state.screenMsg),
+                            ),
+                            // End of Stack
                           ],
                         ),
-                        borderRadius: BorderRadius.circular(210 / 2),
-                        boxShadow: [
-                          BoxShadow(
-                            color: HexColor.fromHex("80747D8C"),
-                            blurRadius: 45.2,
-                          ),
-                        ],
-                      ),
-                    ),
 
-                    // Inside of temperature circle (Values and Icon)
-                    Container(
-                      child: Column(
-                        children: [
-                          Icon(
-                            Icons.task_alt_sharp,
-                            color: HexColor.fromHex("#FF5427"),
-                            size: 18,
+                        //
+                        SizedBox(height: 10),
+                        // Linear Temperature 1
+                        customLinearProgressTemperature(
+                            s1Steps, 300, _data.getListTemp[1], _data, 0),
+                        //
+                        SizedBox(height: 20),
+                        // Linear Temperature 2
+                        customLinearProgressTemperature(
+                            s2Steps, 300, _data.getListTemp[2], _data, 1),
+                        //
+                        SizedBox(height: 20),
+                        // Button New Alarm
+                        Container(
+                          height: 62,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                width: 2,
+                                color: _data.darkMode
+                                    ? Colors.white
+                                    : HexColor.fromHex('#FF5427'),
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                              color: _data.darkMode
+                                  ? HexColor.fromHex("#0B2235")
+                                  : Colors.transparent),
+                          margin: EdgeInsets.symmetric(horizontal: 25),
+                          child: GestureDetector(
+                            onTap: () {
+                              _blue.mandaMensagem("Temp");
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.timer,
+                                  color: Colors.white,
+                                  size: 23,
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                TextFont(
+                                    data: "CRIAR ALARME",
+                                    weight: FontWeight.w700,
+                                    hexColor: "#FFFFFF",
+                                    size: 16,
+                                    height: 19.36 / 16,
+                                    letter: 12,
+                                    gFont: GoogleFonts.inter),
+                              ],
+                            ),
                           ),
-                          SizedBox(height: 3),
-                          TextFont(
-                              data: "${_data.getListTemp[1]}º",
-                              weight: FontWeight.w600,
-                              hexColor: "#130F26",
-                              size: 36,
-                              height: 44 / 36,
-                              gFont: GoogleFonts.inter),
-                          SizedBox(height: 3),
-                          TextFont(
-                              data: "${_data.getListTemp[3]}",
-                              weight: FontWeight.w400,
-                              hexColor: "#130F26",
-                              size: 14.5,
-                              height: 17.5 / 14.5,
-                              gFont: GoogleFonts.inter)
-                        ],
-                      ),
-                    ),
-
-                    // End of Stack
-                  ],
-                ),
-                //
-                SizedBox(height: 30),
-                // Linear Temperature 1
-                customLinearProgressTemperature(
-                    s1Steps, 300, _data.getListTemp[1], _data, 0),
-                //
-                SizedBox(height: 20),
-                // Linear Temperature 2
-                customLinearProgressTemperature(
-                    s2Steps, 300, _data.getListTemp[2], _data, 1),
-                //
-                SizedBox(height: 20),
-                // Button New Alarm
-                Container(
-                  height: 62,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                        width: 2,
-                        color: _data.darkMode
-                            ? Colors.white
-                            : HexColor.fromHex('#FF5427'),
-                      ),
-                      borderRadius: BorderRadius.circular(12),
-                      color: _data.darkMode
-                          ? HexColor.fromHex("#0B2235")
-                          : Colors.transparent),
-                  margin: EdgeInsets.symmetric(horizontal: 25),
-                  child: GestureDetector(
-                    onTap: () {
-                      _blue.mandaMensagem("Temp");
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.timer,
-                          color: Colors.white,
-                          size: 23,
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        TextFont(
-                            data: "CRIAR ALARME",
-                            weight: FontWeight.w700,
-                            hexColor: "#FFFFFF",
-                            size: 16,
-                            height: 19.36 / 16,
-                            letter: 12,
-                            gFont: GoogleFonts.inter),
+                        )
                       ],
                     ),
                   ),
-                )
+                ),
               ],
             );
           }),
@@ -380,14 +396,14 @@ Widget customLinearProgressTemperature(
                 BoxShadow(
                   color: _data.darkMode
                       ? HexColor.fromHex("E6ECF2")
-                      : Colors.black,
+                      : HexColor.fromHex("33000000"),
                   blurRadius: 9.2,
                   offset: Offset(4.6, 4.6), // changes position of shadow
                 ),
                 BoxShadow(
                   color: _data.darkMode
                       ? HexColor.fromHex("#80FFFFFF")
-                      : Colors.black,
+                      : HexColor.fromHex("4C000000"),
                   blurRadius: 9.2,
                   offset: Offset(-4.6, 4.6), // changes position of shadow
                 ),

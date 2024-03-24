@@ -14,6 +14,8 @@ class AllData {
 
   bool _darkMode = false;
 
+  Set<String> _favoriteIdSet = {};
+
   String _tGrelha = '000';
   String _tSensor1 = '000';
   String _tSensor2 = '000';
@@ -29,8 +31,14 @@ class AllData {
   String _wifiPassword = "";
 
   String _selectedRecipe = "0";
+  
+  String _searchText = "";
+
+  Function _favoritesUpdate = (){};
 
   get darkMode => _darkMode;
+
+  get getFavoriteIdList => _favoriteIdSet;
 
   get tGrelha => int.parse(_tGrelha);
   get tSensor1 => int.parse(_tSensor1);
@@ -50,6 +58,9 @@ class AllData {
 
   get getMotorPos => int.parse(_motorPos);
 
+  get getSearchText => _searchText;
+
+
   ///////////////////////// Set /////////////////////////////////////
 
   setDarkMode() {
@@ -57,6 +68,21 @@ class AllData {
     _saveDarkMode();
   }
 
+  setFavoriteIdSet(String id){
+    _favoriteIdSet.add(id);
+    _saveFavoriteIdSet();
+    print(_favoriteIdSet);
+  }
+
+  removeFavoriteIdSet(String id){
+    _favoriteIdSet.remove(id);
+    _saveFavoriteIdSet();
+    print(_favoriteIdSet);
+  }
+
+  setFavoritesUpdate(fun) => _favoritesUpdate = fun;
+  get getFavoritesUpdate => _favoritesUpdate;
+  
   set setListTemp(List<String> list) {
     _tGrelha = list[0];
     _tSensor1 = list[1];
@@ -74,6 +100,8 @@ class AllData {
   set setSelectedRecipe(idRecipe) => _selectedRecipe = idRecipe;
 
   set setMotorPos(pos) => _motorPos = pos;
+
+  set setSearchText(text) => _searchText = text;
 
   setCertBlank() {
     _cert = "";
@@ -129,7 +157,7 @@ class AllData {
 
   Future<void> loadDarkMode() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    print("LOAD: ${prefs.getBool('darkMode')}");
+    //print("LOAD: ${prefs.getBool('darkMode')}");
     _darkMode = prefs.getBool('darkMode') ?? false;
 
   }
@@ -137,5 +165,17 @@ class AllData {
   Future<void> _saveDarkMode() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('darkMode', _darkMode);
+  }
+
+  Future<void> loadFavoriteIdList() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    //print("LOAD: ${prefs.getStringList('FavIdList')}");
+    var idList = prefs.getStringList('FavIdList') ?? [];
+    _favoriteIdSet = idList.toSet();
+  }
+
+  Future<void> _saveFavoriteIdSet() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('FavIdList', _favoriteIdSet.toList());
   }
 }
