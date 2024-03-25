@@ -14,6 +14,7 @@ import 'package:apptempesp32/pages/menus/body_top.dart';
 import 'package:apptempesp32/pages/menus/botton_barr.dart';
 import 'package:apptempesp32/pages/menus/top_barr.dart';
 import 'package:apptempesp32/widget/widget_blue_toggle.dart';
+import 'package:apptempesp32/widget/widget_temperature_creat.dart';
 import 'package:apptempesp32/widget/widget_text_font.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -260,26 +261,32 @@ class _TemperaturePageState extends State<TemperaturePage> {
                             s2Steps, 300, _data.getListTemp[2], _data, 1),
                         //
                         SizedBox(height: 20),
+                        //
                         // Button New Alarm
-                        Container(
-                          height: 62,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                                width: 2,
+                        GestureDetector(
+                          onTap: () {
+                            showModalBottomSheet(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return temperatureTargetModal();
+                              },
+                            );
+                          },
+                          child: Container(
+                            height: 62,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                  width: 2,
+                                  color: _data.darkMode
+                                      ? Colors.white
+                                      : HexColor.fromHex('#FF5427'),
+                                ),
+                                borderRadius: BorderRadius.circular(12),
                                 color: _data.darkMode
-                                    ? Colors.white
-                                    : HexColor.fromHex('#FF5427'),
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                              color: _data.darkMode
-                                  ? HexColor.fromHex("#0B2235")
-                                  : Colors.transparent),
-                          margin: EdgeInsets.symmetric(horizontal: 25),
-                          child: GestureDetector(
-                            onTap: () {
-                              _blue.mandaMensagem("Temp");
-                            },
+                                    ? HexColor.fromHex("#0B2235")
+                                    : Colors.transparent),
+                            margin: EdgeInsets.symmetric(horizontal: 25),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -292,12 +299,12 @@ class _TemperaturePageState extends State<TemperaturePage> {
                                   width: 10,
                                 ),
                                 TextFont(
-                                    data: "CRIAR ALARME",
+                                    data: "TEMPERATURA ALVO",
                                     weight: FontWeight.w700,
                                     hexColor: "#FFFFFF",
                                     size: 16,
                                     height: 19.36 / 16,
-                                    letter: 12,
+                                    letter: 5,
                                     gFont: GoogleFonts.inter),
                               ],
                             ),
