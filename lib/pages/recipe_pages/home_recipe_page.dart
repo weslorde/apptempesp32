@@ -173,6 +173,7 @@ class _RecipeHomePagState extends State<RecipeHomePag> {
                                           // Negative magin to match the function left preset margin with this pag pattern margin
                                           offset: Offset(-12, 0),
                                           child: Row(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               for (int indice = state
                                                           .recipesAll['Items']

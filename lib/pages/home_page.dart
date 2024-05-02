@@ -227,8 +227,9 @@ class _HomePageState extends State<HomePage> {
                                     scrollDirection: Axis.horizontal,
                                     child: Transform.translate(
                                       // Negative magin to match the function left preset margin with this pag pattern margin
-                                      offset: Offset(-40, 0),
+                                      offset: Offset(0, 0),
                                       child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           for (int indice = dynamoState
                                                       .recipesAll['Items']
