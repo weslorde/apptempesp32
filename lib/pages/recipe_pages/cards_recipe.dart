@@ -168,7 +168,7 @@ Widget cardsMaisAcessadas(
 
 Widget recipeCardsGenerator2(
     dynamic recipeItem, AllData data, PageIndex pageController, _data) {
-  return Column(
+  return Column( 
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       GestureDetector(
