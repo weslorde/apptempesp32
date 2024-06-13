@@ -25,10 +25,28 @@ class AwsBloc extends Bloc<AwsEvent, AwsState> {
       emitAll(stateActual: 'InitState');
     });
 
+    on<CheckConnect>((event, emit) async {
+      emitAll(stateActual: 'CheckConnect');
+      _aws.setfunWifiStatusOn = () => {add(const CheckFiles())};
+      _aws.setfunWifiStatusOff = () => {}; //{add(const WarningInternet())};
+      if (await _aws.hasInternet()) {
+        add(const CheckFiles());
+      } else {
+        //add(const WarningInternet());
+      }
+    });
+
+    on<WarningInternet>((event, emit) async {
+      emitAll(stateActual: 'WarningInternet');
+      _aws.setMQTTConnect = false;
+      await Future.delayed(const Duration(seconds: 5));
+      add(const InitState());
+    });
+
     on<CheckFiles>((event, emit) async {
       emitAll(stateActual: 'CheckFiles');
       if (await _aws.hasCertFiles()) {
-        add(const CheckConnect());
+        add(const CheckAwsConnect());
       } else {
         add(const WarningFiles());
       }
@@ -40,23 +58,26 @@ class AwsBloc extends Bloc<AwsEvent, AwsState> {
       add(const InitState());
     });
 
-    on<CheckConnect>((event, emit) async {
+    on<CheckAwsConnect>((event, emit) async {
       emitAll(stateActual: 'CheckConnect');
-      if (await _aws.hasInternet()) {
-        await _aws.creatClient();
-        add(const StartAws());
-      } else {
-        add(const WarningInternet());
+      if (_aws.getAwsHasNet) {
+        try {
+          await _aws.creatClient();
+          add(const StartAws());
+        } catch (e) {
+          add(const WarningAwsConnect());
+        }
       }
     });
 
-    on<WarningInternet>((event, emit) async {
-      emitAll(stateActual: 'WarningInternet');
+    on<WarningAwsConnect>((event, emit) async {
+      emitAll(stateActual: 'WarningAwsConnect');
       await Future.delayed(const Duration(seconds: 5));
       add(const InitState());
     });
 
     on<StartAws>((event, emit) async {
+      _aws.setfunDataRecived = () => {add(const RecivedData())};
       emitAll(stateActual: 'StartAws');
       await _aws.connectAWS();
       add(const ConnectAws());
@@ -64,18 +85,29 @@ class AwsBloc extends Bloc<AwsEvent, AwsState> {
 
     on<ConnectAws>((event, emit) async {
       emitAll(stateActual: 'ConnectAws');
-      await _aws.arrumar();
-      add(const SendAws());
+      if (await _aws.arrumar()) {
+        add(const SendAws());
+      } else {
+        print("ERRRRROOOO AO CONECTAR State ConnectAws");
+      }
     });
 
     on<SendAws>((event, emit) async {
       emitAll(stateActual: 'SendAws');
-      const topic =
-          '\$aws/things/ChurrasTech2406/shadow/name/TemperaturesShadow/update';
-      const msg = '{"state": {"desired": {"TAlvoFlutter": "166"}}}';
+      const topic = 'TemperaturesShadow/update';
+      const msg =
+          '{"state": {"desired": {"Flutter": "1", "Enviar": "1", "NotificaAlarm": "0", "CriaAlarm": "0", "DelAlarm": "0"}}}';
       _aws.awsMsg(topic, msg);
     });
-    
+
+    on<AwsConnected>((event, emit) async {
+      emitAll(stateActual: 'AwsConnected');
+    });
+
+    on<RecivedData>((event, emit) async {
+      emitAll(stateActual: 'RecivedData');
+      add(const AwsConnected());
+    });
 
 //'\$aws/things/ChurrasTech2406/shadow/name/MotorShadow/update', '{"state": {"desired": {"Sentido": "${comandos[1]}","Nivel": "${comandos[2]}"}}}'
 

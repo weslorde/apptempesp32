@@ -9,6 +9,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:apptempesp32/api/data_storege.dart';
 import 'package:path_provider/path_provider.dart';
 
 /// An example of connecting to the AWS IoT Core MQTT broker and publishing to a devices topic.
@@ -36,6 +37,10 @@ class AwsDynamoDB {
 
   late Function _goDataOk;
 
+  final AllData _data = AllData();
+
+  bool _firstClientTest = true;
+
   goDataOk(Function fun) {
     _goDataOk = fun;
   }
@@ -55,9 +60,10 @@ class AwsDynamoDB {
     print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
     print(testData);
     print(_recipeData['AppDate']);
-    num deltaTime = (testData - _recipeData['AppDate'])/86400000; // 86400000 = 1000mili * 60seg * 60min * 24hrs 
+    num deltaTime = (testData - _recipeData['AppDate']) /
+        86400000; // 86400000 = 1000mili * 60seg * 60min * 24hrs
     print(deltaTime);
-    if (deltaTime > 1){
+    if (deltaTime > 1) {
       getAllData();
     }
   }
@@ -73,7 +79,7 @@ class AwsDynamoDB {
   }
 
   Future<void> getAllData() async {
-    var url = Uri.https( 
+    var url = Uri.https(
         //'h2k2lfbpqioi443tmo3uiqcamm0scrvi.lambda-url.sa-east-1.on.aws', // Conta antiga
         'hx2dsfyi7oiej24l23aylzkkzu0bcdiy.lambda-url.sa-east-1.on.aws', // Conta nova
         '',
@@ -105,6 +111,32 @@ class AwsDynamoDB {
     }
   }
 
+  Future<void> getClientHasDisp(String dispName, Function changeState) async {
+    if (_firstClientTest) {
+      _firstClientTest = false;
+      var url = Uri.https(
+          'w6f4yzgqhhnievclw2kqr47aei0sffiw.lambda-url.sa-east-1.on.aws', '', {
+        'fun': 'getAll',
+        'id': {dispName.replaceAll("ChurrasTech", "")}
+      });
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        print(jsonData);
+        if (jsonData == 1) {
+          _data.setDynamoUserAlexaLink = true;
+          changeState();
+        } else {
+          _data.setDynamoUserAlexaLink = false;
+          changeState();
+        }
+      } else {
+        _data.setDynamoUserAlexaLink = false;
+        //throw Exception('Failed to load data');
+      }
+    }
+  }
+
   //Future<Map<String, dynamic>> _readRecipeFile() async {
   Future readRecipeFile() async {
     File file;
@@ -129,4 +161,3 @@ class AwsDynamoDB {
         });
   }
 } // End of Class AwsController
-

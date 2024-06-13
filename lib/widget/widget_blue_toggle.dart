@@ -33,14 +33,14 @@ class _blueToggleState extends State<blueToggle> {
       'Buscando' : "#FF8D27",
     };
 
-    return Container(
-      alignment: Alignment.centerRight,
-      child: FittedBox(
-        child: GestureDetector(
+    return GestureDetector(
           onTap: () {
             attWidget();
           },
           child: Container(
+      alignment: Alignment.centerRight,
+      child: FittedBox(
+        child:  Container(
             padding: EdgeInsets.all(10),
             decoration: BoxDecoration(
                 color:

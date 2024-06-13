@@ -1,12 +1,16 @@
+import 'package:apptempesp32/api/aws_api.dart';
 import 'package:apptempesp32/api/blue_api.dart';
 import 'package:apptempesp32/api/data_storege.dart';
 import 'package:apptempesp32/api/hex_to_colors.dart';
+import 'package:apptempesp32/bloc/aws_bloc_files/aws_bloc.dart';
+import 'package:apptempesp32/bloc/aws_bloc_files/aws_bloc_events.dart';
 import 'package:apptempesp32/bloc/blue_bloc_files/blue_bloc.dart';
 import 'package:apptempesp32/bloc/blue_bloc_files/blue_state.dart';
 import 'package:apptempesp32/bloc/blue_bloc_files/blue_bloc_events.dart';
 import 'package:apptempesp32/bloc/dynamoDB_bloc_files/dynamo_bloc.dart';
 import 'package:apptempesp32/bloc/dynamoDB_bloc_files/dynamo_bloc_events.dart';
-import 'package:apptempesp32/dialogs/close_alert.dart';
+import 'package:apptempesp32/dialogs_box/blue_off_alert.dart';
+import 'package:apptempesp32/dialogs_box/close_alert.dart';
 import 'package:apptempesp32/pages/menus/body_top.dart';
 import 'package:apptempesp32/pages/menus/botton_barr.dart';
 import 'package:apptempesp32/pages/menus/controller_pages.dart';
@@ -38,6 +42,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final AllData _data = AllData();
     final BlueController _blue = BlueController();
+    final AwsController _aws = AwsController();
     final PageIndex _pageController = PageIndex();
 
     return PopScope(
@@ -59,11 +64,21 @@ class _HomePageState extends State<HomePage> {
           child: Builder(builder: (context) {
             final dynamoState = context.watch<DynamoBloc>().state;
             final blueState = context.watch<BlueBloc>().state;
-            if (dynamoState.stateActual == 'empty') {
+            final awsState = context.watch<AwsBloc>().state;
+            if (awsState.stateActual == 'empty' ||
+                awsState.stateActual == "InitState") {
+              if (!_aws.getAwsHasNet) {
+                context.read<AwsBloc>().add(const CheckConnect());
+              } else {
+                context.read<AwsBloc>().add(const CheckFiles());
+              }
+            }
+            if (dynamoState.stateActual == 'empty' && _aws.getAwsHasNet) {
               context.read<DynamoBloc>().add(const CheckData());
             }
             return dynamoState.stateActual == 'DataOk'
-                ? BodyStart(children: [
+                ? BodyStart(
+                    children: [
                       // Top spacing need - 20 px to macth
                       // Start of Perfil Avatar and Text
                       Container(
@@ -121,7 +136,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       //Scrool screen
-          
+
                       Expanded(
                         child: SingleChildScrollView(
                           child: Column(
@@ -197,7 +212,7 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                 ),
                               ),
-                        
+
                               // Space
                               SizedBox(height: 40),
                               //Quadro Receitas
@@ -229,7 +244,8 @@ class _HomePageState extends State<HomePage> {
                                       // Negative magin to match the function left preset margin with this pag pattern margin
                                       offset: Offset(0, 0),
                                       child: Row(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           for (int indice = dynamoState
                                                       .recipesAll['Items']

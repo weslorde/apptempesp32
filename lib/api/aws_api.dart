@@ -9,6 +9,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:apptempesp32/api/data_storege.dart';
+import 'package:apptempesp32/api/notificationAlarm.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
@@ -38,6 +40,33 @@ class AwsController {
 
   late String _dispName;
 
+  final AllData data = AllData();
+
+  Function _funDataRecived = () => {};
+  set setfunDataRecived(Function fun) => _funDataRecived = fun;
+
+  Function _funWifiStatusOff = () => {};
+  set setfunWifiStatusOff(Function fun) => _funWifiStatusOff = fun;
+  Function _funWifiStatusOn = () => {};
+  set setfunWifiStatusOn(Function fun) => _funWifiStatusOn = fun;
+
+  Function _funAlexaLink = () => {};
+  set setfunAlexaLink(Function fun) => _funAlexaLink = fun;
+  String _alexaLinkResponse = "";
+  String get getAlexaLinkResponse => _alexaLinkResponse;
+
+  bool _awsHasCert = false;
+  bool _awsHasNet = false;
+  bool _awsMQTTConnect = false;
+
+  String get getDispName => _dispName;
+
+  bool get getAwsHasCert => _awsHasCert;
+  bool get getAwsHasNet => _awsHasNet;
+  bool get getMQTTConnect => _awsMQTTConnect;
+
+  set setMQTTConnect(logic) => _awsMQTTConnect = logic;
+
   //Return true if all 3 files exists
   Future<bool> hasCertFiles() async {
     final directory = await getApplicationDocumentsDirectory();
@@ -53,6 +82,7 @@ class AwsController {
         return false;
       }
     }
+    _awsHasCert = true;
     return true;
   }
 
@@ -69,17 +99,27 @@ class AwsController {
       if (result != ConnectivityResult.none) {
         isDeviceConnected = await InternetConnectionChecker().hasConnection;
         print(isDeviceConnected);
+        //Se bugar tem que melhorar a logica para nao chamar o Estado de erro 2 vezes
+        if (isDeviceConnected == false && _awsHasNet == true) {
+          _funWifiStatusOff();
+        } else {
+          _funWifiStatusOn();
+        }
+        _awsHasNet = isDeviceConnected;
+      } else {
+        _awsHasNet = false;
+        _funWifiStatusOff();
       }
     });
-
-    return isDeviceConnected;
+    _awsHasNet = isDeviceConnected;
+    return false;
   }
 
   Future creatClient() async {
     _dispName = await fileDataPicker();
     //_dispName = "ChurrasTech2406";
     // Your AWS IoT Core endpoint url
-    const url = "a35wgflbzj4nrh-ats.iot.sa-east-1.amazonaws.com";
+    const url = "aymk3jv3m3bvi-ats.iot.sa-east-1.amazonaws.com";
     // AWS IoT MQTT default port
     const port = 8883;
     // The client id unique to your device
@@ -126,7 +166,7 @@ class AwsController {
     }
   }
 
-  Future arrumar() async {
+  Future<bool> arrumar() async {
     if (_clientAWS.connectionStatus!.state == MqttConnectionState.connected) {
       print('MQTT client connected to AWS IoT');
 
@@ -138,6 +178,8 @@ class AwsController {
       // Important: AWS IoT Core can only handle QOS of 0 or 1. QOS 2 (exactlyOnce) will fail!
       _clientAWS.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
 
+      _awsMQTTConnect = true;
+
       // Subscribe to the same topic
       _clientAWS.subscribe(
           '\$aws/things/$_dispName/shadow/name/TemperaturesShadow/update/delta',
@@ -145,6 +187,10 @@ class AwsController {
       _clientAWS.subscribe(
           '\$aws/things/$_dispName/shadow/name/AlarmShadow/update/delta',
           MqttQos.atLeastOnce);
+      _clientAWS.subscribe(
+          '\$aws/things/$_dispName/shadow/name/DynamoSendShadow/update/delta',
+          MqttQos.atLeastOnce);
+
       // Print incoming messages from another client on this topic
 
       _clientAWS.updates!
@@ -157,35 +203,104 @@ class AwsController {
             'Topic is <${listRecivedMsg[0].topic}>, payload is <-- ${mapMsg['state']} -->');
         _awsListener(listRecivedMsg[0].topic, mapMsg);
       });
+
+      return true;
     } else {
       print(
           'ERROR MQTT client connection failed - disconnecting, state is ${_clientAWS.connectionStatus!.state}');
       _clientAWS.disconnect();
+
+      return false;
     }
   }
 
   void _awsListener(String topic, Map<String, dynamic> mapMsg) {
-    if (topic ==
-        '\$aws/things/$_dispName/shadow/name/TemperaturesShadow/update/delta') {
-      if (mapMsg['state']['Enviar'] == "0") {
-        var tgrelha = mapMsg['state']['Grelha'];
-        var tsensor1 = mapMsg['state']['Temp1'];
-        var tsensor2 = mapMsg['state']['Temp2'];
-        var tempAlvo = mapMsg['state']['TAlvoEsp'];
-        print("Valors das Temps: $tgrelha $tsensor1 $tsensor2 $tempAlvo !");
-        //setTemp(Tgrelha, Tsensor1, Tsensor2, TempAlvo);
-      }
-    } else if (topic ==
-        '\$aws/things/$_dispName/shadow/name/AlarmShadow/update/delta') {
-      if (mapMsg['state']['Enviar'] == "0") {
-        var alarmeTimer = mapMsg['state']['TimerAlarm'];
-        var alarmeGraus = mapMsg['state']['GrausAlarm'];
-        print("\n   $alarmeTimer\n   $alarmeGraus");
-        //attPage2([alarmToList(AlarmeGraus), alarmToList(AlarmeTimer)]);
-        print("Aqui");
-        //print(alarmToList(AlarmeTimer));
+    if (mapMsg['state']['MsgError'] != "") {
+      print("AWSiot CHEGOU!");
+      print(mapMsg['state']);
+      if (topic ==
+          '\$aws/things/$_dispName/shadow/name/DynamoSendShadow/update/delta') {
+        if (mapMsg['state']['Error'] == "1") {
+          _alexaLinkResponse = mapMsg['state']['MsgError'];
+          _funAlexaLink(1);
+        }
+        if (mapMsg['state']['Error'] == "0") {
+          _alexaLinkResponse = mapMsg['state']['MsgError'];
+          _funAlexaLink(0);
+        }
       }
     }
+
+    if (mapMsg['state']['Flutter'] == "0") {
+      data.setAwsIotBoardConnect = true;
+      if (topic ==
+          '\$aws/things/$_dispName/shadow/name/TemperaturesShadow/update/delta') {
+        if (mapMsg['state']['Enviar'] == "0") {
+          var tgrelha = mapMsg['state']['Grelha'];
+          var tsensor1 = mapMsg['state']['Temp1'];
+          var tsensor2 = mapMsg['state']['Temp2'];
+          var tempAlvo = mapMsg['state']['TAlvoEsp'];
+          print("Valors das Temps: $tgrelha $tsensor1 $tsensor2 $tempAlvo !");
+          data.setListTemp = [tgrelha, tsensor1, tsensor2, tempAlvo];
+          _funDataRecived();
+          //setTemp(Tgrelha, Tsensor1, Tsensor2, TempAlvo);
+        }
+      } // END TemperaturesShadow
+
+      else if (topic ==
+          '\$aws/things/$_dispName/shadow/name/AlarmShadow/update/delta') {
+        if (mapMsg['state']['Enviar'] == "0") {
+          data.zeraAlarms();
+          var alarmeTimer = mapMsg['state']['TimerAlarm']; //'01','10','02''20'
+          var alarmeGraus =
+              mapMsg['state']['GrausAlarm']; // [['Grelha', 110], ['Grelha', 5]]
+          //TODO ARRUMAR ta aqui faz tempo kk
+          print("Alarme CHEGOU: $alarmeTimer");
+          if (alarmeTimer != "") {
+            alarmeTimer = alarmeTimer
+                .substring(0, alarmeTimer.length - 1)
+                .split(','); // ['01''10''02''20']
+            for (int x = 0; x < alarmeTimer.length; x += 3) {
+              String hora = alarmeTimer[x];
+              String min = alarmeTimer[x + 1];
+              data.setAlarmeTimer = [hora, min];
+            }
+          }
+
+          if (alarmeGraus != "[]") {
+            alarmeGraus = alarmeGraus
+                .substring(1, alarmeGraus.length - 1)
+                .split(', '); // ['Grelha' -- 110] -- ['Grelha' -- 5]
+            int x = 0;
+            String sensor = "";
+            for (var item in alarmeGraus) {
+              if (x % 2 == 0) // Par
+                sensor = item.substring(2, item.length - 1);
+              else {
+                // Impar
+                String temp = item.substring(0, item.length - 1);
+                data.setAlarmGraus = [sensor, temp];
+              }
+              x += 1;
+            }
+          }
+          //
+          if (mapMsg['state']['NotificaAlarm'] == "1") {
+            List<String> NotiAlarm = mapMsg['state']['NAlarm'].split(',');
+            data.startNotificationAlarm(
+                NotiAlarm[0], NotiAlarm[1], NotiAlarm[2]);
+            const topic = 'AlarmShadow/update';
+            const msg =
+                '{"state": {"desired": {"Flutter": "1", "NotificaAlarm": "0", "Enviar": "1"}}}';
+            awsMsg(topic, msg);
+          }
+
+          //
+          print("\n   $alarmeTimer\n   $alarmeGraus");
+          _funDataRecived();
+        }
+      } //END AlarmShadow
+    } // END IF FLUTTER == 0
   } // End of Function awsListener
 
   Future<ByteData> certBytePicker(String fileName) async {
@@ -196,23 +311,24 @@ class AwsController {
     return ByteData.view(bytes.buffer);
   }
 
-  Future<String> fileDataPicker() async{
+  Future<String> fileDataPicker() async {
     final directory = await getApplicationDocumentsDirectory();
     final file = File('${directory.path}/AWS/deviceName.key');
     return file.readAsString();
   }
 
   void closeAWS() {
+    _awsMQTTConnect = false;
     _clientAWS.disconnect();
     print('Disconnecting');
   }
 
   void awsMsg(String topic, String msg) {
-    print("fun Send");
+    print("\nSend: $topic \n$msg \n");
+    var topicFull = '\$aws/things/$_dispName/shadow/name/$topic';
     final builder = MqttClientPayloadBuilder();
     builder.addString(msg);
     // Important: AWS IoT Core can only handle QOS of 0 or 1. QOS 2 (exactlyOnce) will fail!
-    _clientAWS.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
+    _clientAWS.publishMessage(topicFull, MqttQos.atLeastOnce, builder.payload!);
   }
 } // End of Class AwsController
-

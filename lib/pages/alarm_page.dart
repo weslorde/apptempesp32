@@ -1,13 +1,16 @@
 import 'dart:convert';
 import 'dart:math';
 import 'dart:ui';
+import 'package:apptempesp32/api/aws_api.dart';
 import 'package:apptempesp32/api/blue_api.dart';
 import 'package:apptempesp32/api/data_storege.dart';
 import 'package:apptempesp32/api/hex_to_colors.dart';
+import 'package:apptempesp32/bloc/aws_bloc_files/aws_bloc.dart';
 import 'package:apptempesp32/bloc/blue_bloc_files/blue_bloc.dart';
 import 'package:apptempesp32/bloc/blue_bloc_files/blue_state.dart';
 import 'package:apptempesp32/bloc/blue_bloc_files/blue_bloc_events.dart';
-import 'package:apptempesp32/dialogs/close_alert.dart';
+import 'package:apptempesp32/bloc/dynamoDB_bloc_files/dynamo_bloc.dart';
+import 'package:apptempesp32/dialogs_box/close_alert.dart';
 import 'package:apptempesp32/pages/home_page.dart';
 import 'package:apptempesp32/pages/menus/body_top.dart';
 import 'package:apptempesp32/pages/menus/botton_barr.dart';
@@ -30,28 +33,55 @@ class AlarmPage extends StatefulWidget {
 class _AlarmPageState extends State<AlarmPage> {
   final BlueController _blue = BlueController();
   final AllData _data = AllData();
+  final AwsController _aws = AwsController();
 
   @override
   void initState() {
-    _blue.mandaMensagem("Alarme");
+    if (_blue.getblueConnect) {
+      _blue.mandaMensagem("Alarme");
+    } else if (_data.getAwsIotBoardConnect) {
+      _data.zeraAlarms();
+      const topic = 'AlarmShadow/update';
+      const msg =
+          '{"state": {"desired": {"Flutter": "1", "Enviar": "1", "DelAlarm": "0"}}}';
+      _aws.awsMsg(topic, msg);
+    }
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final AllData data = AllData();
+
     int nowStep = 30;
     int nowStep2 = 300;
     return PopScope(
       canPop: false,
       onPopInvoked: (_) => {onBackPressed(context)},
       child: Scaffold(
-        backgroundColor: _data.darkMode ? Colors.white : HexColor.fromHex('#101010'),
+        backgroundColor:
+            _data.darkMode ? Colors.white : HexColor.fromHex('#101010'),
         appBar: const TopBar(),
         //
         bottomNavigationBar: BottomBar(),
         //
-        body: BlocBuilder<BlueBloc, BlueState>(
-          builder: ((context, state) {
+        body: MultiBlocProvider(
+          providers: [
+            BlocProvider<DynamoBloc>(
+              create: (BuildContext context) => DynamoBloc(),
+            )
+          ],
+          child: Builder(builder: (context) {
+            final blueState = context.watch<BlueBloc>().state;
+            final awsState = context.watch<AwsBloc>().state;
+
+            //Start blue on start of screen
+            if (blueState.stateActual == "empty") {
+              if (data.getAwsIotBoardConnect == false) {
+                _blue.setToggleBool = true;
+                context.read<BlueBloc>().add(const BlueIsSup());
+              }
+            }
             return BodyStart(
               children: [
                 //
@@ -70,7 +100,7 @@ class _AlarmPageState extends State<AlarmPage> {
                         size: 35,
                         gFont: GoogleFonts.yanoneKaffeesatz),
                   ),
-                  blueToggle(status: state.screenMsg),
+                  blueToggle(status: blueState.screenMsg),
                 ]),
                 //
                 SizedBox(height: 20),
@@ -84,12 +114,12 @@ class _AlarmPageState extends State<AlarmPage> {
                             item < _data.getAlarmeTimer.length;
                             item++)
                           alarmCard(0, item, _data.getAlarmeTimer[item], _blue,
-                              _data),
+                              _data, _aws),
                         for (int item = 0;
                             item < _data.getAlarmGraus.length;
                             item++)
-                          alarmCard(
-                              1, item, _data.getAlarmGraus[item], _blue, _data),
+                          alarmCard(1, item, _data.getAlarmGraus[item], _blue,
+                              _data, _aws),
                       ],
                     ),
                   ),
@@ -163,7 +193,14 @@ class _AlarmPageState extends State<AlarmPage> {
   }
 }
 
-Widget alarmCard(int type, int num, dynamic data, BlueController blue, _data) {
+Widget alarmCard(
+  int type,
+  int num,
+  dynamic data,
+  BlueController blue,
+  _data,
+  AwsController aws,
+) {
   return Container(
     height: 66,
     margin: EdgeInsets.only(left: 24, right: 24, bottom: 30),
@@ -214,7 +251,14 @@ Widget alarmCard(int type, int num, dynamic data, BlueController blue, _data) {
           GestureDetector(
             onTap: () {
               List listType = ["timer", "graus"];
-              blue.mandaMensagem("DelAlarme,${listType[type]},${num}");
+              if (!_data.getAwsIotBoardConnect) {
+                blue.mandaMensagem("DelAlarme,${listType[type]},${num}");
+              } else {
+                const topic = 'AlarmShadow/update';
+                String msg =
+                    '{"state": {"desired": {"Flutter": "1", "DelAlarm": "1", "DelAlarmTipo": "${listType[type]}", "DelAlarmNum": "$num"}}}';
+                aws.awsMsg(topic, msg);
+              }
             },
             child: Container(
               height: 66,

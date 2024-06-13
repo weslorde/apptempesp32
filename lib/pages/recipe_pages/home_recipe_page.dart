@@ -10,7 +10,7 @@ import 'package:apptempesp32/bloc/blue_bloc_files/blue_bloc_events.dart';
 import 'package:apptempesp32/bloc/dynamoDB_bloc_files/dynamo_bloc.dart';
 import 'package:apptempesp32/bloc/dynamoDB_bloc_files/dynamo_bloc_events.dart';
 import 'package:apptempesp32/bloc/dynamoDB_bloc_files/dynamo_state.dart';
-import 'package:apptempesp32/dialogs/close_alert.dart';
+import 'package:apptempesp32/dialogs_box/close_alert.dart';
 import 'package:apptempesp32/pages/home_page.dart';
 import 'package:apptempesp32/pages/menus/body_top.dart';
 import 'package:apptempesp32/pages/menus/botton_barr.dart';

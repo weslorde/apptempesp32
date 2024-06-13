@@ -31,18 +31,32 @@ class NotificationService {
     await _initializeNotifications();
   }
 
-  void _onReciveResponse(NotificationResponse payload) {
+  void _onAndroidReciveResponse(NotificationResponse payload) {
+    print(payload);
+  }
+
+  void _onIOSReciveResponse(
+      int id, String? title, String? body, String? payload) {
     print(payload);
   }
 
   _initializeNotifications() async {
-    const android = AndroidInitializationSettings('@mipmap/ic_launcher');
-    //TODO fazer para iOS! notificacoes
+    // Android
+    const iniAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    // Ios
+    var iniIOS = DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+      onDidReceiveLocalNotification: _onIOSReciveResponse,
+    );
 
     await localNotificationsPlugin.initialize(
-      const InitializationSettings(android: android),
-      onDidReceiveNotificationResponse: _onReciveResponse,
+      InitializationSettings(android: iniAndroid, iOS: iniIOS),
+      onDidReceiveNotificationResponse: _onAndroidReciveResponse,
     );
+
     await localNotificationsPlugin
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
@@ -51,25 +65,25 @@ class NotificationService {
 
   showNotification(CustomNotification notification) {
     androidDetails = const AndroidNotificationDetails(
-      "channel_alarms",
-      "Avisos e alarmes",
-      importance: Importance.max,
-      priority: Priority.max,
-      enableVibration: true,
-      enableLights: true,
-      playSound: true,
-      fullScreenIntent: true,
-      sound: RawResourceAndroidNotificationSound('noticelong')
-      //sound: RawResourceAndroidNotificationSound('notification'),
-    );
+        "channel_alarms10", "Avisos e alarmes10",
+        importance: Importance.max,
+        priority: Priority.max,
+        enableVibration: true,
+        enableLights: true,
+        playSound: true,
+        fullScreenIntent: true,
+        sound: RawResourceAndroidNotificationSound('slow_spring_board')
+        //sound: RawResourceAndroidNotificationSound('slow_spring_board.mp3')
+        //sound: RawResourceAndroidNotificationSound('notification'),
+        );
 
-    
     localNotificationsPlugin.show(
         notification.id,
         notification.title,
         notification.body,
         NotificationDetails(
           android: androidDetails,
+          iOS: const DarwinNotificationDetails(),
         ),
         payload: notification.payload);
   }

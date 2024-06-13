@@ -2,13 +2,17 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'dart:ui';
+import 'package:apptempesp32/api/aws_api.dart';
 import 'package:apptempesp32/api/blue_api.dart';
 import 'package:apptempesp32/api/data_storege.dart';
 import 'package:apptempesp32/api/hex_to_colors.dart';
+import 'package:apptempesp32/bloc/aws_bloc_files/aws_bloc.dart';
+import 'package:apptempesp32/bloc/aws_bloc_files/aws_bloc_events.dart';
 import 'package:apptempesp32/bloc/blue_bloc_files/blue_bloc.dart';
 import 'package:apptempesp32/bloc/blue_bloc_files/blue_state.dart';
 import 'package:apptempesp32/bloc/blue_bloc_files/blue_bloc_events.dart';
-import 'package:apptempesp32/dialogs/close_alert.dart';
+import 'package:apptempesp32/bloc/dynamoDB_bloc_files/dynamo_bloc.dart';
+import 'package:apptempesp32/dialogs_box/close_alert.dart';
 import 'package:apptempesp32/pages/home_page.dart';
 import 'package:apptempesp32/pages/menus/body_top.dart';
 import 'package:apptempesp32/pages/menus/botton_barr.dart';
@@ -56,6 +60,9 @@ class _TemperaturePageState extends State<TemperaturePage> {
 
   @override
   Widget build(BuildContext context) {
+    final AllData data = AllData();
+    final AwsController _aws = AwsController();
+
     return PopScope(
       canPop: false,
       onPopInvoked: (_) => {onBackPressed(context)},
@@ -66,19 +73,46 @@ class _TemperaturePageState extends State<TemperaturePage> {
         //
         bottomNavigationBar: BottomBar(),
         //
-        body: BlocBuilder<BlueBloc, BlueState>(
+
+        body: MultiBlocProvider(
+          providers: [
+            BlocProvider<DynamoBloc>(
+              create: (BuildContext context) => DynamoBloc(),
+            )
+          ],
+          child: Builder(builder: (context) {
+            final blueState = context.watch<BlueBloc>().state;
+            final awsState = context.watch<AwsBloc>().state;
+
+            //Temps adiquire
+            int targetSteps = int.parse(_data.getListTemp[3]);
+            int grelhaSteps = int.parse(_data.getListTemp[0]);
+            int s1Steps = int.parse(_data.getListTemp[1]);
+            int s2Steps = int.parse(_data.getListTemp[2]);
+
+            //Start blue on start of screen
+            if (blueState.stateActual == "empty") {
+              if (data.getAwsIotBoardConnect == false) {
+                _blue.setToggleBool = true;
+                context.read<BlueBloc>().add(const BlueIsSup());
+              }
+            }
+
+            /*body: BlocBuilder<BlueBloc, BlueState>(
           builder: ((context, state) {
             //
             int targetSteps = int.parse(_data.getListTemp[3]);
             int grelhaSteps = int.parse(_data.getListTemp[0]);
             int s1Steps = int.parse(_data.getListTemp[1]);
             int s2Steps = int.parse(_data.getListTemp[2]);
-            //
+            //Start blue on start of screen
             if (state.stateActual == "empty") {
-              _blue.setToggleBool = true;
-              context.read<BlueBloc>().add(const BlueIsSup());
+              if (data.getAwsIotBoardConnect == false) {
+                _blue.setToggleBool = true;
+                context.read<BlueBloc>().add(const BlueIsSup());
+              }
             }
-            //
+            */
             return BodyStart(
               children: [
                 //
@@ -222,7 +256,7 @@ class _TemperaturePageState extends State<TemperaturePage> {
                                   ),
                                   SizedBox(height: 3),
                                   TextFont(
-                                      data: "${_data.getListTemp[1]}º",
+                                      data: "${grelhaSteps}º",
                                       weight: FontWeight.w600,
                                       hexColor: "#130F26",
                                       size: 36,
@@ -243,7 +277,7 @@ class _TemperaturePageState extends State<TemperaturePage> {
                             // Blue icon
                             Padding(
                               padding: const EdgeInsets.only(bottom: 210),
-                              child: blueToggle(status: state.screenMsg),
+                              child: blueToggle(status: blueState.screenMsg),
                             ),
                             // End of Stack
                           ],

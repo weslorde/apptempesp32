@@ -71,6 +71,7 @@ class CertBloc extends Bloc<CertEvent, CertState> {
     //
     on<InitAlexaLink>((event, emit) async {
       emitAll(stateActual: 'InitAlexaLink');
+      print("InitAlexaLink");
     });
 
     //
@@ -92,6 +93,8 @@ class CertBloc extends Bloc<CertEvent, CertState> {
 
     on<CertWarningFiles>((event, emit) async {
       emitAll(stateActual: 'CertWarningFiles');
+      print("JAAA TEM CERTIFICADO!!!!!!!!!!!");
+      add(const CertCheckBlue());
     });
 
     on<CertCheckBlue>((event, emit) async {
@@ -147,6 +150,41 @@ class CertBloc extends Bloc<CertEvent, CertState> {
 
     on<CertEnd>((event, emit) async {
       emitAll(stateActual: 'CertEnd');
+    });
+
+    // TestMQTT
+
+    on<AWStest>((event, emit) async {
+      emitAll(stateActual: 'AWStest');
+    });
+
+    // AlexaLink
+
+    on<ALinkWaiting>((event, emit) async {
+      emitAll(stateActual: 'ALinkWaiting');
+    });
+
+    on<ALinkDataRecived>((event, emit) async {
+      emitAll(stateActual: 'ALinkDataRecived');
+      add(const ALinkWaiting());
+    });
+
+    on<ALinkLoading>((event, emit) async {
+      emitAll(stateActual: 'ALinkLoading');
+      await Future.delayed(const Duration(seconds: 5));
+      add(const ALinkWaiting());
+    });
+
+    on<ALinkWarning>((event, emit) async {
+      emitAll(stateActual: 'ALinkWarning');
+      await Future.delayed(const Duration(seconds: 5));
+      add(const ALinkWaiting());
+    });
+
+    on<ALinkOk>((event, emit) async {
+      emitAll(stateActual: 'ALinkOk');
+      await Future.delayed(const Duration(seconds: 5));
+      add(const ALinkWaiting());
     });
 
     //

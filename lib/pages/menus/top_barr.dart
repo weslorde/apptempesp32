@@ -1,7 +1,6 @@
 import 'package:apptempesp32/api/data_storege.dart';
 import 'package:apptempesp32/api/hex_to_colors.dart';
 import 'package:apptempesp32/pages/menus/controller_pages.dart';
-import 'package:apptempesp32/pages/cert_page.dart';
 import 'package:flutter/material.dart';
 
 class TopBar extends StatelessWidget implements PreferredSizeWidget {

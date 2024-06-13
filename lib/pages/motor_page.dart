@@ -3,13 +3,16 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
+import 'package:apptempesp32/api/aws_api.dart';
 import 'package:apptempesp32/api/blue_api.dart';
 import 'package:apptempesp32/api/data_storege.dart';
 import 'package:apptempesp32/api/hex_to_colors.dart';
+import 'package:apptempesp32/bloc/aws_bloc_files/aws_bloc.dart';
 import 'package:apptempesp32/bloc/blue_bloc_files/blue_bloc.dart';
 import 'package:apptempesp32/bloc/blue_bloc_files/blue_state.dart';
 import 'package:apptempesp32/bloc/blue_bloc_files/blue_bloc_events.dart';
-import 'package:apptempesp32/dialogs/close_alert.dart';
+import 'package:apptempesp32/bloc/dynamoDB_bloc_files/dynamo_bloc.dart';
+import 'package:apptempesp32/dialogs_box/close_alert.dart';
 import 'package:apptempesp32/pages/home_page.dart';
 import 'package:apptempesp32/pages/menus/body_top.dart';
 import 'package:apptempesp32/pages/menus/botton_barr.dart';
@@ -33,6 +36,7 @@ class MotorPage extends StatefulWidget {
 class _MotorPageState extends State<MotorPage> {
   final AllData _data = AllData();
   final BlueController _blue = BlueController();
+  final AwsController _aws = AwsController();
 
   late Timer _timer;
   @override
@@ -57,8 +61,16 @@ class _MotorPageState extends State<MotorPage> {
     super.dispose();
   }
 
+  void awsMovMotor(String Sentido, int Tempo) {
+    const topic = 'MotorShadow/update';
+    var msg =
+        '{"state": {"desired": {"Flutter": "1", "Sentido": "$Sentido", "Tempo": "$Tempo"}}}';
+    _aws.awsMsg(topic, msg);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final AllData data = AllData();
     return PopScope(
       canPop: false,
       onPopInvoked: (_) => {onBackPressed(context)},
@@ -69,19 +81,23 @@ class _MotorPageState extends State<MotorPage> {
         //
         bottomNavigationBar: BottomBar(),
         //
-        body: BlocBuilder<BlueBloc, BlueState>(
-          builder: ((context, state) {
-            //
-            int targetSteps = int.parse(_data.getListTemp[3]);
-            int grelhaSteps = int.parse(_data.getListTemp[0]);
-            int s1Steps = int.parse(_data.getListTemp[1]);
-            int s2Steps = int.parse(_data.getListTemp[2]);
-            //
-            if (state.stateActual == "empty") {
-              _blue.setToggleBool = true;
-              context.read<BlueBloc>().add(const BlueIsSup());
+        body: MultiBlocProvider(
+          providers: [
+            BlocProvider<DynamoBloc>(
+              create: (BuildContext context) => DynamoBloc(),
+            )
+          ],
+          child: Builder(builder: (context) {
+            final blueState = context.watch<BlueBloc>().state;
+            final awsState = context.watch<AwsBloc>().state;
+
+            //Start blue on start of screen
+            if (blueState.stateActual == "empty") {
+              if (data.getAwsIotBoardConnect == false) {
+                _blue.setToggleBool = true;
+                context.read<BlueBloc>().add(const BlueIsSup());
+              }
             }
-            //
             return BodyStart(
               children: [
                 //
@@ -99,7 +115,7 @@ class _MotorPageState extends State<MotorPage> {
                 //
                 SizedBox(height: 5),
                 // Blue icon
-                blueToggle(status: state.screenMsg),
+                blueToggle(status: blueState.screenMsg),
 
                 SizedBox(height: 10),
 
@@ -121,33 +137,51 @@ class _MotorPageState extends State<MotorPage> {
                           Container(
                             child: Column(
                               children: [
-                                SizedBox(height: 40,),
+                                SizedBox(
+                                  height: 40,
+                                ),
                                 // Plus Button
                                 GestureDetector(
                                   onLongPress: () {
                                     // On press start motor Up
-                                    _blue.mandaMensagem("Motor,Up,Press");
-                                    print("1");
+                                    if (!_data.getAwsIotBoardConnect) {
+                                      _blue.mandaMensagem("Motor,Up,Press");
+                                    } else {
+                                      _data.setMotorPos = "2";
+                                      awsMovMotor("Up", 1);
+                                    }
+                                    print("Up1");
                                   },
                                   onLongPressUp: () {
                                     // On release stop motor
-                                    _blue.mandaMensagem("Motor,Up,Release");
-                                    print("2");
+                                    //_blue.mandaMensagem("Motor,Up,Release");
+                                    if (_data.getMotorPos == 3) {
+                                      _data.setMotorPos = "2";
+                                    }
+                                    print("Up2");
                                   },
                                   onLongPressCancel: () {
                                     // On "problem" stop motor
-                                    _blue.mandaMensagem("Motor,Up,Release");
+                                    //_blue.mandaMensagem("Motor,Up,Release");
+                                    if (_data.getMotorPos == 3) {
+                                      _data.setMotorPos = "2";
+                                    }
+                                    print("UpCancel");
                                   },
                                   child: Container(
                                     height: 80,
                                     width: 80,
                                     decoration: BoxDecoration(
-                                      color: _data.darkMode ? HexColor.fromHex("#0B2235"): Colors.transparent,
+                                      color: _data.darkMode
+                                          ? HexColor.fromHex("#0B2235")
+                                          : Colors.transparent,
                                       borderRadius:
                                           BorderRadius.all(Radius.circular(10)),
                                       border: Border.all(
                                         width: 1.5,
-                                        color: _data.darkMode ? Colors.transparent : HexColor.fromHex("#FF5427"),
+                                        color: _data.darkMode
+                                            ? Colors.transparent
+                                            : HexColor.fromHex("#FF5427"),
                                       ),
                                     ),
                                     child: Icon(Icons.add,
@@ -161,34 +195,50 @@ class _MotorPageState extends State<MotorPage> {
                                 GestureDetector(
                                   onLongPress: () {
                                     // On press start motor Up
-                                    _blue.mandaMensagem("Motor,Down,Press");
-                                    print("1");
+                                    if (!_data.getAwsIotBoardConnect) {
+                                      _blue.mandaMensagem("Motor,Down,Press");
+                                    } else {
+                                      _data.setMotorPos = "1";
+                                      awsMovMotor("Down", 1);
+                                    }
+                                    print("Down 1");
                                   },
                                   onLongPressUp: () {
                                     // On release stop motor
-                                    _blue.mandaMensagem("Motor,Down,Release");
-                                    print("2");
+                                    //_blue.mandaMensagem("Motor,Down,Release");
+                                    if (_data.getMotorPos == 1) {
+                                      _data.setMotorPos = "2";
+                                    }
+                                    print("Down 2");
                                   },
                                   onLongPressCancel: () {
                                     // On "problem" stop motor
-                                    _blue.mandaMensagem("Motor,Down,Release");
+                                    //_blue.mandaMensagem("Motor,Down,Release");
+                                    if (_data.getMotorPos == 1) {
+                                      _data.setMotorPos = "2";
+                                    }
+                                    print("DownCancel");
                                   },
                                   child: Container(
                                     height: 80,
                                     width: 80,
                                     decoration: BoxDecoration(
-                                      color: _data.darkMode ? HexColor.fromHex("#0B2235"): Colors.transparent,
+                                      color: _data.darkMode
+                                          ? HexColor.fromHex("#0B2235")
+                                          : Colors.transparent,
                                       borderRadius:
                                           BorderRadius.all(Radius.circular(10)),
                                       border: Border.all(
                                         width: 1.5,
-                                        color: _data.darkMode ? Colors.transparent : HexColor.fromHex("#FF5427"),
+                                        color: _data.darkMode
+                                            ? Colors.transparent
+                                            : HexColor.fromHex("#FF5427"),
                                       ),
                                     ),
                                     child: Icon(Icons.remove,
                                         size: 40,
                                         opticalSize: 60,
-                                        color: Colors.white ),
+                                        color: Colors.white),
                                   ),
                                 ),
                               ],
@@ -234,7 +284,7 @@ Color customColorTraceProgress(int drawStep, int actualStep, int totalSteps) {
 
 Widget customLinearProgressTemperatureVertical(_data) {
   int totalSteps = 100;
-  int actualStep = [10,30,55,75,98][_data.getMotorPos]; // Min 8, Max 98 
+  int actualStep = [10, 30, 55, 75, 98][_data.getMotorPos]; // Min 8, Max 98
   return Container(
     height: 300,
     child: Row(

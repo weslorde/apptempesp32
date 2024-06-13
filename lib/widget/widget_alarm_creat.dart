@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:apptempesp32/api/aws_api.dart';
 import 'package:apptempesp32/api/blue_api.dart';
 import 'package:apptempesp32/api/data_storege.dart';
 import 'package:apptempesp32/api/hex_to_colors.dart';
@@ -100,6 +101,7 @@ class alarmTemperatureModal extends StatefulWidget {
 }
 
 class _alarmTemperatureModalState extends State<alarmTemperatureModal> {
+  final AwsController _aws = AwsController();
   final BlueController _blue = BlueController();
   final AllData _data = AllData();
   double grausStep = 3;
@@ -289,11 +291,22 @@ class _alarmTemperatureModalState extends State<alarmTemperatureModal> {
             //
             GestureDetector(
               onTap: () {
-                _blue.mandaMensagem("GAl,${[
-                  'Grelha',
-                  'Sensor1',
-                  'Sensor2'
-                ][sensorSelected - 1]},${(grausStep.toInt() + 1) * 25}");
+                if (!_data.getAwsIotBoardConnect) {
+                  _blue.mandaMensagem("GAl,${[
+                    'Grelha',
+                    'Sensor1',
+                    'Sensor2'
+                  ][sensorSelected - 1]},${(grausStep.toInt() + 1) * 25}");
+                } else {
+                  const topic = 'AlarmShadow/update';
+                  String msg =
+                      '{"state": {"desired": {"Flutter": "1", "CriaAlarm": "1", "CriaAlarmData":  "GAl,${[
+                    'Grelha',
+                    'Sensor1',
+                    'Sensor2'
+                  ][sensorSelected - 1]},${(grausStep.toInt() + 1) * 25}"  }}}';
+                  _aws.awsMsg(topic, msg);
+                }
                 Navigator.pop(context);
                 Navigator.pop(context);
               },
@@ -314,6 +327,7 @@ class alarmTimerModal extends StatefulWidget {
 }
 
 class _alarmTimerModalState extends State<alarmTimerModal> {
+  final AwsController _aws = AwsController();
   double hoursStep = 2;
   int hoursBaseNum = 0;
   double minutesStep = 2;
@@ -478,8 +492,15 @@ class _alarmTimerModalState extends State<alarmTimerModal> {
 
             GestureDetector(
               onTap: () {
-                _blue.mandaMensagem(
-                    "TAl,${hoursStep.toInt() + hoursBaseNum - 1},${(minutesStep.toInt() - 1) * 5}");
+                if (!_data.getAwsIotBoardConnect) {
+                  _blue.mandaMensagem(
+                      "TAl,${hoursStep.toInt() + hoursBaseNum - 1},${(minutesStep.toInt() - 1) * 5}"); 
+                } else {
+                  const topic = 'AlarmShadow/update';
+                  String msg =
+                      '{"state": {"desired": {"Flutter": "1", "CriaAlarm": "1", "CriaAlarmData": "TAl,${hoursStep.toInt() + hoursBaseNum - 1},${(minutesStep.toInt() - 1) * 5}" }}}';
+                  _aws.awsMsg(topic, msg);
+                }
                 Navigator.pop(context);
                 Navigator.pop(context);
               },

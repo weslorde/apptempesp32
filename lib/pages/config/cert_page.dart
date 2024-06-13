@@ -2,15 +2,18 @@ import 'package:apptempesp32/api/aws_api.dart';
 import 'package:apptempesp32/api/blue_api.dart';
 import 'package:apptempesp32/api/data_storege.dart';
 import 'package:apptempesp32/bloc/aws_bloc_files/aws_bloc.dart';
+import 'package:apptempesp32/bloc/aws_bloc_files/aws_bloc_events.dart';
 import 'package:apptempesp32/bloc/blue_bloc_files/blue_bloc.dart';
 import 'package:apptempesp32/bloc/certficado_bloc_files/cert_bloc.dart';
 import 'package:apptempesp32/bloc/certficado_bloc_files/cert_bloc_events.dart';
 import 'package:apptempesp32/bloc/certficado_bloc_files/cert_state.dart';
-import 'package:apptempesp32/dialogs/close_alert.dart';
+import 'package:apptempesp32/dialogs_box/close_alert.dart';
 import 'package:apptempesp32/pages/menus/botton_barr.dart';
+import 'package:apptempesp32/pages/menus/controller_pages.dart';
 import 'package:apptempesp32/pages/menus/top_barr.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:apptempesp32/api/hex_to_colors.dart';
 
 class PagCert extends StatelessWidget {
   const PagCert({super.key});
@@ -19,20 +22,19 @@ class PagCert extends StatelessWidget {
   Widget build(BuildContext context) {
     final BlueController blue = BlueController();
     final AwsController aws = AwsController();
-    final AllData data = AllData();
+    final AllData _data = AllData();
+    final PageIndex _pageController = PageIndex();
 
     return PopScope(
       canPop: false,
-      onPopInvoked: (_) => {onBackPressed(context)},
+      onPopInvoked: (_) => {_pageController.setIndex = 0},
       child: Scaffold(
-        //Top Menu
-        appBar: const TopBar(),
-
-        //Bottom Menu
-        // ignore: prefer_const_constructors
+        backgroundColor:
+            _data.darkMode ? Colors.white : HexColor.fromHex('#101010'),
+        appBar: TopBar(),
+        //
         bottomNavigationBar: BottomBar(),
-
-        //Body (all pags)
+        //
         body: MultiBlocProvider(
           providers: [
             BlocProvider<CertBloc>(
@@ -58,7 +60,8 @@ class PagCert extends StatelessWidget {
                           ...widgetIniState(context.read<CertBloc>())
                         // State Wifi to Board
                         else if (certState.stateActual == "WifiForm")
-                          ...widgetWifiForm(context.read<CertBloc>(),blue,data)
+                          ...widgetWifiForm(
+                              context.read<CertBloc>(), blue, _data)
                         else if (certState.stateActual == "WarningFiles") ...[
                           Text(blueState.stateActual),
                           const Text(
@@ -75,7 +78,7 @@ class PagCert extends StatelessWidget {
                           )
                         ]
                         // State
-                        else if (certState.stateActual == "WarningFiles") ...[
+                        else if (certState.stateActual == "CertWarningFiles") ...[
                           Text(blueState.stateActual),
                           const Text("Celular já sincronizado"),
                           const Text(
@@ -90,25 +93,35 @@ class PagCert extends StatelessWidget {
                           )
                         ]
                         // State
-                        else if (certState.stateActual == "SendAws") ...[
+                        else if (certState.stateActual == "AWStest") ...[
                           Text(certState.stateActual),
                           const SizedBox(
                             height: 50,
                           ),
                           TextButton(
                             onPressed: () {
-                              const topic =
-                                  '\$aws/things/ChurrasTech2406/shadow/name/TemperaturesShadow/update';
-                              const msg =
-                                  '{"state": {"desired": {"TAlvoFlutter": "166"}}}';
-                              aws.awsMsg(topic, msg);
+                              context.read<CertBloc>().add(const CertEnd());
+                              context.read<AwsBloc>().add(const CheckFiles());
                             },
-                            child: const Text('MandarAWS'),
+                            child: const Text('Check'),
                           )
                         ]
                         // Else State
                         else ...[
-                          Text(certState.stateActual)
+                          Text(
+                            'Certificate State: ${certState.stateActual}',
+                            style: TextStyle(
+                              color:
+                                  _data.darkMode ? Colors.black : Colors.white,
+                            ),
+                          ),
+                          Text(
+                            'AWS State: ${awsState.stateActual}',
+                            style: TextStyle(
+                              color:
+                                  _data.darkMode ? Colors.black : Colors.white,
+                            ),
+                          )
                         ]
                       ],
                     );
@@ -141,6 +154,12 @@ List<Widget> widgetIniState(contextBloc) {
       child: const Text("Alexa Linking"),
       onPressed: () {
         contextBloc.add(const InitAlexaLink());
+      },
+    ),
+    ElevatedButton(
+      child: const Text("Test MQTT"),
+      onPressed: () {
+        contextBloc.add(const AWStest());
       },
     ),
   ];
@@ -179,9 +198,9 @@ List<Widget> widgetWifiForm(contextBloc, BlueController blue, AllData data) {
               onPressed: () {
                 print(
                     "${loginWifiController.text} - ${passwordWifiController.text}");
-                    data.setWifiLogin = loginWifiController.text;
-                    data.setWifiPassword = passwordWifiController.text;
-                    blue.mandaMensagem("Wifi");
+                data.setWifiLogin = loginWifiController.text;
+                data.setWifiPassword = passwordWifiController.text;
+                blue.mandaMensagem("Wifi");
               },
               child: Text('Enviar'))
         ],

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:apptempesp32/api/aws_api.dart';
 import 'package:apptempesp32/api/blue_api.dart';
 import 'package:apptempesp32/api/data_storege.dart';
 import 'package:apptempesp32/api/hex_to_colors.dart';
@@ -7,7 +8,6 @@ import 'package:apptempesp32/widget/widget_text_font.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
-
 
 class temperatureTargetModal extends StatefulWidget {
   temperatureTargetModal({super.key});
@@ -19,6 +19,8 @@ class temperatureTargetModal extends StatefulWidget {
 class _temperatureTargetModalState extends State<temperatureTargetModal> {
   final BlueController _blue = BlueController();
   final AllData _data = AllData();
+  final AwsController _aws = AwsController();
+
   double grausStep = 3;
   int sensorSelected = 1;
 
@@ -112,10 +114,18 @@ class _temperatureTargetModalState extends State<temperatureTargetModal> {
             //
             GestureDetector(
               onTap: () {
-                _blue.mandaMensagem("Target,${(grausStep.toInt() + 1) * 25}");
+                if (!_data.getAwsIotBoardConnect) {
+                  _blue.mandaMensagem("Target,${(grausStep.toInt() + 1) * 25}");
+                } else {
+                  const topic = 'TemperaturesShadow/update';
+                  var msg =
+                      '{"state": {"desired": {"Flutter": "1", "TAlvoFlutter": "${(grausStep.toInt() + 1) * 25}"}}}';
+                  _aws.awsMsg(topic, msg);
+                }
                 Navigator.pop(context);
               },
-              child: buttonNewAlarmBig("Salvar Temperatura", Icons.timer, _data),
+              child:
+                  buttonNewAlarmBig("Salvar Temperatura", Icons.timer, _data),
             ),
           ],
         ),
@@ -123,7 +133,6 @@ class _temperatureTargetModalState extends State<temperatureTargetModal> {
     );
   }
 }
-
 
 Widget buttonNewAlarm(String text, IconData icon, _data) {
   return Container(
