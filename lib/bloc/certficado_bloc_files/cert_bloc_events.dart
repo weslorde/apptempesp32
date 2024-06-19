@@ -100,6 +100,22 @@ class AWStest implements CertEvent {
 }
 
 // AlexaLink
+class ALinkIni implements CertEvent {
+  const ALinkIni();
+}
+
+class ALinkTutorial1 implements CertEvent {
+  const ALinkTutorial1();
+}
+
+class ALinkTutorial2 implements CertEvent {
+  const ALinkTutorial2();
+}
+
+class ALinkTutorial3 implements CertEvent {
+  const ALinkTutorial3();
+}
+
 class ALinkWaiting implements CertEvent {
   const ALinkWaiting();
 }

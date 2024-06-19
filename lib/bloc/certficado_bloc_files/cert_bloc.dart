@@ -160,6 +160,23 @@ class CertBloc extends Bloc<CertEvent, CertState> {
 
     // AlexaLink
 
+    on<ALinkIni>((event, emit) async {
+      emitAll(stateActual: 'ALinkIni');
+    });
+
+    on<ALinkTutorial1>((event, emit) async {
+      emitAll(stateActual: 'ALinkTutorial1');
+    });
+
+    on<ALinkTutorial2>((event, emit) async {
+      emitAll(stateActual: 'ALinkTutorial2');
+    });
+
+    on<ALinkTutorial3>((event, emit) async {
+      emitAll(stateActual: 'ALinkTutorial3');
+    });
+
+
     on<ALinkWaiting>((event, emit) async {
       emitAll(stateActual: 'ALinkWaiting');
     });

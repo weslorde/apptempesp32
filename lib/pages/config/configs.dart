@@ -536,8 +536,7 @@ class PagConfig extends StatelessWidget {
                                               children: [
                                                 IconButton(
                                                     onPressed: () {
-                                                      //context.read<CertBloc>().add( //TODO
-                                                      //    const ALinkLoading());
+                                                      context.read<CertBloc>().add(const ALinkIni());
                                                       if (_aws.getMQTTConnect) {
                                                         _pageController
                                                             .setIndex = 9;

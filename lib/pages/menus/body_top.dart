@@ -3,9 +3,10 @@ import 'package:apptempesp32/api/hex_to_colors.dart';
 import 'package:flutter/material.dart';
 
 class BodyStart extends StatelessWidget {
-  BodyStart({super.key, required this.children});
+  BodyStart({super.key, required this.children, MainAxisAlignment mymainAxisAlignment = MainAxisAlignment.start});
   final List<Widget> children;
   final AllData _data = AllData();
+  final MainAxisAlignment mymainAxisAlignment = MainAxisAlignment.start;
 
   Widget build(BuildContext context) {
     return Container(
@@ -18,6 +19,7 @@ class BodyStart extends StatelessWidget {
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
         ),
         child: Column(
+          mainAxisAlignment: mymainAxisAlignment,
           children: [
             Container(
               margin: const EdgeInsets.only(top: 16),

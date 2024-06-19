@@ -22,6 +22,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:apptempesp32/api/hex_to_colors.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PagAlexaLink extends StatelessWidget {
   const PagAlexaLink({super.key});
@@ -65,303 +66,42 @@ class PagAlexaLink extends StatelessWidget {
                   context.read<CertBloc>().add(const ALinkWarning());
                 }
               };
-
+              if (certState.stateActual == "empty") {
+                context.read<CertBloc>().add(const ALinkIni());
+              }
+              List<String> listItens = [
+                "ALinkIni",
+                "ALinkTutorial1",
+                "ALinkTutorial2",
+                "ALinkTutorial3"
+              ];
               return BodyStart(
                 children: [
-                  Stack(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 90.0),
-                        child: blueToggle(status: blueState.screenMsg),
-                      ), // Blue Status Indicator
-                      // ALL the Pag
-                      Container(
-                        width: double.infinity,
-                        margin:
-                            EdgeInsets.symmetric(vertical: 30, horizontal: 30),
+                  Expanded(
+                    child: Container(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 30.0, bottom: 20.0),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            //
-                            const SizedBox(height: 30),
-                            // Title Alexa Link
-                            Center(
-                              child: TextYanKaf(
-                                data: "Alexa Link",
-                                height: 0.87,
-                                weight: FontWeight.w700,
-                                hexColor:
-                                    _data.darkMode ? "#0B2235" : "#FFFFFF",
-                                size: 35,
-                              ),
-                            ),
-                            //
-                            const SizedBox(height: 30),
-                            // Passo 1 Title
-                            TextYanKaf(
-                              data: "Necessário",
-                              height: 0.87,
-                              weight: FontWeight.w700,
-                              hexColor: _data.darkMode ? "#0B2235" : "#FFFFFF",
-                              size: 25,
-                            ),
-                            const SizedBox(height: 10),
-                            // Conexão Internet Container
-                            Container(
-                              padding: EdgeInsets.symmetric(horizontal: 15),
-                              height: 50,
-                              decoration: BoxDecoration(
-                                  color: _data.darkMode
-                                      ? HexColor.fromHex('#F8F8F8')
-                                      : Colors.black45,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10))),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  // Left Row - Title and Info
-                                  Row(
-                                    children: [
-                                      TextYanKaf(
-                                        data: "Conexão Internet",
-                                        weight: FontWeight.w500,
-                                        hexColor: _data.darkMode
-                                            ? "#0B2235"
-                                            : "#FFFFFF",
-                                        size: 20,
-                                      ),
-                                      IconButton(
-                                          onPressed: () {
-                                            infoConfigAlert(
-                                                context,
-                                                "Conexão Internet",
-                                                "Para se comunicar com a churrasqueira sem usar Bluetooth, é necessária uma conexão com a internet. \n\nAlém disso, é preciso vincular o aplicativo ao equipamento antes da primeira utilização.");
-                                          },
-                                          icon: Icon(
-                                            Icons.info,
-                                            color: _data.darkMode
-                                                ? Colors.black
-                                                : Colors.white70,
-                                          ))
-                                    ],
-                                  ),
-                                  // Rigth Row - Retry and Status
-                                  Row(
-                                    children: [
-                                      _aws.getAwsHasNet
-                                          ? Icon(
-                                              Icons.check,
-                                              color: Colors.green,
-                                            )
-                                          : Row(
-                                              children: [
-                                                IconButton(
-                                                    onPressed: () {
-                                                      context.read<AwsBloc>().add(
-                                                          const CheckConnect());
-                                                    },
-                                                    icon: Icon(
-                                                      Icons.replay,
-                                                      color: _data.darkMode
-                                                          ? Colors.black
-                                                          : Colors.white70,
-                                                    )),
-                                                Icon(
-                                                  Icons.close,
-                                                  color: Colors.red,
-                                                )
-                                              ],
-                                            ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                            // End Wifi Container
-                            const SizedBox(height: 10),
-                            // Check App Vinculado
-                            Container(
-                              padding: EdgeInsets.symmetric(horizontal: 15),
-                              height: 50,
-                              decoration: BoxDecoration(
-                                  color: _data.darkMode
-                                      ? HexColor.fromHex('#F8F8F8')
-                                      : Colors.black45,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10))),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  // Left Row - Title and Info
-                                  Row(
-                                    children: [
-                                      TextYanKaf(
-                                        data: "Vincular Churrasqueira",
-                                        weight: FontWeight.w500,
-                                        hexColor: _data.darkMode
-                                            ? "#0B2235"
-                                            : "#FFFFFF",
-                                        size: 20,
-                                      ),
-                                      IconButton(
-                                          onPressed: () {
-                                            infoConfigAlert(
-                                                context,
-                                                "Vincular Churrasqueira",
-                                                "Para conectar com sua churrasqueira sem usar Bluetooth, é necessário vincular seu celular ao dispositivo.");
-                                          },
-                                          icon: Icon(
-                                            Icons.info,
-                                            color: _data.darkMode
-                                                ? Colors.black
-                                                : Colors.white70,
-                                          ))
-                                    ],
-                                  ),
-                                  // Rigth Row - Retry and Status
-                                  Row(
-                                    children: [
-                                      _aws.getAwsHasCert
-                                          ? Icon(
-                                              Icons.check,
-                                              color: Colors.green,
-                                            )
-                                          : Row(
-                                              children: [
-                                                IconButton(
-                                                    onPressed: () {
-                                                      context.read<AwsBloc>().add(
-                                                          const CheckFiles());
-                                                      infoConfigAlert(
-                                                          context,
-                                                          "Vincular Churrasqueira",
-                                                          "Na página anterior complete o passo 2.");
-                                                    },
-                                                    icon: Icon(
-                                                      Icons.replay,
-                                                      color: _data.darkMode
-                                                          ? Colors.black
-                                                          : Colors.white70,
-                                                    )),
-                                                Icon(
-                                                  Icons.close,
-                                                  color: Colors.red,
-                                                )
-                                              ],
-                                            ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                            // End Check App Vinculado
-                            const SizedBox(height: 30),
-                            // Passo 1 Title
-                            TextYanKaf(
-                              data: "Passo 1",
-                              height: 0.87,
-                              weight: FontWeight.w700,
-                              hexColor: _data.darkMode ? "#0B2235" : "#FFFFFF",
-                              size: 25,
-                            ),
-                            //
-                            const SizedBox(height: 10),
-                            // Explanation
-                            TextYanKaf(
-                              data: " Abra seu aplicativo Alexa, baixe a skill Monzio Churrasco, Realize a vinculação de conta pelo aplicativa Alexa. Por voz acione a skill falando: Abrir meu chhurras, apos a resposta pergunte qual a chave de cadastro. Com a chave preencha os campos abaixo",
-                              weight: FontWeight.w500,
-                              hexColor: _data.darkMode ? "#0B2235" : "#FFFFFF",
-                              size: 20,
-                            ),
-                            //
-                            const SizedBox(height: 10),
-                            //
-                            Container(
-                                padding: EdgeInsets.symmetric(horizontal: 15),
-                                height: 60,
-                                decoration: BoxDecoration(
-                                    color: _data.darkMode
-                                        ? HexColor.fromHex('#F8F8F8')
-                                        : Colors.black45,
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(10))),
-                                child: TextFormField(
-                                  style: TextStyle(
-                                    color: _data.darkMode
-                                        ? Colors.black
-                                        : Colors.white,
-                                  ),
-                                  controller: _textEmailController,
-                                  decoration: InputDecoration(
-                                      hintText: "Email da Alexa",
-                                      hintStyle: TextStyle(
-                                        color: _data.darkMode
-                                            ? Colors.black38
-                                            : Colors.white38,
-                                      )),
-                                )),
-                            //
-                            SizedBox(height: 10),
-                            //
-                            Container(
-                                padding: EdgeInsets.symmetric(horizontal: 15),
-                                height: 60,
-                                decoration: BoxDecoration(
-                                    color: _data.darkMode
-                                        ? HexColor.fromHex('#F8F8F8')
-                                        : Colors.black45,
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(10))),
-                                child: TextFormField(
-                                  style: TextStyle(
-                                    color: _data.darkMode
-                                        ? Colors.black
-                                        : Colors.white,
-                                  ),
-                                  controller: _textCodeController,
-                                  decoration: InputDecoration(
-                                      hintText: "Codigo de Cadastro",
-                                      hintStyle: TextStyle(
-                                        color: _data.darkMode
-                                            ? Colors.black38
-                                            : Colors.white38,
-                                      )),
-                                )),
-                            TextButton(
-                                onPressed: () {
-                                  infoConfigAlert(
-                                      context, "Conexão Internet", "");
-                                  _aws.awsMsg('DynamoSendShadow/update',
-                                      '{"state": { "desired": {"MsgError": "", "Email": "${_textEmailController.text}", "Dispositivo": "${_aws.getDispName}", "MyKey": "${_textCodeController.text}", "Error": "0", "MsgError": ""}}}');
-                                  context
-                                      .read<CertBloc>()
-                                      .add(const ALinkLoading());
-                                },
-                                child: Text(
-                                  "TESTE",
-                                  style: TextStyle(
-                                    color: _data.darkMode
-                                        ? Colors.black
-                                        : Colors.white,
-                                  ),
-                                )),
-                            SizedBox(
-                              height: 30,
-                            ),
-                            Text(
-                              "Mensagem: ${_aws.getAlexaLinkResponse}",
-                              style: TextStyle(
-                                color: _data.darkMode
-                                    ? Colors.black
-                                    : Colors.white,
-                              ),
-                            )
+                            if (certState.stateActual == "ALinkIni")
+                              AlexaTutorial0()
+                            else if (certState.stateActual == "ALinkTutorial1")
+                              AlexaTutorial1()
+                            else if (certState.stateActual == "ALinkTutorial2")
+                              AlexaTutorial2()
+                            else if (certState.stateActual == "ALinkTutorial3")
+                              AlexaTutorial1()
+                            else
+                              Container(),
+                            BottonSelector(
+                                listItens.indexWhere(
+                                    (element) => element == certState.stateActual),
+                                context.read<CertBloc>())
                           ],
                         ),
                       ),
-                    ],
+                    ),
                   ),
                 ],
               );
@@ -371,4 +111,87 @@ class PagAlexaLink extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget AlexaTutorial0() {
+  return Container(
+    child: Text('TESTANDO0'),
+  );
+}
+
+Widget AlexaTutorial1() {
+  final Uri _url = Uri.parse('https://www.amazon.com.br/dp/B0D63DLP9X/');
+  Future<void> _launchUrl() async {
+    if (!await launchUrl(_url)) {
+      throw Exception('Could not launch $_url');
+    }
+  }
+
+  return Container(
+      child: Column(
+    children: [
+      Text("TESTEEEE"),
+      TextButton(onPressed: _launchUrl, child: Text("MeuLink"))
+    ],
+  ));
+}
+
+Widget AlexaTutorial2() {
+  return Container(
+    child: Text('TESTANDO1'),
+  );
+}
+
+Widget AlexaTutorial3() {
+  return Container(
+    child: Text('TESTANDO2'),
+  );
+}
+
+Widget BottonSelector(int actualPag, testeww) {
+  List listSelect = [
+    ALinkIni(),
+    ALinkTutorial1(),
+    ALinkTutorial2(),
+    ALinkTutorial3()
+  ];
+  int npags = 4;
+  return Container(
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        IconButton(
+            onPressed: () {
+              if (actualPag != 0) {
+                testeww.add(listSelect[actualPag - 1]);
+              }
+            },
+            icon: Icon(
+              Icons.keyboard_arrow_left_rounded,
+              size: 40,
+              color: actualPag != 0 ? Colors.black : Colors.transparent,
+            )),
+        for (int pag = 0; pag < npags; pag++)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5.0),
+            child: Icon(
+              Icons.circle,
+              size: 20,
+              color: pag == actualPag ? Colors.black : Colors.grey.shade300,
+            ),
+          ),
+        IconButton(
+            onPressed: () {
+              if (actualPag != 3) {
+                testeww.add(listSelect[actualPag + 1]);
+              }
+            },
+            icon: Icon(
+              Icons.keyboard_arrow_right_rounded,
+              size: 40,
+              color: actualPag != 3 ? Colors.black : Colors.transparent,
+            )),
+      ],
+    ),
+  );
 }
