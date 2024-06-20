@@ -81,10 +81,17 @@ flutter:
       - lib/assets/images/TargetIcon.png
       - lib/assets/images/bannerChurrasco.png
       - lib/assets/images/logoNome.png
+      - lib/assets/images/amazon/AmazonAtivar.jpg
+      - lib/assets/images/amazon/AmazonConcluido.jpg
+      - lib/assets/images/amazon/AmazonPermitir.jpg
+      - lib/assets/images/amazon/AmazonVincular.jpg
+
       - lib/assets/awsCert/rootCA.pem
       - lib/assets/awsCert/device.pem.crt
       - lib/assets/awsCert/private.pem.key
+
       - lib/assets/sons/slow_spring_board.mp3
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

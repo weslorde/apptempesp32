@@ -116,6 +116,10 @@ class ALinkTutorial3 implements CertEvent {
   const ALinkTutorial3();
 }
 
+class ALinkTutorial4 implements CertEvent {
+  const ALinkTutorial4();
+}
+
 class ALinkWaiting implements CertEvent {
   const ALinkWaiting();
 }

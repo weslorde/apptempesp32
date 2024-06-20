@@ -176,6 +176,9 @@ class CertBloc extends Bloc<CertEvent, CertState> {
       emitAll(stateActual: 'ALinkTutorial3');
     });
 
+    on<ALinkTutorial4>((event, emit) async {
+      emitAll(stateActual: 'ALinkTutorial4');
+    });
 
     on<ALinkWaiting>((event, emit) async {
       emitAll(stateActual: 'ALinkWaiting');
