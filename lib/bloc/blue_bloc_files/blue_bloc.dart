@@ -30,7 +30,7 @@ class BlueBloc extends Bloc<BlueEvent, BlueState> {
         ) {
     //Logic of ALL STATES -----------------------------------
 
-    on<InitState>((event, emit) async {
+    on<InitStateBlue>((event, emit) async {
       _blue.setBlueLinked = false;
       _blue.setBlueIsOn = false;
       _blue.setLocatIsOn = false;
@@ -57,7 +57,7 @@ class BlueBloc extends Bloc<BlueEvent, BlueState> {
       _blue.setScreenMsg = 'Falha';
       emitAll(stateActual: 'WarningBlueSup', msg: 'Bluetooth não suportado');
       await Future.delayed(const Duration(seconds: 5));
-      add(const InitState());
+      add(const InitStateBlue());
     });
 
     on<BlueIsOn>((event, emit) {
@@ -99,7 +99,7 @@ class BlueBloc extends Bloc<BlueEvent, BlueState> {
         await FlutterBluePlus.turnOn();
       } on Exception catch (_) {}
       _blue.setBlueTurningOn = false;
-      add(const InitState());
+      add(const InitStateBlue());
     });
 
     on<LocationisOn>((event, emit) async {
@@ -127,7 +127,7 @@ class BlueBloc extends Bloc<BlueEvent, BlueState> {
           stateActual: 'WarningLocationOff',
           msg: 'Localização não está ligado');
       await Future.delayed(const Duration(seconds: 3));
-      add(const InitState());
+      add(const InitStateBlue());
     });
 
     on<BlueStartScan>((event, emit) async {
@@ -179,7 +179,7 @@ class BlueBloc extends Bloc<BlueEvent, BlueState> {
           stateActual: 'WarningDeviceNotFound',
           msg: 'Dispositivo Não encontrado');
       await Future.delayed(const Duration(seconds: 5));
-      add(const InitState());
+      add(const InitStateBlue());
     });
 
     on<BlueStartConnect>((event, emit) async {
@@ -211,7 +211,7 @@ class BlueBloc extends Bloc<BlueEvent, BlueState> {
           stateActual: 'WarningBlueDisconnect',
           msg: 'Dispositivo Desconectado');
       await Future.delayed(const Duration(seconds: 3));
-      add(const InitState());
+      add(const InitStateBlue());
     });
 
     on<BlueStartDiscover>((event, emit) async {

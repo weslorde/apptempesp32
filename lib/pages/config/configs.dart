@@ -56,9 +56,9 @@ class PagConfig extends StatelessWidget {
               final certState = context.watch<CertBloc>().state;
               final awsState = context.watch<AwsBloc>().state;
               final blueState = context.watch<BlueBloc>().state;
-              
+
               _dynamo.getClientHasDisp(_aws.getDispName, () {
-                context.read<CertBloc>().add(const ALinkLoading());
+                context.read<CertBloc>().add(const ALinkLoading()); //TODO buga se entrar e sair rapido da configs PAGE
               });
 
               return BodyStart(
@@ -411,25 +411,10 @@ class PagConfig extends StatelessWidget {
                                         Row(
                                           children: [
                                             _aws.getAwsHasCert
-                                                ? IconButton(
-                                                    onPressed: () {
-                                                      if (_blue
-                                                          .getblueConnect) {
-                                                        context
-                                                            .read<CertBloc>()
-                                                            .add(
-                                                                const InitCertFiles());
-                                                      } else {
-                                                        infoConfigAlert(
-                                                            context,
-                                                            "Erro ao Vincular Agora",
-                                                            "Necessário estar conectado por Bluetooth para fazer essa etapa.");
-                                                      }
-                                                    },
-                                                    icon: Icon(
-                                                      Icons.check,
-                                                      color: Colors.green,
-                                                    ))
+                                                ? Icon(
+                                                    Icons.check,
+                                                    color: Colors.green,
+                                                  )
                                                 : Row(
                                                     children: [
                                                       IconButton(
@@ -536,8 +521,18 @@ class PagConfig extends StatelessWidget {
                                               children: [
                                                 IconButton(
                                                     onPressed: () {
-                                                      context.read<CertBloc>().add(const ALinkIni());
-                                                      if (_aws.getMQTTConnect) {
+                                                      if (!_aws.getAwsHasCert) {
+                                                        infoConfigAlert(
+                                                            context,
+                                                            "Erro ao Vincular Agora",
+                                                            "Necessário estar conectado por Bluetooth para fazer essa etapa.");
+                                                      } else if (!_aws
+                                                          .getMQTTConnect) {
+                                                        infoConfigAlert(
+                                                            context,
+                                                            "Erro ao Conectar",
+                                                            "Erro com a comunicação com o servidor tente novamente mais tarde.");
+                                                      } else {
                                                         _pageController
                                                             .setIndex = 9;
                                                       }

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ffi';
 
+import 'package:apptempesp32/api/aws_dynamodb_api.dart';
 import 'package:apptempesp32/api/blue_api.dart';
 import 'package:apptempesp32/api/data_storege.dart';
 import 'package:apptempesp32/api/hex_to_colors.dart';
@@ -85,7 +86,7 @@ class _RecipeHomePagState extends State<RecipeHomePag> {
         //
         body: BlocBuilder<DynamoBloc, DynamoState>(
           builder: ((context, state) {
-            if (state.stateActual == 'empty') {
+            if (state.stateActual == 'empty' || state.stateActual == 'InitState') {
               context.read<DynamoBloc>().add(const CheckData());
             }
 

@@ -44,13 +44,14 @@ dependencies:
   duration_picker: ^1.1.1
   numberpicker: ^2.1.2
   path_provider: ^2.1.1
-  mqtt_client: ^10.0.0
+  mqtt_client: ^10.4.0
   internet_connection_checker: ^1.0.0+1
   connectivity_plus: ^5.0.2
   google_fonts: ^4.0.4
   shared_preferences: ^2.0.8
   flutter_local_notifications: ^15.0.1
   url_launcher: ^6.0.0
+  email_validator: '^2.1.17'
 
 
 dev_dependencies:

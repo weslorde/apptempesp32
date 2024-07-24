@@ -36,9 +36,13 @@ class AwsController {
   AwsController._sharedInstance();
   factory AwsController() => _shared;
 
+  final AllData _data = AllData();
+
   late MqttServerClient _clientAWS;
 
-  late String _dispName;
+  String _dispName = "";
+
+  List<List<String>> _listDispsPath = [[]];
 
   final AllData data = AllData();
 
@@ -65,6 +69,8 @@ class AwsController {
   bool get getAwsHasNet => _awsHasNet;
   bool get getMQTTConnect => _awsMQTTConnect;
 
+  List<List<String>> get getListDispsPath => _listDispsPath;
+
   set setMQTTConnect(logic) => _awsMQTTConnect = logic;
 
   //Return true if all 3 files exists
@@ -77,7 +83,8 @@ class AwsController {
       'deviceName.key'
     ];
     for (String fileName in listFileName) {
-      final file = File('${directory.path}/AWS/${fileName}');
+      final file = File(
+          '${directory.path}/AWS/${_data.getFileIdDispActual}/${fileName}'); //TODO pastas
       if (!file.existsSync()) {
         return false;
       }
@@ -112,7 +119,7 @@ class AwsController {
       }
     });
     _awsHasNet = isDeviceConnected;
-    return false;
+    return isDeviceConnected;
   }
 
   Future creatClient() async {
@@ -159,14 +166,16 @@ class AwsController {
     try {
       print('MQTT client connecting to AWS IoT using certificates....');
       await _clientAWS.connect();
+      print("CONECTADO?");
     } on Exception catch (e) {
       print('MQTT client exception - $e');
       _clientAWS.disconnect();
-      exit(-1);
+      //exit(-1);
     }
   }
 
   Future<bool> arrumar() async {
+    print("TESTE ${_clientAWS.connectionStatus!.state}");
     if (_clientAWS.connectionStatus!.state == MqttConnectionState.connected) {
       print('MQTT client connected to AWS IoT');
 
@@ -305,7 +314,8 @@ class AwsController {
 
   Future<ByteData> certBytePicker(String fileName) async {
     final directory = await getApplicationDocumentsDirectory();
-    final file = File('${directory.path}/AWS/${fileName}');
+    final file = File(
+        '${directory.path}/AWS/${_data.getFileIdDispActual}/${fileName}'); //TODO pastas
     print(file.readAsString());
     Uint8List bytes = file.readAsBytesSync();
     return ByteData.view(bytes.buffer);
@@ -313,8 +323,33 @@ class AwsController {
 
   Future<String> fileDataPicker() async {
     final directory = await getApplicationDocumentsDirectory();
-    final file = File('${directory.path}/AWS/deviceName.key');
+    final file = File(
+        '${directory.path}/AWS/${_data.getFileIdDispActual}/deviceName.key'); //TODO pastas
     return file.readAsString();
+  }
+
+  dispsRegistered(attState) async {
+    final directory = await getApplicationDocumentsDirectory();
+    //
+    //print(directory);
+    var folders = await Directory('${directory.path}/AWS/')
+        .listSync()
+        .where((entity) => entity is Directory)
+        .toList();
+
+    List<List<String>> dispFiles = [];
+    for (int x = 0; x < folders.length; x++) {
+      //print(folders[x].path.replaceAll('${directory.path}/AWS/', ""));
+      var name =
+          await File('${directory.path}/AWS/$x/deviceName.key').readAsString();
+      dispFiles.add([
+        folders[x].path.replaceAll('${directory.path}/AWS/', ""),
+        name.replaceAll("ChurrasTech", "")
+      ]);
+    }
+    //
+    _listDispsPath = dispFiles; // TODO return
+    attState();
   }
 
   void closeAWS() {

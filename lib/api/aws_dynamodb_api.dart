@@ -38,9 +38,7 @@ class AwsDynamoDB {
   late Function _goDataOk;
 
   final AllData _data = AllData();
-
-  bool _firstClientTest = true;
-
+  
   goDataOk(Function fun) {
     _goDataOk = fun;
   }
@@ -57,7 +55,7 @@ class AwsDynamoDB {
 
   newRecipeData() {
     int testData = DateTime.now().millisecondsSinceEpoch;
-    print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+    print("Teste Delta Data download Receitas");
     print(testData);
     print(_recipeData['AppDate']);
     num deltaTime = (testData - _recipeData['AppDate']) /
@@ -112,14 +110,17 @@ class AwsDynamoDB {
   }
 
   Future<void> getClientHasDisp(String dispName, Function changeState) async {
-    if (_firstClientTest) {
-      _firstClientTest = false;
+    if (_data.getFirstClientHasDisp) {
+      print("entrouuuuu1");
+      _data.setFirstClientHasDisp = false;
+      //https://w6f4yzgqhhnievclw2kqr47aei0sffiw.lambda-url.sa-east-1.on.aws/?fun=getAll&id=6666
       var url = Uri.https(
           'w6f4yzgqhhnievclw2kqr47aei0sffiw.lambda-url.sa-east-1.on.aws', '', {
         'fun': 'getAll',
         'id': {dispName.replaceAll("ChurrasTech", "")}
       });
       final response = await http.get(url);
+      print("TESTE, ${response.body}");
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
         print(jsonData);
@@ -132,6 +133,7 @@ class AwsDynamoDB {
         }
       } else {
         _data.setDynamoUserAlexaLink = false;
+        changeState();
         //throw Exception('Failed to load data');
       }
     }

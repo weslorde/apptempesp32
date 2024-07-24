@@ -21,7 +21,7 @@ class AwsBloc extends Bloc<AwsEvent, AwsState> {
         ) {
     //Logic of ALL STATES -----------------------------------
 
-    on<InitState>((event, emit) async {
+    on<InitStateAws>((event, emit) async {
       emitAll(stateActual: 'InitState');
     });
 
@@ -40,7 +40,7 @@ class AwsBloc extends Bloc<AwsEvent, AwsState> {
       emitAll(stateActual: 'WarningInternet');
       _aws.setMQTTConnect = false;
       await Future.delayed(const Duration(seconds: 5));
-      add(const InitState());
+      add(const InitStateAws());
     });
 
     on<CheckFiles>((event, emit) async {
@@ -55,7 +55,7 @@ class AwsBloc extends Bloc<AwsEvent, AwsState> {
     on<WarningFiles>((event, emit) async {
       emitAll(stateActual: 'WarningFiles');
       await Future.delayed(const Duration(seconds: 5));
-      add(const InitState());
+      add(const InitStateAws());
     });
 
     on<CheckAwsConnect>((event, emit) async {
@@ -73,7 +73,7 @@ class AwsBloc extends Bloc<AwsEvent, AwsState> {
     on<WarningAwsConnect>((event, emit) async {
       emitAll(stateActual: 'WarningAwsConnect');
       await Future.delayed(const Duration(seconds: 5));
-      add(const InitState());
+      add(const InitStateAws());
     });
 
     on<StartAws>((event, emit) async {

@@ -5,8 +5,8 @@ class DynamoEvent{
   const DynamoEvent();
 }
 
-class InitState implements DynamoEvent{
-  const InitState();
+class InitStateDynamo implements DynamoEvent{
+  const InitStateDynamo();
 }
 
 class CheckData implements DynamoEvent{

@@ -45,6 +45,7 @@ class _HomePageState extends State<HomePage> {
     final AwsController _aws = AwsController();
     final PageIndex _pageController = PageIndex();
 
+
     return PopScope(
       canPop: false,
       onPopInvoked: (_) => {onBackPressed(context)},
@@ -65,6 +66,7 @@ class _HomePageState extends State<HomePage> {
             final dynamoState = context.watch<DynamoBloc>().state;
             final blueState = context.watch<BlueBloc>().state;
             final awsState = context.watch<AwsBloc>().state;
+            //
             if (awsState.stateActual == 'empty' ||
                 awsState.stateActual == "InitState") {
               if (!_aws.getAwsHasNet) {
@@ -73,7 +75,8 @@ class _HomePageState extends State<HomePage> {
                 context.read<AwsBloc>().add(const CheckFiles());
               }
             }
-            if (dynamoState.stateActual == 'empty' && _aws.getAwsHasNet) {
+            //
+            if ((dynamoState.stateActual == 'empty' || dynamoState.stateActual == 'InitState') && _aws.getAwsHasNet) {
               context.read<DynamoBloc>().add(const CheckData());
             }
             return dynamoState.stateActual == 'DataOk'
@@ -183,7 +186,9 @@ class _HomePageState extends State<HomePage> {
                                     child: Row(
                                       children: [
                                         GestureDetector(
-                                          onTap: () {},
+                                          onTap: () {
+                                            _pageController.setIndex = 10;
+                                          },
                                           child: homeCardsGenerator(
                                               Icons.key,
                                               "Meus             Dispositivos",
@@ -200,6 +205,8 @@ class _HomePageState extends State<HomePage> {
                                         ),
                                         GestureDetector(
                                           onTap: () {
+                                            _data.setFirstClientHasDisp = !_data
+                                                .getDynamoUserAlexaLink; //IF User is AlexaLink set HasDisp False to not check if HasDisp
                                             _pageController.setIndex = 7;
                                           },
                                           child: homeCardsGenerator(Icons.wifi,

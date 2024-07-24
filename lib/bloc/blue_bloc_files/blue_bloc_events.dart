@@ -5,8 +5,8 @@ class BlueEvent{
   const BlueEvent();
 }
 
-class InitState implements BlueEvent{
-  const InitState();
+class InitStateBlue implements BlueEvent{
+  const InitStateBlue();
 }
 
 @immutable

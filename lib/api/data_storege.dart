@@ -39,7 +39,18 @@ class AllData {
 
   bool _dynamoUserAlexaLink = false;
 
+  bool _firstClientHasDisp = true;
+
   Function _favoritesUpdate = () {};
+
+  Function _restartAppTree = () {};
+
+  bool _alexaLinkPopLoad = false;
+
+  int _fileIdDispActual = 1;
+
+  List<String> _listDispNamesID = ["6666"];
+  List<String> _listDispNames = ["Minha casa"];
 
   get darkMode => _darkMode;
 
@@ -69,6 +80,20 @@ class AllData {
 
   get getDynamoUserAlexaLink => _dynamoUserAlexaLink;
 
+  get getAlexaLinkPopLoad => _alexaLinkPopLoad;
+
+  get getFirstClientHasDisp => _firstClientHasDisp;
+
+  get getFileIdDispActual => _fileIdDispActual;
+
+  String getMyDispNames(String myID) {
+    int indice = _listDispNamesID.indexOf(myID);
+    if (indice == -1) {
+      return "0";
+    }
+    return _listDispNames[indice];
+  }
+
   ///////////////////////// Set /////////////////////////////////////
 
   setDarkMode() {
@@ -90,6 +115,9 @@ class AllData {
 
   setFavoritesUpdate(fun) => _favoritesUpdate = fun;
   get getFavoritesUpdate => _favoritesUpdate;
+
+  setRestartAppTree(fun) => _restartAppTree = fun;
+  get getRestartAppTree => _restartAppTree;
 
   set setListTemp(List<String> list) {
     _tGrelha = list[0];
@@ -114,6 +142,24 @@ class AllData {
   set setAwsIotBoardConnect(logic) => _awsIotBoardConnect = logic;
 
   set setDynamoUserAlexaLink(logic) => _dynamoUserAlexaLink = logic;
+
+  set setAlexaLinkPopLoad(logic) => _alexaLinkPopLoad = logic;
+
+  set setFirstClientHasDisp(logic) => _firstClientHasDisp = logic;
+
+  set setFileIdDispActual(int num) =>
+      {_fileIdDispActual = num, _saveActualDisp()};
+
+  setListDispNames(String myID, String newName) {
+    int indice = _listDispNamesID.indexOf(myID);
+    if (indice == -1) {
+      _listDispNamesID.add(myID);
+      _listDispNames.add(newName);
+    } else {
+      _listDispNames[indice] = newName;
+    }
+    _saveDispNames();
+  }
 
   setCertBlank() {
     _cert = "";
@@ -175,6 +221,35 @@ class AllData {
   Future<void> _saveDarkMode() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('darkMode', _darkMode);
+  }
+
+  Future<void> loadActualDisp() async {
+    print("Loading actualDisp");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    //print("LOAD: ${prefs.getBool('darkMode')}");
+    _fileIdDispActual = prefs.getInt('actualDisp') ?? 0;
+    print("Actual Disp ID: $_fileIdDispActual");
+  }
+
+  Future<void> _saveActualDisp() async {
+    print("Save actualDisp");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('actualDisp', _fileIdDispActual);
+  }
+
+  Future<void> _saveDispNames() async {
+    print("Save DispNames");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('listDispNames', _listDispNames);
+    await prefs.setStringList('listDispNamesID', _listDispNamesID);
+  }
+
+  Future<void> loadDispNames() async {
+    print("Loading DispNames");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    //print("LOAD: ${prefs.getBool('darkMode')}");
+    _listDispNames = prefs.getStringList('listDispNames') ?? ["Minha casa"];
+    _listDispNamesID = prefs.getStringList('listDispNamesID') ?? ["6666"];
   }
 
   Future<void> loadFavoriteIdList() async {

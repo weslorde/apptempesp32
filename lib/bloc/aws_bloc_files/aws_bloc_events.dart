@@ -5,8 +5,8 @@ class AwsEvent{
   const AwsEvent();
 }
 
-class InitState implements AwsEvent{
-  const InitState();
+class InitStateAws implements AwsEvent{
+  const InitStateAws();
 }
 
 class CheckFiles implements AwsEvent{

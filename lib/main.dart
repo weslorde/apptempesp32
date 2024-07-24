@@ -6,6 +6,7 @@ import 'package:apptempesp32/pages/alarm_page.dart';
 import 'package:apptempesp32/pages/config/alexa_link.dart';
 import 'package:apptempesp32/pages/config/cert_page.dart';
 import 'package:apptempesp32/pages/config/configs.dart';
+import 'package:apptempesp32/pages/config/disps_page.dart';
 import 'package:apptempesp32/pages/home_page.dart';
 import 'package:apptempesp32/pages/init_banner.dart';
 import 'package:apptempesp32/pages/menus/controller_pages.dart';
@@ -86,8 +87,11 @@ class _SelectedPageState extends State<SelectedPage> {
 
   @override
   void initState() {
+    print("Ini");
     final AllData _data = AllData();
     _data.loadFavoriteIdList();
+    _data.loadActualDisp();
+    _data.loadDispNames();
     _data.loadDarkMode().then((_) {
       Future.delayed(Duration(seconds: 3)).then((_) {
         _pageController.setIndex = 0;
@@ -98,7 +102,6 @@ class _SelectedPageState extends State<SelectedPage> {
     super.initState();
   }
 
-  @override
   Widget build(BuildContext context) {
     return /*BlocListener<AppBloc, AppState>(listener: (context, state){if (state.blueIsOn){context.read<AppBloc>().add(const BlueIsOn());}}, child:*/ [
       //List of Pages
@@ -113,6 +116,7 @@ class _SelectedPageState extends State<SelectedPage> {
       const PagConfig(),
       const BannerInit(),
       const PagAlexaLink(),
+      const PagDisp(),
     ][_index];
   }
 }

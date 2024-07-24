@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:apptempesp32/api/aws_api.dart';
 import 'package:apptempesp32/api/blue_api.dart';
 import 'package:apptempesp32/api/data_storege.dart';
@@ -17,6 +19,7 @@ import 'package:apptempesp32/pages/menus/controller_pages.dart';
 import 'package:apptempesp32/pages/menus/top_barr.dart';
 import 'package:apptempesp32/widget/widget_blue_toggle.dart';
 import 'package:apptempesp32/widget/widget_text_font.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -60,7 +63,11 @@ class PagAlexaLink extends StatelessWidget {
               final blueState = context.watch<BlueBloc>().state;
 
               _aws.setfunAlexaLink = (int n) {
-                Navigator.of(context).pop(); // Close Loading Dialog
+                if (_data.getAlexaLinkPopLoad) {
+                  _data.setAlexaLinkPopLoad = false;
+                  // Close Loading Dialog
+                  Navigator.of(context).pop();
+                }
                 if (n == 0) {
                   context.read<CertBloc>().add(const ALinkDataRecived());
                 } else if (n == 1) {
@@ -75,7 +82,8 @@ class PagAlexaLink extends StatelessWidget {
                 "ALinkTutorial1",
                 "ALinkTutorial2",
                 "ALinkTutorial3",
-                "ALinkTutorial4"
+                "ALinkTutorial4",
+                "ALinkTutorial5"
               ];
               return BodyStart(
                 children: [
@@ -95,13 +103,15 @@ class PagAlexaLink extends StatelessWidget {
                             else if (certState.stateActual == "ALinkTutorial3")
                               AlexaTutorial3(context, _data)
                             else if (certState.stateActual == "ALinkTutorial4")
-                              AlexaTutorial4(context, _data, _aws)
+                              AlexaTutorial4(context, _data)
                             else
-                              Container(),
+                              AlexaTutorial5(context, _data,
+                                  context.read<CertBloc>(), _aws),
                             BottonSelector(
                                 listItens.indexWhere((element) =>
                                     element == certState.stateActual),
-                                context.read<CertBloc>())
+                                context.read<CertBloc>(),
+                                _data)
                           ],
                         ),
                       ),
@@ -161,7 +171,9 @@ Widget AlexaTutorial1(context, _data) {
         SizedBox(height: 30),
         Container(
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.black, width: 4),
+              border: Border.all(
+                  color: _data.darkMode ? Colors.black : Colors.white,
+                  width: 4),
               borderRadius: BorderRadius.circular(20.0),
             ),
             child: ClipRRect(
@@ -201,7 +213,9 @@ Widget AlexaTutorial2(context, _data) {
         SizedBox(height: 30),
         Container(
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.black, width: 4),
+              border: Border.all(
+                  color: _data.darkMode ? Colors.black : Colors.white,
+                  width: 4),
               borderRadius: BorderRadius.circular(20.0),
             ),
             child: ClipRRect(
@@ -241,7 +255,8 @@ Widget AlexaTutorial3(context, _data) {
         SizedBox(height: 30),
         Container(
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.black, width: 4),
+            border: Border.all(
+                color: _data.darkMode ? Colors.black : Colors.white, width: 4),
             borderRadius: BorderRadius.circular(20.0),
           ),
           child: ClipRRect(
@@ -253,7 +268,8 @@ Widget AlexaTutorial3(context, _data) {
         SizedBox(height: 10),
         Container(
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.black, width: 4),
+            border: Border.all(
+                color: _data.darkMode ? Colors.black : Colors.white, width: 4),
             borderRadius: BorderRadius.circular(20.0),
           ),
           child: ClipRRect(
@@ -279,7 +295,7 @@ Widget AlexaTutorial3(context, _data) {
   );
 }
 
-Widget AlexaTutorial4(context, _data, _aws) {
+Widget AlexaTutorial4(context, _data) {
   final Uri _url = Uri.parse('https://www.amazon.com.br/dp/B0D63DLP9X/');
   Future<void> _launchUrl() async {
     if (!await launchUrl(_url)) {
@@ -287,182 +303,318 @@ Widget AlexaTutorial4(context, _data, _aws) {
     }
   }
 
+  return Container(
+    child: Expanded(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // Title
+          TextYanKaf(
+            data: "Cadastro Skill",
+            height: 0.87,
+            weight: FontWeight.w700,
+            hexColor: _data.darkMode ? "#0B2235" : "#FFFFFF",
+            size: 30,
+          ),
+          //
+          // Warning close page
+          Padding(
+            padding: const EdgeInsets.only(left: 30, right: 25),
+            child: TextYanKaf(
+              data:
+                  "Caso a página não carregue feche através do X e tente novamente.",
+              height: 1,
+              weight: FontWeight.w500,
+              hexColor: _data.darkMode ? "#0B2235" : "#FFFFFF",
+              size: 25,
+            ),
+          ),
+          // Button Container Link Skill
+          GestureDetector(
+            onTap: _launchUrl,
+            child: Container(
+              height: 62,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                  border: Border.all(
+                    width: 2,
+                    color: _data.darkMode
+                        ? Colors.white
+                        : HexColor.fromHex('#FF5427'),
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  color: _data.darkMode
+                      ? HexColor.fromHex("#0B2235")
+                      : Colors.transparent),
+              margin: EdgeInsets.symmetric(horizontal: 25),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.open_in_browser,
+                    color: Colors.white,
+                    size: 23,
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  TextFont(
+                      data: "Acessar Alexa Skill",
+                      weight: FontWeight.w700,
+                      hexColor: "#FFFFFF",
+                      size: 16,
+                      height: 19.36 / 16,
+                      letter: 12,
+                      gFont: GoogleFonts.inter),
+                ],
+              ),
+            ),
+          ),
+          //TextButton(onPressed: _launchUrl, child: Text("MeuLink")),
+          SizedBox(height: 40),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget AlexaTutorial5(context, _data, certBloc, _aws) {
   final TextEditingController _textEmailController = TextEditingController();
   final TextEditingController _textCodeController = TextEditingController();
 
+  bool isFourDigitNumber(String input) {
+    final regex = RegExp(r'^\d{4}$');
+    if (regex.hasMatch(input)) {
+      // Se tiver 4 digitos
+      if (int.parse(input) % 127 == 0) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   return Container(
-      child: Column(
-    children: [
-      // Title
-      TextYanKaf(
-        data: "Cadastro Skill",
-        height: 0.87,
-        weight: FontWeight.w700,
-        hexColor: _data.darkMode ? "#0B2235" : "#FFFFFF",
-        size: 30,
-      ),
-      SizedBox(height: 40),
-      // Button Container Link Skill
-      GestureDetector(
-        onTap: _launchUrl,
-        child: Container(
-          height: 62,
-          width: double.infinity,
-          decoration: BoxDecoration(
-              border: Border.all(
-                width: 2,
-                color:
-                    _data.darkMode ? Colors.white : HexColor.fromHex('#FF5427'),
-              ),
-              borderRadius: BorderRadius.circular(12),
-              color: _data.darkMode
-                  ? HexColor.fromHex("#0B2235")
-                  : Colors.transparent),
-          margin: EdgeInsets.symmetric(horizontal: 25),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.open_in_browser,
-                color: Colors.white,
-                size: 23,
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              TextFont(
-                  data: "Acessar Alexa Skill",
-                  weight: FontWeight.w700,
-                  hexColor: "#FFFFFF",
-                  size: 16,
-                  height: 19.36 / 16,
-                  letter: 12,
-                  gFont: GoogleFonts.inter),
-            ],
+      child: Expanded(
+    child: Column(
+      children: [
+        // Title
+        TextYanKaf(
+          data: "Cadastro Skill",
+          height: 0.87,
+          weight: FontWeight.w700,
+          hexColor: _data.darkMode ? "#0B2235" : "#FFFFFF",
+          size: 30,
+        ),
+        //
+        SizedBox(height: 15),
+        // Scroll Screen
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                //
+                SizedBox(height: 30),
+                // Skill vinculado com sucesso?
+                TextYanKaf(
+                  data: "A Skill foi vinculada com successo?",
+                  height: 0.87,
+                  weight: FontWeight.w500,
+                  hexColor: _data.darkMode ? "#0B2235" : "#FFFFFF",
+                  size: 25,
+                ),
+                SizedBox(height: 20),
+                // Abrir meu churrasco
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                  child: TextYanKaf(
+                    data:
+                        '- Utilize o comando de voz com sua alexa para iniciar a skill dizendo: "Alexa, abrir meu churrasco"',
+                    height: 0.9,
+                    weight: FontWeight.w500,
+                    hexColor: _data.darkMode ? "#0B2235" : "#FFFFFF",
+                    size: 20,
+                  ),
+                ),
+                //
+                SizedBox(height: 20),
+                // Pedir Codigo
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                  child: TextYanKaf(
+                    data:
+                        "- Em seguida pergunte qual o código de cadrastro                            ",
+                    height: 0.87,
+                    weight: FontWeight.w500,
+                    hexColor: _data.darkMode ? "#0B2235" : "#FFFFFF",
+                    size: 20,
+                  ),
+                ),
+                //
+                SizedBox(height: 20),
+                // Pedir Email
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                  child: TextYanKaf(
+                    data:
+                        "- Caso necessário pergunte qual o Email                                         ",
+                    height: 0.87,
+                    weight: FontWeight.w500,
+                    hexColor: _data.darkMode ? "#0B2235" : "#FFFFFF",
+                    size: 20,
+                  ),
+                ),
+                //
+                SizedBox(height: 30),
+                // Forms Email and Code
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  child: Column(children: [
+                    Container(
+                        padding: EdgeInsets.symmetric(horizontal: 15),
+                        height: 60,
+                        decoration: BoxDecoration(
+                            color: _data.darkMode
+                                ? HexColor.fromHex('#F8F8F8')
+                                : Colors.black45,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10))),
+                        // EMAIL FORM
+                        child: TextFormField(
+                          keyboardType: TextInputType.emailAddress,
+                          style: TextStyle(
+                            color: _data.darkMode ? Colors.black : Colors.white,
+                          ),
+                          controller: _textEmailController,
+                          decoration: InputDecoration(
+                              hintText: "Email Cadastrado na Alexa",
+                              hintStyle: TextStyle(
+                                color: _data.darkMode
+                                    ? Colors.black38
+                                    : Colors.white38,
+                              )),
+                        )),
+                    //
+                    SizedBox(height: 10),
+                    //
+                    Container(
+                        padding: EdgeInsets.symmetric(horizontal: 15),
+                        height: 60,
+                        decoration: BoxDecoration(
+                            color: _data.darkMode
+                                ? HexColor.fromHex('#F8F8F8')
+                                : Colors.black45,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10))),
+                        // Key FORM
+                        child: TextFormField(
+                          keyboardType: TextInputType.number,
+                          style: TextStyle(
+                            color: _data.darkMode ? Colors.black : Colors.white,
+                          ),
+                          controller: _textCodeController,
+                          decoration: InputDecoration(
+                              hintText: "Código de Cadastro (4 números)",
+                              hintStyle: TextStyle(
+                                color: _data.darkMode
+                                    ? Colors.black38
+                                    : Colors.white38,
+                              )),
+                        )),
+                  ]),
+                ),
+                //
+                SizedBox(
+                  height: 20,
+                ),
+                // Resposta do cadastro
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 35),
+                  child: TextYanKaf(
+                    data: ResponseFullString(_aws.getAlexaLinkResponse),
+                    weight: FontWeight.w500,
+                    hexColor: _data.darkMode ? "#0B2235" : "#FFFFFF",
+                    size: 20,
+                  ),
+                ),
+                SizedBox(height: 20),
+                // Button Container Enviar Dados
+                GestureDetector(
+                  onTap: () {
+                    //alexaLinkLoadingResponse(context, "Cadastrando", "", _data);
+                    if (!EmailValidator.validate(_textEmailController.text)) {
+                      _textEmailController.text = "";
+                      infoConfigAlert(context, "Erro Email",
+                          "Email informado não é valido, tente novamente.");
+                    } else if (!isFourDigitNumber(_textCodeController.text)) {
+                      _textCodeController.text = "";
+                      infoConfigAlert(context, "Erro Código",
+                          "Código de cadastro informado não é valido, tente novamente.");
+                    } else {
+                      FocusScope.of(context).unfocus();
+                      alexaLinkLoadingResponse(
+                          context, "Cadastrando", "", _data);
+                      _aws.awsMsg('DynamoSendShadow/update',
+                          '{"state": { "desired": {"MsgError": "", "Email": "${_textEmailController.text}", "Dispositivo": "${_aws.getDispName}", "MyKey": "${_textCodeController.text}", "Error": "0", "MsgError": ""}}}');
+                      certBloc.add(const ALinkLoading());
+                    }
+                  },
+                  child: Container(
+                    height: 62,
+                    width: 220,
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                          width: 2,
+                          color: _data.darkMode
+                              ? Colors.white
+                              : HexColor.fromHex('#FF5427'),
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        color: _data.darkMode
+                            ? HexColor.fromHex("#0B2235")
+                            : Colors.transparent),
+                    margin: EdgeInsets.symmetric(horizontal: 25),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextFont(
+                            data: "Finalizar Cadastro",
+                            weight: FontWeight.w700,
+                            hexColor: "#FFFFFF",
+                            size: 16,
+                            height: 19.36 / 16,
+                            letter: 12,
+                            gFont: GoogleFonts.inter),
+                      ],
+                    ),
+                  ),
+                ),
+                //
+                SizedBox(
+                  height: 30,
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-      //TextButton(onPressed: _launchUrl, child: Text("MeuLink")),
-      SizedBox(height: 40),
-      // Skill vinculado com sucesso?
-      TextYanKaf(
-        data: "A Skill foi vinculada com successo?",
-        height: 0.87,
-        weight: FontWeight.w500,
-        hexColor: _data.darkMode ? "#0B2235" : "#FFFFFF",
-        size: 25,
-      ),
-      SizedBox(height: 20),
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30.0),
-        child: TextYanKaf(
-          data:
-              '- Utilize o comando de voz com sua alexa para iniciar a skill dizendo: "Alexa, abrir meu churrasco"',
-          height: 0.9,
-          weight: FontWeight.w500,
-          hexColor: _data.darkMode ? "#0B2235" : "#FFFFFF",
-          size: 20,
-        ),
-      ),
-      SizedBox(height: 20),
-      //
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30.0),
-        child: TextYanKaf(
-          data: "- Em seguida pergunte qual o código de cadrastro                            ",
-          height: 0.87,
-          weight: FontWeight.w500,
-          hexColor: _data.darkMode ? "#0B2235" : "#FFFFFF",
-          size: 20,
-        ),
-      ),
-      //
-      SizedBox(height: 30),
-      // Forms Email and Code
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 25.0),
-        child: Column(children: [
-          Container(
-              padding: EdgeInsets.symmetric(horizontal: 15),
-              height: 60,
-              decoration: BoxDecoration(
-                  color: _data.darkMode
-                      ? HexColor.fromHex('#F8F8F8')
-                      : Colors.black45,
-                  borderRadius: BorderRadius.all(Radius.circular(10))),
-              child: TextFormField(
-                style: TextStyle(
-                  color: _data.darkMode ? Colors.black : Colors.white,
-                ),
-                controller: _textEmailController,
-                decoration: InputDecoration(
-                    hintText: "Email Cadastrado na Alexa",
-                    hintStyle: TextStyle(
-                      color: _data.darkMode ? Colors.black38 : Colors.white38,
-                    )),
-              )),
-          //
-          SizedBox(height: 10),
-          //
-          Container(
-              padding: EdgeInsets.symmetric(horizontal: 15),
-              height: 60,
-              decoration: BoxDecoration(
-                  color: _data.darkMode
-                      ? HexColor.fromHex('#F8F8F8')
-                      : Colors.black45,
-                  borderRadius: BorderRadius.all(Radius.circular(10))),
-              child: TextFormField(
-                style: TextStyle(
-                  color: _data.darkMode ? Colors.black : Colors.white,
-                ),
-                controller: _textCodeController,
-                decoration: InputDecoration(
-                    hintText: "Código de Cadastro (4 números)",
-                    hintStyle: TextStyle(
-                      color: _data.darkMode ? Colors.black38 : Colors.white38,
-                    )),
-              )),
-        ]),
-      ),
-      //
-      SizedBox(height: 20),
-
-      TextButton(
-          onPressed: () {
-            infoConfigAlert(context, "Conexão Internet", "");
-            _aws.awsMsg('DynamoSendShadow/update',
-                '{"state": { "desired": {"MsgError": "", "Email": "${_textEmailController.text}", "Dispositivo": "${_aws.getDispName}", "MyKey": "${_textCodeController.text}", "Error": "0", "MsgError": ""}}}');
-            context.read<CertBloc>().add(const ALinkLoading());
-          },
-          child: Text(
-            "TESTE",
-            style: TextStyle(
-              color: _data.darkMode ? Colors.black : Colors.white,
-            ),
-          )),
-      SizedBox(
-        height: 30,
-      ),
-      Text(
-        "Mensagem: ${_aws.getAlexaLinkResponse}",
-        style: TextStyle(
-          color: _data.darkMode ? Colors.black : Colors.white,
-        ),
-      )
-    ],
+      ],
+    ),
   ));
 }
 
-Widget BottonSelector(int actualPag, testeww) {
+Widget BottonSelector(int actualPag, certBloc, _data) {
+  if (actualPag == -1) {
+    //Page not found on list go to last page
+    actualPag = 5;
+  }
   List listSelect = [
     ALinkIni(),
     ALinkTutorial1(),
     ALinkTutorial2(),
     ALinkTutorial3(),
-    ALinkTutorial4()
+    ALinkTutorial4(),
+    ALinkTutorial5()
   ];
-  int totalpags = 5;
+  int totalpags = 6;
   return Container(
     child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -470,13 +622,19 @@ Widget BottonSelector(int actualPag, testeww) {
         IconButton(
             onPressed: () {
               if (actualPag != 0) {
-                testeww.add(listSelect[actualPag - 1]);
+                certBloc.add(listSelect[actualPag - 1]);
               }
             },
             icon: Icon(
               Icons.keyboard_arrow_left_rounded,
               size: 40,
-              color: actualPag != 0 ? Colors.black : Colors.transparent,
+              color: _data.darkMode
+                  ? actualPag != 0
+                      ? Colors.black
+                      : Colors.transparent
+                  : actualPag != 0
+                      ? Colors.white
+                      : Colors.transparent,
             )),
         for (int pag = 0; pag < totalpags; pag++)
           Padding(
@@ -484,23 +642,48 @@ Widget BottonSelector(int actualPag, testeww) {
             child: Icon(
               Icons.circle,
               size: 20,
-              color: pag == actualPag ? Colors.black : Colors.grey.shade300,
+              color: _data.darkMode
+                  ? pag == actualPag
+                      ? Colors.black
+                      : Colors.grey.shade300
+                  : pag == actualPag
+                      ? Colors.white
+                      : Colors.grey.shade800,
             ),
           ),
         IconButton(
             onPressed: () {
               if (actualPag != totalpags - 1) {
-                testeww.add(listSelect[actualPag + 1]);
+                certBloc.add(listSelect[actualPag + 1]);
               }
             },
             icon: Icon(
               Icons.keyboard_arrow_right_rounded,
               size: 40,
-              color: actualPag != totalpags - 1
-                  ? Colors.black
-                  : Colors.transparent,
+              color: _data.darkMode
+                  ? actualPag != totalpags - 1
+                      ? Colors.black
+                      : Colors.transparent
+                  : actualPag != totalpags - 1
+                      ? Colors.white
+                      : Colors.transparent,
             )),
       ],
     ),
   );
+}
+
+String ResponseFullString(String response) {
+  if (response == "ErroEmail") {
+    return "Erro, email não encontrado! Tente novamente ou pergunte para a skill qual o email cadastrado.";
+  } else if (response == "ErroServidor") {
+    return "Falha ao conectar com o servidor, por favor tente novamente mais tarde.";
+  } else if (response == "ErroCodigo") {
+    return "Erro, email ou códido de cadastro não encontrado! Tente novamente ou pergunte para a skill.";
+  } else if (response == "CadastroConcluido") {
+    return "Cadastro concluído com sucesso!";
+  } else if (response == "ErroEmail") {
+    return "";
+  } else
+    return "Erro ao cadastrar tente novamente.";
 }

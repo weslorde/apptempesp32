@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:apptempesp32/api/aws_api.dart';
 import 'package:apptempesp32/api/data_storege.dart';
 import 'package:apptempesp32/api/notificationAlarm.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -9,6 +10,12 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
 class BlueController {
+  
+  // Creat Singleton
+  static final BlueController _shared = BlueController._sharedInstance();
+  BlueController._sharedInstance();
+  factory BlueController({Function(int)? attPageState}) => _shared;
+
   BluetoothDevice? _blueDevice;
 
   BluetoothCharacteristic? _blueCharacteristicToRecive;
@@ -33,11 +40,6 @@ class BlueController {
   Function _funDataRecived = () => {};
 
   late Function(int) _funCertState;
-
-  // Creat Singleton
-  static final BlueController _shared = BlueController._sharedInstance();
-  BlueController._sharedInstance();
-  factory BlueController({Function(int)? attPageState}) => _shared;
 
   set setScreenMsg(String msg) => _screenMsg = msg;
   set setblueSup(bool logic) => _blueSuported = logic;
@@ -171,7 +173,6 @@ class BlueController {
     } // End AlarmEND
     else if (comando == "NotT") {
       data.startNotificationAlarm("Timer", listRecived[1], listRecived[2]);
-      
     } // End NotT
     else if (comando == "NotG") {
       data.startNotificationAlarm("Graus", listRecived[1], listRecived[2]);
@@ -207,25 +208,29 @@ class BlueController {
     }
   }
 
-  void _creatCertFile(int numCert, String _data) {
+  void _creatCertFile(int numCert, String _dados) {
+    final AllData _data = AllData();
     final _fileNames = ["device.pem.crt", "private.pem.key", "rootCA.pem"];
     File file;
     getApplicationDocumentsDirectory().then((directory) => {
-          file = File('${directory.path}/AWS/${_fileNames[numCert]}'),
+          file = File(
+              '${directory.path}/AWS/${_data.getFileIdDispActual}/${_fileNames[numCert]}'), //TODO pastas
           file.create(recursive: true).then((_) => {
-                file.writeAsString(_data),
+                file.writeAsString(_dados),
                 file.readAsString().then((contents) => print(contents))
               }),
         });
   }
 
-  void _creatDispNameFile(String _data) {
+  void _creatDispNameFile(String _dados) {
+    final AllData _data = AllData();
     String _fileNames = "deviceName.key";
     File file;
     getApplicationDocumentsDirectory().then((directory) => {
-          file = File('${directory.path}/AWS/$_fileNames'),
+          file = File(
+              '${directory.path}/AWS/${_data.getFileIdDispActual}/$_fileNames'), //TODO pastas
           file.create(recursive: true).then((_) => {
-                file.writeAsString(_data),
+                file.writeAsString(_dados),
                 file.readAsString().then((contents) => print(contents))
               }),
         });

@@ -26,7 +26,7 @@ class DynamoBloc extends Bloc<DynamoEvent, DynamoState> {
     //Logic of ALL STATES -----------------------------------
     _dynamo.goDataOk(() => add(const DataOk()));
 
-    on<InitState>((event, emit) async {
+    on<InitStateDynamo>((event, emit) async {
       emitAll(stateActual: 'InitState');
     });
 

@@ -180,6 +180,10 @@ class CertBloc extends Bloc<CertEvent, CertState> {
       emitAll(stateActual: 'ALinkTutorial4');
     });
 
+    on<ALinkTutorial5>((event, emit) async {
+      emitAll(stateActual: 'ALinkTutorial5');
+    });
+
     on<ALinkWaiting>((event, emit) async {
       emitAll(stateActual: 'ALinkWaiting');
     });
@@ -191,20 +195,14 @@ class CertBloc extends Bloc<CertEvent, CertState> {
 
     on<ALinkLoading>((event, emit) async {
       emitAll(stateActual: 'ALinkLoading');
-      await Future.delayed(const Duration(seconds: 5));
-      add(const ALinkWaiting());
     });
 
     on<ALinkWarning>((event, emit) async {
       emitAll(stateActual: 'ALinkWarning');
-      await Future.delayed(const Duration(seconds: 5));
-      add(const ALinkWaiting());
     });
 
     on<ALinkOk>((event, emit) async {
       emitAll(stateActual: 'ALinkOk');
-      await Future.delayed(const Duration(seconds: 5));
-      add(const ALinkWaiting());
     });
 
     //
