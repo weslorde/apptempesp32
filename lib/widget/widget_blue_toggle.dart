@@ -1,3 +1,4 @@
+import 'package:apptempesp32/api/aws_api.dart';
 import 'package:apptempesp32/api/blue_api.dart';
 import 'package:apptempesp32/api/hex_to_colors.dart';
 import 'package:apptempesp32/widget/widget_text_font.dart';
@@ -16,6 +17,7 @@ class _blueToggleState extends State<blueToggle> {
   @override
   Widget build(BuildContext context) {
     final BlueController _blue = BlueController();
+    final AwsController _aws = AwsController();
 
     bool _toggleBool = _blue.getToggleBool;
 
@@ -30,44 +32,73 @@ class _blueToggleState extends State<blueToggle> {
     Map<String, dynamic> statusToColor = {
       'Conectado': "#FF5427",
       'Conectando': "#FF8D27",
-      'Buscando' : "#FF8D27",
+      'Buscando': "#FF8D27",
     };
 
     return GestureDetector(
-          onTap: () {
-            attWidget();
-          },
-          child: Container(
-      alignment: Alignment.centerRight,
-      child: FittedBox(
-        child:  Container(
-            padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(
-                color:
-                    HexColor.fromHex(statusToColor[widget.status] ?? "#BBC8D6"),
-                borderRadius:
-                    BorderRadius.horizontal(left: Radius.circular(6))),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.bluetooth,
-                  size: 20,
-                  color: Colors.white,
+      onTap: () {
+        attWidget();
+      },
+      child: Container(
+        alignment: Alignment.centerRight,
+        child: FittedBox(
+          child: _aws.getMQTTConnect
+              ? wifiVersion(_toggleBool)
+              : Container(
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      color: HexColor.fromHex(
+                          statusToColor[widget.status] ?? "#BBC8D6"),
+                      borderRadius:
+                          BorderRadius.horizontal(left: Radius.circular(6))),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.bluetooth,
+                        size: 20,
+                        color: Colors.white,
+                      ),
+                      _toggleBool == true
+                          ? TextFont(
+                              data: widget.status,
+                              weight: FontWeight.w700,
+                              hexColor: "#FFFFFF",
+                              size: 11.7,
+                              height: 14.2 / 11.7,
+                              gFont: GoogleFonts.inter)
+                          : SizedBox(),
+                    ],
+                  ),
                 ),
-                _toggleBool == true
-                    ? TextFont(
-                        data: widget.status,
-                        weight: FontWeight.w700,
-                        hexColor: "#FFFFFF",
-                        size: 11.7,
-                        height: 14.2 / 11.7,
-                        gFont: GoogleFonts.inter)
-                    : SizedBox(),
-              ],
-            ),
-          ),
         ),
       ),
     );
   }
+}
+
+Widget wifiVersion(_toggleBool) {
+  return Container(
+    padding: EdgeInsets.all(10),
+    decoration: BoxDecoration(
+        color: HexColor.fromHex("#FF5427"),
+        borderRadius: BorderRadius.horizontal(left: Radius.circular(6))),
+    child: Row(
+      children: [
+        Icon(
+          Icons.wifi,
+          size: 20,
+          color: Colors.white,
+        ),
+        _toggleBool == true
+            ? TextFont(
+                data: " WIFI",
+                weight: FontWeight.w700,
+                hexColor: "#FFFFFF",
+                size: 11.7,
+                height: 14.2 / 11.7,
+                gFont: GoogleFonts.inter)
+            : SizedBox(),
+      ],
+    ),
+  );
 }

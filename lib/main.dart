@@ -105,18 +105,18 @@ class _SelectedPageState extends State<SelectedPage> {
   Widget build(BuildContext context) {
     return /*BlocListener<AppBloc, AppState>(listener: (context, state){if (state.blueIsOn){context.read<AppBloc>().add(const BlueIsOn());}}, child:*/ [
       //List of Pages
-      const HomePage(),
-      const TemperaturePage(),
+      const HomePage(), //0   
+      const TemperaturePage(), //1
       //const MotorPage2(),
-      const AlarmPage(),
-      const MotorPage(),
-      const RecipeHomePag(),
-      const OneRecipePag(),
-      const MoreRecipePag(),
-      const PagConfig(),
-      const BannerInit(),
-      const PagAlexaLink(),
-      const PagDisp(),
+      const AlarmPage(), //2
+      const MotorPage(), //3 
+      const RecipeHomePag(), //4
+      const OneRecipePag(), //5
+      const MoreRecipePag(), //6
+      const PagConfig(), //7
+      const BannerInit(), //8
+      const PagAlexaLink(), //9
+      const PagDisp(), //10
     ][_index];
   }
 }

@@ -65,8 +65,7 @@ class _RecipeHomePagState extends State<RecipeHomePag> {
   }
 
   void favoritesUpdate() {
-    setState(() {
-    });
+    setState(() {});
   }
 
   @override
@@ -86,7 +85,8 @@ class _RecipeHomePagState extends State<RecipeHomePag> {
         //
         body: BlocBuilder<DynamoBloc, DynamoState>(
           builder: ((context, state) {
-            if (state.stateActual == 'empty' || state.stateActual == 'InitState') {
+            if (state.stateActual == 'empty' ||
+                state.stateActual == 'InitState') {
               context.read<DynamoBloc>().add(const CheckData());
             }
 
@@ -174,7 +174,8 @@ class _RecipeHomePagState extends State<RecipeHomePag> {
                                           // Negative magin to match the function left preset margin with this pag pattern margin
                                           offset: Offset(-12, 0),
                                           child: Row(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
                                               for (int indice = state
                                                           .recipesAll['Items']
@@ -204,7 +205,24 @@ class _RecipeHomePagState extends State<RecipeHomePag> {
                       )
                     ],
                   )
-                : BodyStart(children: []); // Vazio caso nao tiver data Ok
+                : BodyStart(
+                    children: [
+                      //
+                      const SizedBox(height: 200),
+                      // Title
+                      Container(
+                        margin: EdgeInsets.symmetric(horizontal: 20),
+                        alignment: AlignmentDirectional.center,
+                        child: Container(
+                            height: 80,
+                            width: 80,
+                            child: CircularProgressIndicator(
+                              color: HexColor.fromHex("FF5427"),
+                              strokeWidth: 8,
+                            )),
+                      ),
+                    ],
+                  ); // Vazio caso nao tiver data Ok
           }),
         ),
       ),
@@ -369,4 +387,3 @@ Widget topTextCards(
     ),
   );
 }
-

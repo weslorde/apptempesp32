@@ -1,8 +1,11 @@
 import 'package:apptempesp32/api/aws_api.dart';
 import 'package:apptempesp32/api/data_storege.dart';
+import 'package:apptempesp32/bloc/certficado_bloc_files/cert_bloc.dart';
+import 'package:apptempesp32/bloc/certficado_bloc_files/cert_bloc_events.dart';
 import 'package:apptempesp32/pages/menus/controller_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 infoConfigAlert(context, String topTitle, String infoText) async {
   showDialog(
@@ -50,7 +53,7 @@ alexaLinkLoadingResponse(
   );
 }
 
-dispNameCreate(context, String dispID, attPagFun) async {
+dispNameCreate(context, String dispID, attFun) async {
   final AllData _data = AllData();
   final TextEditingController _textNameController = TextEditingController();
   showDialog(
@@ -77,7 +80,7 @@ dispNameCreate(context, String dispID, attPagFun) async {
           TextButton(
             onPressed: () {
               _data.setListDispNames(dispID, _textNameController.text);
-
+              attFun();
               Navigator.of(context).pop();
             },
             child: Text("Salvar"),
@@ -104,3 +107,36 @@ dispNameCreate(context, String dispID, attPagFun) async {
     ),
   );
 }
+
+confirmDispChange(context, title, text, attFun) async {
+  final AllData _data = AllData();
+  showDialog(
+    context: context,
+    builder: (context) => GestureDetector(
+      onTap: () {
+        Navigator.of(context).pop();
+      },
+      child: AlertDialog(
+        title: Text(title),
+        content: Text(text),
+        actionsAlignment: MainAxisAlignment.spaceBetween,
+        actions: [
+          TextButton(
+            onPressed: () {
+              attFun();
+              Navigator.of(context).pop();
+            },
+            child: Text("Sim"),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text("Não"),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+

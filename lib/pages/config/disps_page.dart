@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:apptempesp32/api/aws_api.dart';
 import 'package:apptempesp32/api/blue_api.dart';
 import 'package:apptempesp32/api/data_storege.dart';
@@ -106,9 +108,12 @@ class PagDisp extends StatelessWidget {
                             else
                               widgetOneDisp(
                                   _data,
+                                  aws,
                                   aws.getListDispsPath[
                                       _data.getFileIdDispActual],
-                                  context),
+                                  context, () {
+                                context.read<CertBloc>().add(const ALinkIni());
+                              }),
                             //
                             SizedBox(height: 20),
                             //
@@ -133,13 +138,26 @@ class PagDisp extends StatelessWidget {
                                         .toString()) //Ignore Disp in Selecionado
                                   GestureDetector(
                                     onTap: () {
-                                      _data.setFileIdDispActual =
-                                          int.parse(disp[0]);
+                                      confirmDispChange(
+                                          context,
+                                          "Trocar dispositivo?",
+                                          "Será necessario reiniciar o aplicativo",
+                                          () {
+                                        _data.setFileIdDispActual =
+                                            int.parse(disp[0]);
+                                        context
+                                            .read<CertBloc>()
+                                            .add(const ALinkIni());
+                                        Future.delayed(Duration(seconds: 2))
+                                            .then((_) => {exit(0)});
+                                      });
+                                    },
+                                    child: widgetOneDisp(
+                                        _data, aws, disp, context, () {
                                       context
                                           .read<CertBloc>()
                                           .add(const ALinkIni());
-                                    },
-                                    child: widgetOneDisp(_data, disp, context),
+                                    }),
                                   ),
 
                             SizedBox(height: 20),
@@ -147,14 +165,22 @@ class PagDisp extends StatelessWidget {
                                 _data.getFileIdDispActual) // NovoDisp Selected
                               GestureDetector(
                                 onTap: () {
-                                  //print("Size: ${aws.getListDispsPath.length}");
-                                  _data.setFileIdDispActual = aws
-                                      .getListDispsPath
-                                      .length; //New disp recive last id of the list of disps
-                                  //print("DispAtual: ${_data.getFileIdDispActual}");
-                                  context
-                                      .read<CertBloc>()
-                                      .add(const ALinkIni());
+                                  confirmDispChange(
+                                      context,
+                                      "Trocar dispositivo?",
+                                      "Será necessario reiniciar o aplicativo",
+                                      () {
+                                    //print("Size: ${aws.getListDispsPath.length}");
+                                    _data.setFileIdDispActual = aws
+                                        .getListDispsPath
+                                        .length; //New disp recive last id of the list of disps
+                                    //print("DispAtual: ${_data.getFileIdDispActual}");
+                                    context
+                                        .read<CertBloc>()
+                                        .add(const ALinkIni());
+                                    Future.delayed(Duration(seconds: 2))
+                                        .then((_) => {SystemNavigator.pop()});
+                                  });
                                 },
                                 child: widgetNewDisp(_data),
                               ),
@@ -168,12 +194,14 @@ class PagDisp extends StatelessWidget {
                         width: 20,
                       )),
                 // Fim teste
+                /*
                 TextButton(
                     onPressed: () {
                       SystemNavigator.pop(); // RESET APP
                       //_data.getRestartAppTree();
                     },
                     child: Text("RESET"))
+                */
               ]);
             },
           ),
@@ -183,12 +211,15 @@ class PagDisp extends StatelessWidget {
   }
 }
 
-Widget MyPrint(disp, _data) {
+Widget MyPrint(
+  disp,
+  _data,
+) {
   print("1: ${disp[0]} 2: ${_data.getFileIdDispActual}");
   return SizedBox();
 }
 
-Widget widgetOneDisp(_data, dispNum, context) {
+Widget widgetOneDisp(_data, _aws, dispNum, context, attFun) {
   print(dispNum.length);
   return Column(
     children: [
@@ -216,7 +247,7 @@ Widget widgetOneDisp(_data, dispNum, context) {
                 ),
                 IconButton(
                     onPressed: () {
-                      dispNameCreate(context, dispNum[1], () {});
+                      dispNameCreate(context, dispNum[1], attFun);
                     },
                     icon: Icon(
                       Icons.edit,
@@ -225,7 +256,17 @@ Widget widgetOneDisp(_data, dispNum, context) {
               ],
             ),
             IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  confirmDispChange(context, "Apagar Dispositivo?",
+                      "O acesso ao dispositivo vai ser perdido até que cadastre novamente! \nSerá necessario reiniciar o aplicativo!",
+                      () {
+                    _data.setFileIdDispActual = 0;
+                    _aws.deleteDisp(dispNum[0]);
+                    attFun();
+                    Future.delayed(Duration(seconds: 2))
+                        .then((_) => {SystemNavigator.pop()});
+                  });
+                },
                 icon: Icon(size: 30, Icons.delete_forever, color: Colors.red)),
           ],
         ),
@@ -265,48 +306,4 @@ Widget widgetNewDisp(_data) {
       ),
     ],
   );
-}
-
-List<Widget> widgetWifiForm(contextBloc, BlueController blue, AllData data) {
-  final loginWifiController = TextEditingController();
-  final passwordWifiController = TextEditingController();
-
-  return [
-    Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 30),
-      child: Column(
-        children: [
-          TextField(
-            controller: loginWifiController,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: 'Rede Wifi',
-            ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          TextField(
-            controller: passwordWifiController,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: 'Senha Wifi',
-            ),
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          TextButton(
-              onPressed: () {
-                print(
-                    "${loginWifiController.text} - ${passwordWifiController.text}");
-                data.setWifiLogin = loginWifiController.text;
-                data.setWifiPassword = passwordWifiController.text;
-                blue.mandaMensagem("Wifi");
-              },
-              child: Text('Enviar'))
-        ],
-      ),
-    )
-  ];
 }

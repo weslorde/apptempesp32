@@ -1,12 +1,16 @@
+import 'dart:io';
+
 import 'package:apptempesp32/api/aws_api.dart';
 import 'package:apptempesp32/api/blue_api.dart';
 import 'package:apptempesp32/bloc/certficado_bloc_files/cert_bloc_events.dart';
 import 'package:apptempesp32/bloc/certficado_bloc_files/cert_state.dart';
+import 'package:apptempesp32/pages/menus/controller_pages.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CertBloc extends Bloc<CertEvent, CertState> {
   final BlueController _blue = BlueController();
   final AwsController _aws = AwsController();
+  final PageIndex _pageController = PageIndex();
 
   void emitAll({required String stateActual, String msg = ''}) {
     // ignore: invalid_use_of_visible_for_testing_member
@@ -150,6 +154,9 @@ class CertBloc extends Bloc<CertEvent, CertState> {
 
     on<CertEnd>((event, emit) async {
       emitAll(stateActual: 'CertEnd');
+      await _aws.hasCertFiles();
+      sleep(Duration(seconds: 3));
+      add(const ALinkLoading());
     });
 
     // TestMQTT

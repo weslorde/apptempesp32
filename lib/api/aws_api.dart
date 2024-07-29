@@ -119,7 +119,7 @@ class AwsController {
       }
     });
     _awsHasNet = isDeviceConnected;
-    return isDeviceConnected;
+    return false;
   }
 
   Future creatClient() async {
@@ -135,12 +135,22 @@ class AwsController {
     _clientAWS = MqttServerClient.withPort(url, clientId, port);
     // Set secure
     _clientAWS.secure = true;
+    //New Try
+    _clientAWS.onDisconnected = () {
+      print("AWS DESCONECT");
+    };
     // Set Keep-Alive
-    //client.keepAlivePeriod = 99999;
+    _clientAWS.keepAlivePeriod = 60;
     // Set the protocol to V3.1.1 for AWS IoT Core, if you fail to do this you will not receive a connect ack with the response code
     _clientAWS.setProtocolV311();
     // logging if you wish
     _clientAWS.logging(on: true);
+
+    void pong() {
+      print('PPPPPPPPPPPPPPPPPPPPPing response client callback invoked');
+    }
+
+    _clientAWS.pongCallback = pong;
 
     //final readString2 = Uint8List.fromList(list).buffer.asByteData();
     //ByteData deviceCert2 = await file.readAsBytes();
@@ -339,6 +349,7 @@ class AwsController {
 
     List<List<String>> dispFiles = [];
     for (int x = 0; x < folders.length; x++) {
+      //TODO Lista fixa de 0 ate o tamanho, mas buga se apagar algum disp no meio da lista
       //print(folders[x].path.replaceAll('${directory.path}/AWS/', ""));
       var name =
           await File('${directory.path}/AWS/$x/deviceName.key').readAsString();
@@ -352,6 +363,17 @@ class AwsController {
     attState();
   }
 
+  deleteDisp(dispID) async {
+    final directory = await getApplicationDocumentsDirectory();
+    final dir = Directory('${directory.path}/AWS/${dispID}');
+    if (await dir.exists()) {
+      await dir.delete(recursive: true);
+      print('Pasta apagada com sucesso!');
+    } else {
+      print('Pasta para apagar NAO ENCONTRADA!');
+    }
+  }
+
   void closeAWS() {
     _awsMQTTConnect = false;
     _clientAWS.disconnect();
@@ -359,11 +381,19 @@ class AwsController {
   }
 
   void awsMsg(String topic, String msg) {
-    print("\nSend: $topic \n$msg \n");
-    var topicFull = '\$aws/things/$_dispName/shadow/name/$topic';
-    final builder = MqttClientPayloadBuilder();
-    builder.addString(msg);
-    // Important: AWS IoT Core can only handle QOS of 0 or 1. QOS 2 (exactlyOnce) will fail!
-    _clientAWS.publishMessage(topicFull, MqttQos.atLeastOnce, builder.payload!);
+    print("AWS Tentou Mandarrrrrr");
+    if (_clientAWS.connectionStatus!.state == MqttConnectionState.connected) {
+      print("\nSend: $topic \n$msg \n");
+      var topicFull = '\$aws/things/$_dispName/shadow/name/$topic';
+      final builder = MqttClientPayloadBuilder();
+      builder.addString(msg);
+      // Important: AWS IoT Core can only handle QOS of 0 or 1. QOS 2 (exactlyOnce) will fail!
+      _clientAWS.publishMessage(
+          topicFull, MqttQos.atLeastOnce, builder.payload!);
+      print("AWS TEntou e foi");
+    } else {
+      _awsMQTTConnect = false;
+      print("AWS TEntou e NAO foi");
+    }
   }
 } // End of Class AwsController

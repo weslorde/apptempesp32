@@ -48,6 +48,7 @@ class PageIndex {
   }
 
   set setIndex(int index) {
+
     if (_currentIndex != index) {
       _currentIndex = index;
       _attPageState(_currentIndex); // Call Fun to updateState
